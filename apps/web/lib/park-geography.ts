@@ -8,7 +8,7 @@ export interface EnterpriseFeature {
   properties: {
     kind: "enterprise"; code: string; name: string; sector: Sector; color: string;
     poiId: string; poiName: string; address: string; sourceUrl: string;
-    precision: string; note: string; boundaryStatus: string;
+    precision: string; note: string; boundaryStatus: string; metricBindingApproved: boolean;
   };
 }
 export interface DistributionFeature {

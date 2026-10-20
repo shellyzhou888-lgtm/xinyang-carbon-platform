@@ -1,0 +1,351 @@
+{
+  "reviewedAt": "2026-10-20",
+  "scope": "信阳经济技术开发区公开资料核实名录；企业、品牌基地、项目与待核条目分别标注，不是管委会全量备案企业名册。",
+  "notes": [
+    "原10家是数据库能耗样本，不代表园区全部企业。",
+    "报道或资料能核实对应时间的入驻/调研/项目事实，不等于2026年实时经营或土地确权证明。",
+    "重点展示为本平台选取的公开报道重点企业，不等于新增官方龙头资质认定。",
+    "不将信阳高新区、平桥产业集聚区或全市企业名单整体纳入本经开区。"
+  ],
+  "sources": [
+    {
+      "id": "industry-2024",
+      "date": "2024-02-02",
+      "title": "示范引领 放大优势：羊山新区信阳经开区以科技创新激发发展活力",
+      "url": "https://www.hnxydj.gov.cn/s/youhuayingshanghuanjing/2024-02-02/8543.html"
+    },
+    {
+      "id": "visit-2023",
+      "date": "2023-05-30",
+      "title": "信阳市委书记到信阳经开区调研",
+      "url": "https://www.henan.gov.cn/2023/05-30/2751977.html"
+    },
+    {
+      "id": "catalog-2023",
+      "date": "2023-06-25",
+      "title": "信阳市政府采购网公开供应商资料（以各条目正文为准）",
+      "url": "https://xinyang.zfcg.henan.gov.cn/webfile/xinyang/rootfiles/2023/06/25/1686703640122773-1686703640125089.pdf"
+    },
+    {
+      "id": "technology-2023",
+      "date": "2023-08-16",
+      "title": "市科技局走访金牛物流产业集聚区电子信息智能产业园",
+      "url": "https://www.xystrm.com/news/show.php?itemid=661"
+    },
+    {
+      "id": "tianyi-2015",
+      "date": "2015-04-02",
+      "title": "全省重点项目暨产业集聚区建设观摩团莅信观摩",
+      "url": "https://www.henan.gov.cn/2015/04-02/268462.html"
+    },
+    {
+      "id": "yadan-2023",
+      "date": "2023-08-07",
+      "title": "亚丹生态科技（信阳）有限公司正式投产",
+      "url": "https://www.henan.gov.cn/2023/08-07/2793273.html"
+    },
+    {
+      "id": "peak-2024",
+      "date": "2024-07-12",
+      "title": "匹克北方总部和信阳服装生产基地项目开工",
+      "url": "https://ysxq.xinyang.gov.cn/2024/07-12/3248008.html"
+    },
+    {
+      "id": "logistics-2025",
+      "date": "2025-04-23",
+      "title": "国家开发银行调研信阳经开区商贸物流产业",
+      "url": "https://www.xinyang.gov.cn/2025/04-23/599538.html"
+    }
+  ],
+  "items": [
+    {
+      "id": "WANHUA",
+      "name": "万华禾香 / 万华生态（信阳基地）",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "品牌基地",
+      "evidence": [
+        "industry-2024"
+      ],
+      "note": "按公开报道保留集团/基地名称，不把品牌名称作为独立法人确权。",
+      "featured": true,
+      "mapCode": "E_WANHUA"
+    },
+    {
+      "id": "ZHUMEI",
+      "name": "河南省现代筑美家居有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "industry-2024",
+        "catalog-2023"
+      ],
+      "note": "PDF第75页正文为家居有限公司，标题出现家具字样；以正文名称记录。",
+      "featured": true,
+      "mapCode": "E_ZHUMEI"
+    },
+    {
+      "id": "YADAN",
+      "name": "亚丹生态科技（信阳）有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "yadan-2023"
+      ],
+      "note": "政府投产报道明确该名称；不混用广州/许昌/荆门公司的法人名称。",
+      "featured": true,
+      "mapCode": "E_YADAN"
+    },
+    {
+      "id": "YONGHAOXUAN_OLD",
+      "name": "信阳永豪轩家具有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "catalog-2023"
+      ],
+      "note": "PDF第83页；与河南永豪轩智能家居股份有限公司的承继关系未取得确证，不直接合并。",
+      "featured": true,
+      "mapCode": null
+    },
+    {
+      "id": "YONGHAOXUAN_INTELLIGENT",
+      "name": "河南永豪轩智能家居股份有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "visit-2023",
+        "industry-2024"
+      ],
+      "note": "2023年调研报道使用永豪轩智能家居股份有限公司简称，全称另由公开POI印证；原数据库企业与该厂区的能耗绑定暂不展示。",
+      "featured": true,
+      "mapCode": "E_YONGHAOXUAN"
+    },
+    {
+      "id": "TIANYI",
+      "name": "天一美家（信阳家居产业园）",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "品牌基地",
+      "evidence": [
+        "tianyi-2015"
+      ],
+      "note": "公开报道能核实品牌产业园；集团品牌不等于园区内所有租户法人。",
+      "featured": false,
+      "mapCode": "E_TIANYI"
+    },
+    {
+      "id": "BAIDE",
+      "name": "信阳百德实业有限公司（百德门业）",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "catalog-2023",
+        "visit-2023"
+      ],
+      "note": "PDF第85页及经开区实地调研报道。",
+      "featured": true,
+      "mapCode": "E_BAIDE"
+    },
+    {
+      "id": "GUMAI",
+      "name": "谷麦光电（信阳生产基地）",
+      "area": "金牛物流片区",
+      "business": "电子信息",
+      "type": "品牌基地",
+      "evidence": [
+        "industry-2024"
+      ],
+      "note": "公开报道称谷麦光电，地图为集团园区POI；不将母子公司或共用厂区拆成虚构地块。",
+      "featured": true,
+      "mapCode": "E_GUMAI"
+    },
+    {
+      "id": "JINSHANG",
+      "name": "今上半导体（信阳）有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息",
+      "type": "企业",
+      "evidence": [
+        "industry-2024"
+      ],
+      "note": "政府产业报道与公司官网相互印证。",
+      "featured": true,
+      "mapCode": "E_JINSHANG"
+    },
+    {
+      "id": "XINGYUAN",
+      "name": "信阳星原智能科技有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息",
+      "type": "企业",
+      "evidence": [
+        "technology-2023"
+      ],
+      "note": "市科技局实地走访明确法人名称；另一篇报道中的星源科技不另建同名企业。",
+      "featured": true,
+      "mapCode": "E_XINGYUAN"
+    },
+    {
+      "id": "QINJIE",
+      "name": "河南螓杰智能科技有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息",
+      "type": "企业",
+      "evidence": [
+        "technology-2023"
+      ],
+      "note": "与星原、勤拓在同次金牛片区实地走访中出现。",
+      "featured": true,
+      "mapCode": "E_QINJIE"
+    },
+    {
+      "id": "QINTUO",
+      "name": "信阳勤拓精密科技有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息",
+      "type": "企业",
+      "evidence": [
+        "technology-2023"
+      ],
+      "note": "市科技局2023年8月实地走访。",
+      "featured": false,
+      "mapCode": "REG_QINTUO"
+    },
+    {
+      "id": "OUTILI",
+      "name": "河南欧缇丽材料科技有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "visit-2023"
+      ],
+      "note": "政府调研报道使用该名称，POI使用材料科技发展有限公司；名称差异保留，不擅改法人。",
+      "featured": false,
+      "mapCode": "REG_OUTILI"
+    },
+    {
+      "id": "NUOYUAN",
+      "name": "河南诺源涂料有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "catalog-2023"
+      ],
+      "note": "PDF第71页明确位于羊山新区国际家居小镇。",
+      "featured": false,
+      "mapCode": "REG_NUOYUAN"
+    },
+    {
+      "id": "DESHENG",
+      "name": "信阳德胜家居有限公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "catalog-2023"
+      ],
+      "note": "PDF第88页明确位于信阳国际家居产业小镇，地图为德胜家具POI。",
+      "featured": false,
+      "mapCode": "REG_DESHENG"
+    },
+    {
+      "id": "ZUOYOU",
+      "name": "河南省左右鑫室家具股份公司",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": [
+        "catalog-2023"
+      ],
+      "note": "PDF第79/81页正文名称，标题有家居/家具差异；第81页明确在羊山新区家居小镇建生产基地。",
+      "featured": false,
+      "mapCode": "REG_ZUOYOU"
+    },
+    {
+      "id": "SONGDE_REVIEW",
+      "name": "河南省颂德家居有限公司 / 领德名称待核",
+      "area": "羊山片区",
+      "business": "绿色家居",
+      "type": "待核条目",
+      "evidence": [
+        "catalog-2023"
+      ],
+      "note": "同份PDF目录为领德、PDF第73页正文为颂德，未消除矛盾，单列且不计入已核验企业。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "PEAK_PROJECT",
+      "name": "匹克北方总部和信阳服装生产基地",
+      "area": "科创研发片区（规划图）",
+      "business": "服装与总部研发",
+      "type": "项目",
+      "evidence": [
+        "peak-2024"
+      ],
+      "note": "来源为2024年开工报道；用户PDF项目主体为信阳匹克体育用品有限公司。未将门店POI作为生产基地。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "XIYA_PROJECT",
+      "name": "西亚电商物流园",
+      "area": "金牛物流片区（需进一步定位）",
+      "business": "商贸物流",
+      "type": "项目",
+      "evidence": [
+        "logistics-2025"
+      ],
+      "note": "2025年政府报道称赴信阳经开区实地查看，项目名称不等同于独立企业法人。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "BAIJIA_PROJECT",
+      "name": "百家配送物流中心",
+      "area": "经开区（片区待核）",
+      "business": "商贸物流",
+      "type": "项目",
+      "evidence": [
+        "logistics-2025"
+      ],
+      "note": "仅记录政府报道项目名，不推定工商主体和地块范围。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "DABIESHAN_PROJECT",
+      "name": "大别山物流园",
+      "area": "经开区（片区待核）",
+      "business": "商贸物流",
+      "type": "项目",
+      "evidence": [
+        "logistics-2025"
+      ],
+      "note": "仅记录政府报道项目名，未与其他同名物流园合并。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "COLDCHAIN_PROJECT",
+      "name": "数智农业冷链产业园",
+      "area": "经开区（片区待核）",
+      "business": "商贸物流",
+      "type": "项目",
+      "evidence": [
+        "logistics-2025"
+      ],
+      "note": "政府实地调研项目，建设及运营状态需按后续资料更新。",
+      "featured": false,
+      "mapCode": null
+    }
+  ]
+}

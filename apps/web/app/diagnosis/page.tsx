@@ -1,0 +1,26 @@
+import Link from "next/link";
+import { charts,management,overview,carbonManagement } from "@/lib/server";
+import { selectedYear,formatNumber as fmt } from "@/lib/workspace";
+import { DataError,DataNotice,PageHeading } from "@/components/WorkspaceParts";
+import { TrendChart } from "@/components/EnergyCharts";
+import MetricChart from "@/components/MetricChart";
+import AlertEvidence from "@/components/AlertEvidence";
+import { Roadmap } from "@/components/CarbonDataSections";
+export const dynamic="force-dynamic";
+const CATEGORIES:Record<string,string>={clean_energy:"清洁能源",green_power:"绿电交易",efficiency:"能效提升",waste_heat:"余热回收",electrification:"电气化",process:"工艺优化",management:"运行管理",offset:"抵消"};
+export default async function Diagnosis({searchParams}:{searchParams:Promise<{year?:string;tab?:string;status?:string}>}){
+  const sp=await searchParams,year=selectedYear(sp.year),tabs=[["alerts","01","诊断预警"],["causes","02","根因溯源"],["strategies","03","减碳策略"],["forecast","04","能碳预测"]];
+  const tab=tabs.some(([key])=>key===sp.tab)?sp.tab!:"alerts";
+  let data:Awaited<ReturnType<typeof overview>>|null=null,detail:Awaited<ReturnType<typeof management>>|null=null,chart:Awaited<ReturnType<typeof charts>>|null=null,error="";
+  let extended:Awaited<ReturnType<typeof carbonManagement>>|null=null;
+  try{[data,detail,chart,extended]=await Promise.all([overview(year),management(year),charts(year),carbonManagement(year)]);}catch(reason){error=reason instanceof Error?reason.message:"请稍后重试";}
+  const visibleAlerts=(detail?.alerts||[]).filter(row=>sp.status==="all"||row.status==="open");
+  return <><PageHeading eyebrow="ENERGY & CARBON DIAGNOSIS" title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。"/><DataNotice data={data} year={year}/><DataError error={error}/>
+    <nav className="diagnosis-steps" aria-label="诊断流程">{tabs.map(([key,number,label])=><Link key={key} href={`/diagnosis?year=${year}&tab=${key}`} className={tab===key?"on":""}><span>{number}</span><b>{label}</b><i aria-hidden="true">→</i></Link>)}</nav>
+    {tab==="alerts"&&<nav className="workspace-tabs" aria-label="预警状态"><Link className={sp.status!=="all"?"on":""} href={`/diagnosis?year=${year}`}>待处理预警</Link><Link className={sp.status==="all"?"on":""} href={`/diagnosis?year=${year}&status=all`}>全部与历史记录</Link></nav>}
+    {tab==="alerts"&&<section className="section"><div className="section-heading"><h2>{year} 年诊断预警</h2><Link href={`/admin?year=${year}`}>数据质量工单 ↗</Link></div>{visibleAlerts.length?visibleAlerts.map(row=><article key={row.id} className={`issue risk-${["critical","high"].includes(row.severity)?"high":"medium"}`}><div className="issue-head"><b>{row.node}</b><span className="tag">{row.status==="open"?"处理中":row.status==="resolved"?"已解决":"已确认"}</span></div><p>{row.message}</p><small>观测值 {fmt(row.observed,4)} · 基线 {fmt(row.baseline,4)}</small><AlertEvidence value={row.root_cause}/></article>):<div className="workspace-empty"><strong>本年度暂无已生成的诊断预警</strong><p>这里显示已运行诊断规则产生的记录。暂无记录不代表已经完成全部风险检查。</p><Link href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献 ↗</Link></div>}</section>}
+    {tab==="causes"&&<div className="workspace-two-col"><section className="section"><h2>企业排放贡献分解</h2><MetricChart rows={(detail?.carbonRanking||[]).map(row=>({name:row.name,value:row.co2_t}))} unit="tCO₂" color="#f2b84b" label="企业排放贡献"/></section><section className="section"><h2>溯源到企业</h2><p className="section-subtitle">贡献排序用于定位核查重点，不能直接认定因果关系。</p>{detail?.carbonRanking.slice(0,5).map((row,index)=><div className="contribution-row" key={row.code}><span>{String(index+1).padStart(2,"0")}</span><b>{row.name}</b><strong>{fmt(row.co2_t)} <small>tCO₂</small></strong></div>)}<p className="hint">产线、设备层级需补充对应计量及分摊数据。</p></section></div>}
+    {tab==="strategies"&&<><section className="section"><h2>预警关联策略推荐</h2><p className="section-subtitle">模拟数据，仅供演示。节能量与减碳量为参数试算，不代表已实现效果；不同策略可能重叠，不直接求和。</p>{extended?.plans.length?<div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th>预计节能 / tce</th><th>预计减碳 / tCO₂</th><th>参数</th></tr></thead><tbody>{extended.plans.map((row,index)=><tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td>{fmt(row.tce_saving)}</td><td>{fmt(row.co2_reduction_t)}</td><td>{row.simulated?"模拟值":"按已录参数"}</td></tr>)}</tbody></table></div>:<div className="workspace-empty">本年度暂无预警关联策略</div>}</section><details className="section"><summary>查看可用策略库</summary><div className="strategy-grid">{detail?.strategies.map(row=><article className="strategy-item" key={row.code}><span className="strategy-category">{CATEGORIES[row.category]||row.category}</span><h2>{row.name}</h2><p>{row.description||"按企业工况和适用条件进一步核查。"}</p><small>{row.reference}</small></article>)}</div></details></>}
+    {tab==="forecast"&&<><Roadmap data={extended}/><section className="section"><h2>月度能耗与碳排放预测</h2><p className="section-subtitle">展示最新成功批次的预测，虚线为中位预测，阴影为10%—90%区间。</p>{chart?.forecast.length?<><TrendChart data={chart}/><div className="forecast-meta">{chart.forecast.map(row=><span key={row.target}>{row.target==="energy_tce"?"能耗":"碳排放"}：{row.model||"基准模型"} · 批次{row.run_id} · {row.points[0]?.month}—{row.points.at(-1)?.month}</span>)}</div></>:<div className="workspace-empty">暂无已发布的预测批次</div>}</section></>}
+  </>;
+}

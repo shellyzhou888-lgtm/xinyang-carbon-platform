@@ -1,0 +1,16 @@
+{
+  "reviewedAt":"2026-10-20",
+  "note":"公开品牌识别用途，商标权归原权利人。部分为公开历史版标识，品牌集团不等同于厂区独立法人；未核实者使用企业简称，不生成仿冒Logo。",
+  "brands": [
+    {"code":"E_WANHUA","shortName":"万华禾香","logo":"/enterprise-logos/wanhua.jpg","status":"public_brand","sourceUrl":"https://www.whstby.cn/","imageUrl":"https://www.whstby.cn/UserFiles/Article/38dc393f-2b3b-4921-b449-24ec7943ffdc.jpg","note":"万华禾香官网页眉品牌标识，不使用万华化学或万华地产标识。"},
+    {"code":"E_GUMAI","shortName":"谷麦光电","logo":"/enterprise-logos/gumai.png","status":"official_site","sourceUrl":"http://www.gdgma.com/","imageUrl":"http://www.gdgma.com/Data/gdgma/template/cn/images/logo.png","note":"招股书列示官网的GMA标识，用于识别谷麦品牌集团。"},
+    {"code":"E_ZHUMEI","shortName":"现代筑美","logo":"/enterprise-logos/zhumei.jpg","status":"historical_brand","sourceUrl":"https://www.whstby.cn/customer/brand.aspx?id=283","imageUrl":"https://so1.360tres.com/t019ae3e94429effd1b.jpg","note":"公开历史版品牌标识，造型与万华品牌客户页记载一致；不声称是2026年最新VI。"},
+    {"code":"E_YADAN","shortName":"亚丹生态","logo":"/enterprise-logos/yadan.jpg","status":"historical_brand","sourceUrl":"https://www.gz-yadan.com/","imageUrl":"https://zhengxin-pub.cdn.bcebos.com/logopic/64aa016e152a8712c58ef14b07497580_fullsize.jpg","note":"公开企业资料所用亚丹衣柜历史版标识，非最新VI声明。"},
+    {"code":"E_TIANYI","shortName":"天一美家","logo":"/enterprise-logos/tianyi.png","status":"association_brand","sourceUrl":"http://www.chinagdda.com/","imageUrl":"http://www.chinagdda.com/ueditor/asp/upload/image/20221213/16709119508639449.png","note":"协会会员介绍中标注东莞、深圳和河南信阳基地的图片左上角TYMJ标识裁切，集团品牌识别用途。"},
+    {"code":"E_BAIDE","shortName":"百德实业","logo":"/enterprise-logos/baide.jpg","status":"partner_brand","sourceUrl":"https://www.wedoors.cn/AboutUs/Partner.aspx","imageUrl":"https://www.wedoors.cn/manage/upload/bd.jpg","note":"合作伙伴页明确标注信阳百德实业，品牌官网本次显示站点关闭。"},
+    {"code":"E_YONGHAOXUAN","shortName":"永豪轩","logo":null,"status":"unverified","sourceUrl":"http://www.yonghaoxuan.com/","note":"官网本次不可达，未取得可靠原图；不用新豪轩、永豪家具等不同企业标识。"},
+    {"code":"E_JINSHANG","shortName":"今上半导体","logo":null,"status":"unverified","sourceUrl":"http://www.tkse.com.cn/","note":"已找到今上公司官网，访问返回502，尚未取得可靠Logo原图。"},
+    {"code":"E_XINGYUAN","shortName":"星原智能","logo":null,"status":"unverified","sourceUrl":null,"note":"公开检索混有多家同名企业，未采用合肥中徽星原、东莞星原等其他公司标识。"},
+    {"code":"E_QINJIE","shortName":"螓杰智能","logo":null,"status":"unverified","sourceUrl":null,"note":"公开检索未取得可靠原图，未采用冠杰、万杰或捷盟等其他企业标识。"}
+  ]
+}

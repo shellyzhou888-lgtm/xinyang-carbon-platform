@@ -28,11 +28,13 @@ function useChart(option: echarts.EChartsCoreOption) {
 }
 
 /** Monthly park energy (tce) and CO2 (t), with the latest forecast: dashed median and 10–90 % band. */
-function TrendChart({ data }: { data: ChartData }) {
+export function TrendChart({ data: original, forecast = true, recentYears = false }: { data: ChartData; forecast?: boolean; recentYears?: boolean }) {
+  const monthly = original.monthly.filter(row => (forecast && !recentYears || Number(row.month.slice(0,4)) <= original.year) && (!recentYears || Number(row.month.slice(0,4)) >= original.year - 2));
+  const data = { ...original, monthly, forecast: forecast ? original.forecast : [] };
   const fe = data.forecast.find((f) => f.target === "energy_tce");
   const fc = data.forecast.find((f) => f.target === "co2_t");
   const months = [...data.monthly.map((m) => m.month), ...(fe?.points.map((p) => p.month) ?? [])];
-  const pad = (n: number) => Array(n).fill(null);
+  const pad = (n: number) => Array(Math.max(0,n)).fill(null);
   const hist = data.monthly.length;
   const lastE = data.monthly.at(-1)?.tce ?? null, lastC = data.monthly.at(-1)?.co2_t ?? null;
   // Forecast lines start at the last actual month so the dashed line connects to the history.
@@ -42,7 +44,7 @@ function TrendChart({ data }: { data: ChartData }) {
   const option = {
     backgroundColor: "transparent",
     tooltip: { trigger: "axis" },
-    legend: { top: 0, textStyle: { color: C.muted }, data: ["综合能耗", "碳排放", "能耗预测", "碳排放预测"] },
+    legend: { top: 0, textStyle: { color: C.muted }, data: forecast ? ["综合能耗", "碳排放", "能耗预测", "碳排放预测"] : ["综合能耗", "碳排放"] },
     grid: { left: 60, right: 60, top: 36, bottom: 56 },
     dataZoom: [{ type: "slider", height: 16, bottom: 8, textStyle: { color: C.muted }, borderColor: C.line }, { type: "inside" }],
     xAxis: { type: "category", data: months, ...axis },
@@ -65,7 +67,7 @@ function TrendChart({ data }: { data: ChartData }) {
   return <div ref={ref} className="chart tall" />;
 }
 
-function StructureChart({ data }: { data: ChartData }) {
+export function StructureChart({ data }: { data: ChartData }) {
   const total = data.structure.reduce((a, s) => a + s.tce, 0);
   const option = {
     backgroundColor: "transparent", color: PIE,
@@ -79,7 +81,7 @@ function StructureChart({ data }: { data: ChartData }) {
   return <div ref={ref} className="chart" />;
 }
 
-function RankingChart({ data }: { data: ChartData }) {
+export function RankingChart({ data }: { data: ChartData }) {
   const rows = [...data.ranking].reverse();
   const option = {
     backgroundColor: "transparent",

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { adminApi } from "@/lib/server";
+import { AdminNavigation } from "@/components/WorkspaceParts";
+import { selectedYear } from "@/lib/workspace";
 import { approveAllColumns, decideIssue, reviewColumn, reviewEdge, reviewQa, reviewTable, runGovernanceNow } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -12,7 +14,7 @@ const STATUS: Record<string, string> = { open: "待处理", approved: "已确认
 const RUN: Record<string, string> = { running: "运行中", succeeded: "完成", failed: "失败" };
 const ACTION: Record<string, string> = { comment_sync: "批准并回写数据库注释", run_calculation: "批准并重新计算", draft_docs: "已在语义目录起草说明" };
 
-type Search = { tab?: string; status?: string; category?: string; object?: string };
+type Search = { tab?: string; status?: string; category?: string; object?: string; year?: string };
 
 export default async function Admin({ searchParams }: { searchParams: Promise<Search> }) {
   const sp = await searchParams;
@@ -38,6 +40,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<Se
 
   return (
     <div className="admin">
+      <AdminNavigation active="governance" year={selectedYear(sp.year)} />
       <div className="header">
         <div>
           <h1>数据治理 · 语义目录</h1>

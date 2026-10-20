@@ -20,6 +20,11 @@ ENTITIES = [
     ("E_JINSHANG", "今上半导体", "电子信息", "B0H02ZCRG5", "金牛物流产业集聚区富民路6号。"),
     ("E_XINGYUAN", "星原智能", "电子信息", "B0I6YHW0PP", "企业POI与园区内楼栋位置，需结合租赁厂房资料复核。"),
     ("E_QINJIE", "螓杰智能", "电子信息", "B0IUJZL7XC", "电子信息智能产业园7号楼；与其他租户可能共用厂区。"),
+    ("REG_QINTUO", "勤拓精密", "电子信息", "B0FFMDO35J", "科技局金牛片区走访资料核实企业；非原10家能耗样本，无已关联能耗。"),
+    ("REG_OUTILI", "欧缇丽材料", "绿色家居", "B0JAF7MTKN", "政府报道与POI存在有限公司/发展有限公司名称差异，位置仅作企业POI参考。"),
+    ("REG_DESHENG", "德胜家居", "绿色家居", "B0FFH9GBNT", "政府采购公开资料明确在家居小镇，地图为德胜家具品牌POI；无已关联能耗。"),
+    ("REG_NUOYUAN", "诺源涂料", "绿色家居", "B0FFJE6KAP", "政府采购公开资料与POI印证家居小镇生产位置；无已关联能耗。"),
+    ("REG_ZUOYOU", "左右鑫室", "绿色家居", "B0MU47BF1E", "政府采购公开资料明确在家居小镇设基地，地图为当前公开POI；无已关联能耗。"),
 ]
 
 
@@ -63,6 +68,7 @@ def main() -> None:
             "source": "高德地图公开企业POI", "sourceUrl": f"https://www.amap.com/detail/{poi_id}",
             "locatedAt": raw["fetchedAt"], "precision": "企业/厂区POI，非测绘界址点", "note": note,
             "boundaryStatus": "unavailable", "boundary": None,
+            "metricBindingApproved": code.startswith("E_") and code != "E_YONGHAOXUAN",
         }})
     for sector, code, color in [("绿色家居", "Z_HOME", "#3ddc97"), ("电子信息", "Z_ELEC", "#69baff")]:
         points = [f["geometry"]["coordinates"] for f in features if f["properties"]["sector"] == sector]
@@ -72,12 +78,12 @@ def main() -> None:
             "method": "已定位企业POI凸包向外扩展约220米；仅用于地图取景与分布展示，不是片区规划红线或企业厂界。",
         }})
     data = {"type": "FeatureCollection", "coordinateSystem": "GCJ-02", "updatedAt": "2026-10-20", "legalBoundaryAvailable": False,
-            "sourceNote": "10家企业点位来自高德公开POI；2个面为企业分布示意范围。已核对豫政办〔2023〕26号四至文字，尚未取得界址坐标及逐企业测绘红线。GCJ-02不是RFC 7946默认的WGS84，导出后须按坐标系处理。", "features": features,
+            "sourceNote": "15个公开POI位置不代表园区全部企业，原10家只是能耗样本。2个面为企业分布示意范围。已核对豫政办〔2023〕26号四至文字，尚未取得界址坐标及逐企业测绘红线。GCJ-02不是RFC 7946默认的WGS84，导出后须按坐标系处理。", "features": features,
             "boundaryReference": json.loads((ROOT / "data/geography/boundary-authority.json").read_text(encoding="utf-8"))}
     output = ROOT / "apps/web/data/park-geography.json"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("Built 10 enterprise POIs and 2 non-legal distribution envelopes:", output)
+    print("Built", len(ENTITIES), "enterprise POIs and 2 non-legal distribution envelopes:", output)
 
 
 if __name__ == "__main__":

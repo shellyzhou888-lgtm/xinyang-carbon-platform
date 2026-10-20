@@ -12,8 +12,10 @@
 | `docs/carbon-management-data.md` | 碳管理补充数据：目标预算、碳达峰路线图、预警与策略推荐、厂区/产线分项、储能充电（模拟），碳价与产品碳足迹（公开采集） |
 | `docs/prompts/server-agent-carbon-market-and-footprint.md` | 交给服务器 Agent 的提示词：采集 CEA/CCER 每日行情与产品碳足迹参考值并入库 |
 | `docs/visualization-and-forecast.md` | 图表库选型（ECharts 为主）、Chronos-2 预测模型与回测、TimescaleDB 时机、对照竞品还缺的功能 |
-| `docs/park-map-and-sources.md` | 高德与L7地图、10家企业GCJ-02点位来源、分布示意范围与红线缺口、ECharts-GL、吸碳云朵形象 |
+| `docs/park-map-and-sources.md` | 规划四片区描绘、高德15个POI与Logo、公开企业核实名录、边界限制与吸碳云朵形象 |
 | `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
+| `docs/frontend-workspaces.md` | 5个工作区的页面结构、只读数据接口、模拟数据标识与当前验证 |
+| `docs/enterprise-directory-review.md` | 22条企业/品牌/项目公开核验记录、15个POI、Logo来源与名称争议 |
 | `docs/web-and-voice.md` | 网站（Next.js）与小云语音接入：结构、为什么这样拆、本机启动、测试记录 |
 | `docs/deploy-xiaoyun.md` | 小云服务器部署：公开 GitHub 依赖、环境变量、HTTPS/WebSocket 代理与验证 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |
@@ -34,7 +36,7 @@
 | `data/simulated/` | 模拟占位数据：假设文件 `assumptions.json` 与按模板生成的 Excel（以 estimated 导入） |
 | `data/public/` | 公开渠道获得的真实数值（按模板整理） |
 | `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
-| `apps/web/` | 网站（Next.js 16）：能碳总览、数据库 Agent 对话框、小云语音助手；`npm run voice` + `npm run dev`，http://localhost:3001 |
+| `apps/web/` | 网站（Next.js 16）：总览、能源、碳、综合诊断、后台5个工作区及公开企业名录；数据库Agent与小云助手；`npm run voice` + `npm run dev`，http://localhost:3001 |
 | `packages/forecast/` | 能耗与碳排放月度预测（Python + PyTorch，Chronos-2）：`forecast.py backtest` / `run --write` |
 | `packages/db-agent/` | 数据库 Agent（TypeScript，Pi 架构）：`npm run chat`；同时供网站和小云语音调用 |
 | `packages/ingest/` | Excel 导入工具（TypeScript）：解析模板 → 入湖 → 调用数据库引擎；`npm run ingest` / `npm run calc` |

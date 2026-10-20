@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Suspense } from "react";
+import PlatformShell from "@/components/PlatformShell";
 
 export const metadata: Metadata = {
   title: "信阳经开区绿色园区能碳管理平台",
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="zh-CN">
-      <body>{children}</body>
+      <body><Suspense fallback={<div className="workspace-content" role="status">正在加载园区工作台…</div>}><PlatformShell>{children}</PlatformShell></Suspense></body>
     </html>
   );
 }

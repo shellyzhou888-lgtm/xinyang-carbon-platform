@@ -1,0 +1,11 @@
+{
+  "source":"上传规划图（2023年9月土地利用规划图）",
+  "purpose":"功能片区名称与面积标注；显示锚点按规划图和已核对POI关系近似设置，非界址拐点。",
+  "coordinateSystem":"GCJ-02",
+  "areas":[
+    {"id":"green-home","name":"绿色家居产业园区","areaKm2":7.97,"coordinates":[114.122,32.239],"color":"#66e3a5"},
+    {"id":"electronics","name":"电子信息产业园区","areaKm2":4.83,"coordinates":[114.058,32.190],"color":"#77c7ec"},
+    {"id":"innovation-community","name":"科创部落","areaKm2":0.37,"coordinates":[114.093,32.196],"color":"#e4a9db"},
+    {"id":"research","name":"科创研发片区","areaKm2":2.39,"coordinates":[114.117,32.181],"color":"#efc06b"}
+  ]
+}

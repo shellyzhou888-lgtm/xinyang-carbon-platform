@@ -1,5 +1,5 @@
 import "server-only";
-import { admin, createDbAgent, getChartData, getParkOverview, initPool, loadConfig, logMessage, triggerGovernance } from "@xinyang/db-agent";
+import { admin, createDbAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, initPool, loadConfig, logMessage, triggerGovernance } from "@xinyang/db-agent";
 
 /** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
 export function adminApi() {
@@ -15,6 +15,25 @@ export function adminApi() {
 export function charts(year: number) {
   initPool(loadConfig({ requireModelKey: false }).databaseUrl);
   return getChartData(year);
+}
+
+export function management(year: number) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getManagementData(year);
+}
+
+export function carbonManagement(year: number) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getCarbonManagementData(year);
+}
+
+export function inventory() {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getDataInventory();
+}
+export function indicatorConfiguration(version: string) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getIndicatorConfiguration(version);
 }
 
 export function overview(year: number) {

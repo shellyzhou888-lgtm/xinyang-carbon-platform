@@ -1,0 +1,45 @@
+{
+  "dataset": "ASTER GDEM V3 30m",
+  "tile": "ASTGTMV003_N32E114",
+  "feeYuan": 0,
+  "source": "https://www.gscloud.cn/sources/index?pid=302",
+  "access": "User logged into official portal manually; free download; no authentication data stored",
+  "preparedAt": "2026-10-20T18:45:49.238115+00:00",
+  "archiveBytes": 17338863,
+  "archiveSha256": "80e78358ace5e8e48bfedb5a92df922b9d04b9b6330353ff0578b5b744bbf73e",
+  "coordinateSystem": "EPSG:4326",
+  "requestedBounds": [
+    114.04,
+    32.15,
+    114.16,
+    32.25
+  ],
+  "clippedSize": [
+    433,
+    361
+  ],
+  "sourcePixelDegrees": [
+    0.000277777777777778,
+    0.000277777777777778
+  ],
+  "clippedBounds": [
+    114.03986111111101,
+    32.14986111111112,
+    114.16013888888878,
+    32.2501388888889
+  ],
+  "minimumM": 56,
+  "maximumM": 191,
+  "publicGridSize": [
+    145,
+    121
+  ],
+  "publicGridStride": 3,
+  "status": "downloaded and prepared; not yet rendered as a 3D terrain mesh in the AMap view",
+  "limitations": [
+    "30m terrain cannot resolve factory buildings, property boundaries or roof geometry",
+    "Public grid remains WGS84; align terrain vertices through an approved display-coordinate conversion before AMap overlay",
+    "Height datum not verified from this tile metadata",
+    "Preview shows relative elevation, not satellite imagery"
+  ]
+}

@@ -3,7 +3,7 @@
   "coordinateSystem": "GCJ-02",
   "updatedAt": "2026-10-20",
   "legalBoundaryAvailable": false,
-  "sourceNote": "10家企业点位来自高德公开POI；2个面为企业分布示意范围。已核对豫政办〔2023〕26号四至文字，尚未取得界址坐标及逐企业测绘红线。GCJ-02不是RFC 7946默认的WGS84，导出后须按坐标系处理。",
+  "sourceNote": "15个公开POI位置不代表园区全部企业，原10家只是能耗样本。2个面为企业分布示意范围。已核对豫政办〔2023〕26号四至文字，尚未取得界址坐标及逐企业测绘红线。GCJ-02不是RFC 7946默认的WGS84，导出后须按坐标系处理。",
   "features": [
     {
       "type": "Feature",
@@ -25,11 +25,12 @@
         "address": "工业大道8号",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0IRRDEV5J",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "万华禾香集团股份有限公司信阳项目；采用家居片区新项目点位，未采用工十四路旧厂。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -52,11 +53,12 @@
         "address": "工业大道8号",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0FFK7OSG4",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "高德名称为河南省现代筑美家居有限公司。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -79,11 +81,12 @@
         "address": "羊山新区家具小镇纬北五路西段",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0JDAA6RW8",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "纬北五路西段生产基地。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -106,11 +109,12 @@
         "address": "工业大道",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0FFH9O305",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "高德名称为河南永豪轩智能家居股份有限公司；与档案历史名称不同，厂区关联待企业复核。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": false
       }
     },
     {
@@ -133,11 +137,12 @@
         "address": "羊山新区家居小镇新十八大街与纬北五路交叉口西北角",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0FFG4050S",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "品牌生产园区点位，非单一法人用地红线。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -160,11 +165,12 @@
         "address": "新十八街与纬北五路交叉口西260米",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0H33ZT833",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "采用信阳百德实业有限公司点位，排除同名超市。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -187,11 +193,12 @@
         "address": "金工大道东100米",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0FFI03U3F",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "高德为谷麦科技集团股份有限公司园区；信阳子公司与母公司共址，未取得独立厂房红线。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -214,11 +221,12 @@
         "address": "金牛物流产业集聚区富民路6号",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0H02ZCRG5",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "金牛物流产业集聚区富民路6号。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -241,11 +249,12 @@
         "address": "消防救援大队二中队东南侧190米",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0I6YHW0PP",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "企业POI与园区内楼栋位置，需结合租赁厂房资料复核。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
       }
     },
     {
@@ -268,11 +277,152 @@
         "address": "金牛物流集聚区金工大道电子信息智能产业园7号楼",
         "source": "高德地图公开企业POI",
         "sourceUrl": "https://www.amap.com/detail/B0IUJZL7XC",
-        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
         "precision": "企业/厂区POI，非测绘界址点",
         "note": "电子信息智能产业园7号楼；与其他租户可能共用厂区。",
         "boundaryStatus": "unavailable",
-        "boundary": null
+        "boundary": null,
+        "metricBindingApproved": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.066706,
+          32.17714
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_QINTUO",
+        "name": "勤拓精密",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "poiId": "B0FFMDO35J",
+        "poiName": "信阳勤拓精密科技有限公司",
+        "address": "金牛山产业集聚区金工大道6号",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFMDO35J",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "科技局金牛片区走访资料核实企业；非原10家能耗样本，无已关联能耗。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.130375,
+          32.212025
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_OUTILI",
+        "name": "欧缇丽材料",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0JAF7MTKN",
+        "poiName": "河南欧缇丽材料科技发展有限公司",
+        "address": "左右鑫室家具有限公司北侧210米",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0JAF7MTKN",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "政府报道与POI存在有限公司/发展有限公司名称差异，位置仅作企业POI参考。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.135123,
+          32.213503
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_DESHENG",
+        "name": "德胜家居",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0FFH9GBNT",
+        "poiName": "德胜家具",
+        "address": "羊山新区新十八大街与纬北三路交叉口西南角",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFH9GBNT",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "政府采购公开资料明确在家居小镇，地图为德胜家具品牌POI；无已关联能耗。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.1369,
+          32.222747
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_NUOYUAN",
+        "name": "诺源涂料",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0FFJE6KAP",
+        "poiName": "河南诺源涂料有限公司",
+        "address": "家居小镇纬北二路诺源涂料有限公司",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFJE6KAP",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "政府采购公开资料与POI印证家居小镇生产位置；无已关联能耗。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.129317,
+          32.210446
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_ZUOYOU",
+        "name": "左右鑫室",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0MU47BF1E",
+        "poiName": "左右鑫室家具股份公司",
+        "address": "纬北五路与经北一路交叉口东南角新资公司产业园2号楼",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0MU47BF1E",
+        "locatedAt": "2026-10-20T18:23:48.353251+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "政府采购公开资料明确在家居小镇设基地，地图为当前公开POI；无已关联能耗。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
       }
     },
     {
@@ -282,28 +432,36 @@
         "coordinates": [
           [
             [
-              114.1102,
-              32.228868
+              114.110202,
+              32.22887
             ],
             [
-              114.132839,
-              32.206498
+              114.129237,
+              32.208457
             ],
             [
-              114.138602,
-              32.207717
+              114.13264,
+              32.206454
             ],
             [
-              114.141102,
-              32.22052
+              114.138521,
+              32.207667
             ],
             [
-              114.119847,
-              32.232179
+              114.141058,
+              32.220738
             ],
             [
-              114.1102,
-              32.228868
+              114.138824,
+              32.223875
+            ],
+            [
+              114.119751,
+              32.232131
+            ],
+            [
+              114.110202,
+              32.22887
             ]
           ]
         ]
@@ -326,24 +484,28 @@
         "coordinates": [
           [
             [
-              114.066547,
-              32.173449
+              114.066294,
+              32.175181
             ],
             [
-              114.069691,
-              32.182222
+              114.066568,
+              32.173446
             ],
             [
-              114.069314,
-              32.190694
+              114.069458,
+              32.185732
             ],
             [
-              114.06868,
-              32.191123
+              114.069332,
+              32.190692
             ],
             [
-              114.066547,
-              32.173449
+              114.068744,
+              32.191119
+            ],
+            [
+              114.066294,
+              32.175181
             ]
           ]
         ]

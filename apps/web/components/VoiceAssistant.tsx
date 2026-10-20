@@ -15,14 +15,16 @@ const YEARS = [2023, 2024, 2025];
  * to the backend project tools in voice-project.mjs (DeepSeek/Pi + our db-agent tools). The only page action
  * registered here is the same year switch as the year buttons at the top of the page.
  */
-export default function VoiceAssistant({ year, overview }: { year: number; overview: Overview }) {
+export default function VoiceAssistant({ year, overview, page = "/" }: { year: number; overview: Overview; page?: string }) {
   const router = useRouter();
   const mount = useRef<HTMLDivElement>(null);
   const voiceRef = useRef<any>(null);
   const pendingYear = useRef<{ year: number; resolve: (v: unknown) => void } | null>(null);
   const [status, setStatus] = useState("小云加载中…");
 
-  const context = () => ({ page: "overview", year, profile: "GIP_2026", availableYears: YEARS, overview });
+  const currentPage = useRef(page);
+  currentPage.current = page;
+  const context = () => ({ page, year, profile: "GIP_2026", availableYears: YEARS, overview });
 
   useEffect(() => {
     let disposed = false;
@@ -37,8 +39,7 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
           backendUrl: BACKEND_URL,
           assetBaseUrl: "/xiaoyun/",
           mode: "live",
-          // Keep the character left of the 420px chat panel so it does not cover the input box.
-          ui: { position: { right: 450, bottom: 22 } },
+          ui: { position: { right: 24, bottom: 70 } },
           context: context(),
           actions: [
             {
@@ -53,7 +54,9 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
               execute: ({ year: target }: { year: number }) =>
                 new Promise((resolve) => {
                   pendingYear.current = { year: Number(target), resolve };
-                  router.push(`/?year=${Number(target)}`);
+                  const query = new URLSearchParams(window.location.search);
+                  query.set("year", String(Number(target)));
+                  router.push(`${currentPage.current}?${query}`);
                 }),
             },
           ],
@@ -68,7 +71,7 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
           const style = document.createElement("style");
           style.dataset.parkAvatar = "carbon-cloud";
           style.textContent = `
-            .xy-widget { --xy-size:132px; }
+            .xy-widget { --xy-size:104px; }
             .xy-character-button, .xy-character-button:hover, .xy-character-button:active,
             .xy-widget[data-dragging=true] .xy-character-button {
               border:0; border-radius:0; background:transparent; box-shadow:none; backdrop-filter:none;
@@ -82,7 +85,10 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
             .xy-character-svg { opacity:0; }
             .xy-character-halo { inset:18px; border-radius:50%; box-shadow:0 0 22px #3ddc9725; }
             .xy-character-button:focus-visible { outline:2px solid #3ddc97; outline-offset:3px; }
-            @media (max-width:900px) { .xy-widget { right:18px!important; --xy-size:108px; } }
+            @media (max-width:900px) {
+              .xy-widget { right:14px!important; --xy-size:76px; }
+              .xy-widget[data-state=mic_off] .xy-status[data-error=false] { display:none; }
+            }
             @media (prefers-reduced-motion:reduce) {
               .xy-character-button::before { background-image:url('/mascots/carbon-cloud/poster.png'); }
             }
@@ -110,7 +116,7 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
       pendingYear.current = null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [year, overview]);
+  }, [year, overview, page]);
 
   useEffect(() => {
     (window as any).xiaoyun = { submitText: (t: string) => voiceRef.current?.submitText(t) };
