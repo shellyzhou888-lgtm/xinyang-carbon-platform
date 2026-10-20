@@ -99,7 +99,7 @@ def make_frames(source: Path, kind: str) -> list[Image.Image]:
 
 def save_gif(frames: list[Image.Image], output: Path) -> None:
     # Matte semi-transparent edge pixels to the dashboard background before
-    # GIF's one-bit transparency. Animated WebP below retains full alpha.
+    # GIF's one-bit transparency.
     flattened = []
     for frame in frames:
         matte = Image.new("RGBA", frame.size, DARK_BG)
@@ -125,9 +125,10 @@ def save_gif(frames: list[Image.Image], output: Path) -> None:
 
 
 def render(name: str, kind: str) -> None:
-    frames = make_frames(ASSETS / f"{name}-source.png", kind)
-    save_gif(frames, ASSETS / f"{name}.gif")
-    frames[0].save(ASSETS / f"{name}-poster.png", optimize=True)
+    folder = ASSETS / name
+    frames = make_frames(folder / "source.png", kind)
+    save_gif(frames, folder / "animation.gif")
+    frames[0].save(folder / "poster.png", optimize=True)
     print(f"Rendered {name}: {FRAMES} frames, {FRAMES * FRAME_MS / 1000:.2f}s loop")
 
 
