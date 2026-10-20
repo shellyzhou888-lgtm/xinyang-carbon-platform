@@ -7,6 +7,7 @@
 | 路径 | 内容 |
 | --- | --- |
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
+| `docs/db-agent.md` | 数据库 Agent（Pi + DeepSeek）：原理、三层安全、工具与角色、使用方法、测试记录 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |
 | `docs/public-data-replacement-assessment.md` | 模拟数据公开来源替换评估：已核验身份、待取证数值、10 家企业采集重点、资源环境来源与口径限制 |
 | `docs/import-and-calculation-engine.md` | 导入解析与计算引擎：流程、核算规则、用法、验证结果、已知简化 |
@@ -25,6 +26,7 @@
 | `data/simulated/` | 模拟占位数据：假设文件 `assumptions.json` 与按模板生成的 Excel（以 estimated 导入） |
 | `data/public/` | 公开渠道获得的真实数值（按模板整理） |
 | `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
+| `packages/db-agent/` | 数据库 Agent（TypeScript，Pi 架构）：`npm run chat` |
 | `packages/ingest/` | Excel 导入工具（TypeScript）：解析模板 → 入湖 → 调用数据库引擎；`npm run ingest` / `npm run calc` |
 | `database/migrations/` | 数据库迁移 SQL（结构与参考数据） |
 | `scripts/` | 隧道、凭据、权限检查、迁移执行脚本 |
