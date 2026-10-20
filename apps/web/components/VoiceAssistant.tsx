@@ -6,7 +6,8 @@ import { useRouter } from "next/navigation";
 type Overview = { tce: number | null; co2_t: number | null; achieved: number; total: number } | null;
 
 const PROJECT_ID = "xinyang-park";
-const BACKEND_URL = "http://127.0.0.1:8766";
+const BACKEND_URL = process.env.NEXT_PUBLIC_XIAOYUN_BACKEND_URL ||
+  (process.env.NODE_ENV === "development" ? "http://127.0.0.1:8766" : "");
 const YEARS = [2023, 2024, 2025];
 
 /**
@@ -26,6 +27,7 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
     let disposed = false;
     (async () => {
       try {
+        if (!BACKEND_URL) throw new Error("请在构建网站前设置 NEXT_PUBLIC_XIAOYUN_BACKEND_URL");
         const { createVoiceAssistant } = await import("@xiaoyun/voice");
         if (disposed) return;
         voiceRef.current = createVoiceAssistant({
