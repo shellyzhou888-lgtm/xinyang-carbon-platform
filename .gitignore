@@ -1,0 +1,7 @@
+# 本地工具日志与临时文件
+.statamcp/
+~$*
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
