@@ -1,0 +1,51 @@
+{
+  "sourceImage": "含边界信息.pdf 第152页 / planning-boundaries.json",
+  "coordinateSystem": "GCJ-02",
+  "status": "approximate_planning_illustration_not_surveyed",
+  "method": "Two-point similarity in Web Mercator, fitted to manually selected image landmarks; controls converted through official AMap GPS coordinate conversion.",
+  "controls": [
+    {
+      "id": "rail-junction",
+      "pixel": [
+        343,
+        510
+      ],
+      "sourceCoordinate": [
+        114.0721406,
+        32.2213259
+      ],
+      "sourceCRS": "WGS84",
+      "displayCoordinate": [
+        114.078033040365,
+        32.21935546875
+      ],
+      "evidence": "已下载研究底图中的京广线/宁西线连接区域，OSM way/547914963与859784498共点；规划图铁路汇合处人工读图，非界址控制点。",
+      "url": "https://www.openstreetmap.org/way/547914963"
+    },
+    {
+      "id": "peak-project",
+      "pixel": [
+        555,
+        763
+      ],
+      "sourceCoordinate": [
+        114.115880833333,
+        32.180913888889
+      ],
+      "sourceCRS": "Report does not state CRS; assumed WGS84 only for preliminary display",
+      "displayCoordinate": [
+        114.121745605469,
+        32.178958333334
+      ],
+      "evidence": "用户PDF第12页：114度6分57.171秒、32度10分51.290秒；第152页匹克项目红框中心人工读图。坐标基准未明，显示定位含系统性不确定性。"
+    }
+  ],
+  "limitations": [
+    "Only two manually identified controls; no independent accuracy check or survey certification",
+    "The report project coordinate CRS is unstated; WGS84 assumption may cause hundreds of meters of display displacement",
+    "Do not derive enterprise land ownership or parcel area from this illustration",
+    "Cited area values are copied from the planning map, not calculated from transformed polygons",
+    "Official 2023 No.26 vertex boundary remains unavailable; this overlay does not replace it"
+  ],
+  "officialBoundary": "https://www.henan.gov.cn/2023/07-06/2773998.html"
+}

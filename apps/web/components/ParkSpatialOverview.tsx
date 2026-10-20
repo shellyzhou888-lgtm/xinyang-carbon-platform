@@ -4,11 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import type { ChartData } from "@xinyang/db-agent";
 import { loadAmap, type AmapApi } from "@/lib/amap";
-import { distributions, enterprises, geography, type Sector } from "@/lib/park-geography";
+import { enterprises, geography, type Sector } from "@/lib/park-geography";
 import { enterpriseBadge, enterpriseBrands } from "@/lib/enterprise-branding";
 import directory from "@/data/enterprise-directory.json";
-import planning from "@/data/planning-areas.json";
-import PlanningBoundaryMap from "./PlanningBoundaryMap";
+import planning from "@/data/planning-overlay.json";
 import Link from "next/link";
 
 const Energy3D = dynamic(() => import("./EnterpriseEnergy3D"), { ssr: false, loading: () => <div className="map-empty">3D 能耗图加载中…</div> });
@@ -16,6 +15,15 @@ const EMPTY_RANKING: ChartData["ranking"] = [];
 const FEATURED = new Set(directory.items.filter(row=>row.featured&&row.mapCode).map(row=>row.mapCode));
 const value = (number: number | null | undefined, digits = 1) => number == null ? "—" : number.toLocaleString("zh-CN", { maximumFractionDigits: digits });
 const pinIcon = (color: string) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="15" cy="15" r="11" fill="#0b1d1a88"/><circle cx="15" cy="15" r="6" fill="${color}" stroke="#e6f2ef" stroke-width="2"/></svg>`);
+function planningLabel(name:string,color:string,area:number) {
+  const canvas=document.createElement("canvas");canvas.width=380;canvas.height=88;
+  const ctx=canvas.getContext("2d")!;ctx.scale(2,2);
+  ctx.fillStyle="rgba(10,30,25,.95)";ctx.strokeStyle=color;ctx.lineWidth=1;
+  ctx.beginPath();ctx.roundRect(.5,.5,189,43,4);ctx.fill();ctx.stroke();
+  ctx.textAlign="center";ctx.font='600 12px "Microsoft YaHei", sans-serif';ctx.fillStyle=color;ctx.fillText(name,95,18);
+  ctx.font='10px "Microsoft YaHei", sans-serif';ctx.fillStyle="#d7e9e0";ctx.fillText(`${area.toFixed(2)} km² · 规划示意`,95,34);
+  return canvas.toDataURL("image/png");
+}
 
 export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, compact = false, initialEnterprise }: { year: number; ranking?: ChartData["ranking"]; compact?: boolean; initialEnterprise?: string }) {
   const shell = useRef<HTMLElement>(null);
@@ -26,9 +34,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
   const pinLayer = useRef<any>(null);
   const nameLayer = useRef<any>(null);
   const areaLayer = useRef<any>(null);
-  const planningDialog = useRef<HTMLDialogElement>(null);
   const satelliteLayers = useRef<any[]>([]);
-  const nativePolygons = useRef<any[]>([]);
+  const planningPolygons = useRef<any[]>([]);
   const l7Layers = useRef<any[]>([]);
   const pick = useRef<(code: string) => void>(() => {});
   const [ready, setReady] = useState(false);
@@ -37,13 +44,10 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
   const [retry, setRetry] = useState(0);
   const [sector, setSector] = useState<Sector | "全部">("全部");
   const [selected, setSelected] = useState("");
-  const [view, setView] = useState<"planning" | "map" | "energy">(initialEnterprise?"map":"planning");
-  const [mapRequested,setMapRequested]=useState(Boolean(initialEnterprise));
-  useEffect(()=>{if(view==="map")setMapRequested(true);},[view]);
+  const [view, setView] = useState<"map" | "energy">("map");
   const [satellite, setSatellite] = useState(true);
   const [pitched, setPitched] = useState(false);
   const [labels, setLabels] = useState(true);
-  const [ranges, setRanges] = useState(false);
   const [areaNames,setAreaNames] = useState(true);
   const [query, setQuery] = useState("");
   const [fullscreen, setFullscreen] = useState(false);
@@ -65,7 +69,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
   };
 
   useEffect(() => {
-    if (!mapRequested || !container.current) return;
+    if (!container.current) return;
     let disposed = false;
     let currentMap: AmapApi;
     let currentScene: any;
@@ -104,12 +108,12 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
       // DOM markers can instead throw Pixel(NaN, NaN) when zooming into one factory.
       pinLayer.current = new AMap.LabelsLayer({ zIndex: 150, collision: false });
       nameLayer.current = new AMap.LabelsLayer({ zIndex: 151, collision: true, allowCollision: false });
-      areaLayer.current = new AMap.LabelsLayer({ zIndex: 145, collision: false });
+      areaLayer.current = new AMap.LabelsLayer({ zIndex: 160, collision: false });
       currentMap.add([pinLayer.current, nameLayer.current,areaLayer.current]);
       setReady(true);
       // Real AMap overlays remain usable if the optional WebGL visualization layer fails.
       try {
-        const [{ Scene }, { PolygonLayer, LineLayer, PointLayer }, { GaodeMap }] = await Promise.all([
+        const [{ Scene }, { PointLayer }, { GaodeMap }] = await Promise.all([
           import("@antv/l7-scene"), import("@antv/l7-layers"), import("@antv/l7-maps/gaode"),
         ]);
         if (disposed || !container.current) return;
@@ -117,21 +121,16 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
         scene.current = currentScene;
         currentScene.on("loaded", () => {
           if (disposed) return;
-          const fill = new PolygonLayer({ name: "enterprise-distribution-fill", zIndex: 1 })
-            .source({ type: "FeatureCollection", features: distributions }).shape("fill").color("color").style({ opacity: 0.09 });
-          const outline = new LineLayer({ name: "enterprise-distribution-line", zIndex: 2 })
-            .source({ type: "FeatureCollection", features: distributions }).shape("line").size(1.5).color("color").style({ opacity: 0.65, lineType: "dash", dashArray: [5, 5] });
           const points = new PointLayer({ name: "enterprise-locations", zIndex: 3 })
             .source({ type: "FeatureCollection", features: enterprises }).shape("circle").size(10).color("color")
             .style({ opacity: 0.35, stroke: "#e6f2ef", strokeWidth: 1 });
-          l7Layers.current = [fill, outline, points];
-          [fill, outline, points].forEach((layer) => currentScene.addLayer(layer));
-          nativePolygons.current.forEach((polygon) => polygon.hide());
+          l7Layers.current = [points];
+          currentScene.addLayer(points);
           shell.current?.setAttribute("data-map-engine", "amap-l7");
           setL7Ready(true);
         });
       } catch (reason) {
-        // The base map, markers and distribution envelopes already provide the same facts.
+        // Native planning polygons and enterprise labels remain available.
         console.warn("[park-map] L7 overlay unavailable", reason instanceof Error ? reason.message : "unknown error");
       }
     }).catch((reason) => { if (!disposed) setError(reason instanceof Error ? reason.message : "地图初始化失败"); });
@@ -143,7 +142,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
       nameLayer.current = null;
       areaLayer.current = null;
       satelliteLayers.current = [];
-      nativePolygons.current = [];
+      planningPolygons.current = [];
       l7Layers.current = [];
       scene.current = null;
       map.current = null;
@@ -154,7 +153,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
       setReady(false);
       setL7Ready(false);
     };
-  }, [retry,mapRequested]);
+  }, [retry]);
 
   useEffect(() => {
     if (!ready || !map.current || !amap.current || !pinLayer.current || !nameLayer.current) return;
@@ -187,16 +186,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
     if (!ready || !map.current || !amap.current) return;
     const AMap = amap.current;
     const instance = map.current;
-    nativePolygons.current.forEach((polygon) => polygon.setMap(null));
-    nativePolygons.current = distributions.filter((feature) => sector === "全部" || feature.properties.sector === sector).map((feature) => {
-      const polygon = new AMap.Polygon({ path: feature.geometry.coordinates[0].map((position) => [...position]), fillColor: feature.properties.color, fillOpacity: 0.08,
-        strokeColor: feature.properties.color, strokeOpacity: 0.65, strokeWeight: 2, strokeStyle: "dashed", strokeDasharray: [5, 5], zIndex: 40 });
-      polygon.setMap(instance);
-      if (!ranges || scene.current?.getLayerByName("enterprise-distribution-fill")) polygon.hide();
-      return polygon;
-    });
-    const targets = visible.map(feature => new AMap.Marker({ position:[...feature.geometry.coordinates] }));
-    if(sector==="全部")planning.areas.forEach(area=>targets.push(new AMap.Marker({position:area.coordinates})));
+    const targets = visible.map(feature => new AMap.Marker({position:[...feature.geometry.coordinates]}));
+    const areas=planning.features.filter(feature=>sector==="全部"||feature.properties.id===(sector==="绿色家居"?"green-home":"electronics"));
+    for(const area of areas)for(const polygon of area.geometry.coordinates)for(const point of polygon[0])targets.push(new AMap.Marker({position:point}));
     instance.setFitView(targets, true, [75,45,55,45], sector === "全部" ? 14 : 16);
     shell.current?.setAttribute("data-map-preset", sector === "全部" ? "panorama" : sector === "绿色家居" ? "yangshan" : "jinniu");
     if (selected && !visible.some((feature) => feature.properties.code === selected)) setSelected("");
@@ -207,14 +199,22 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
   useEffect(()=>{if(ready&&initialEnterprise)pick.current(initialEnterprise);},[ready,initialEnterprise]);
 
   useEffect(()=>{
-    if(!ready||!areaLayer.current||!amap.current)return;
+    if(!ready||!areaLayer.current||!amap.current||!map.current)return;
     areaLayer.current.clear();
-    shell.current?.setAttribute("data-planning-area-count",String(areaNames?(sector==="全部"?4:1):0));
+    planningPolygons.current.forEach(polygon=>polygon.setMap(null));
+    planningPolygons.current=[];
+    const areas=planning.features.filter(feature=>sector==="全部"||feature.properties.id===(sector==="绿色家居"?"green-home":"electronics"));
+    shell.current?.setAttribute("data-planning-area-count",String(areaNames?areas.length:0));
+    shell.current?.setAttribute("data-planning-polygon-count",String(areaNames?areas.reduce((count,area)=>count+area.geometry.coordinates.length,0):0));
     if(!areaNames)return;
     const AMap=amap.current;
-    for(const area of planning.areas){
-      if(sector!=="全部"&&area.id!==(sector==="绿色家居"?"green-home":"electronics"))continue;
-      areaLayer.current.add(new AMap.LabelMarker({position:area.coordinates,text:{content:`${area.name} · ${area.areaKm2} km²`,direction:"center",style:{fontSize:12,fillColor:area.color,backgroundColor:"rgba(10,30,25,.94)",padding:[8,10],borderColor:area.color,borderWidth:1}}}));
+    for(const area of areas){
+      for(const rings of area.geometry.coordinates){
+        const polygon=new AMap.Polygon({path:rings[0],fillColor:area.properties.color,fillOpacity:.12,strokeColor:area.properties.color,strokeOpacity:.95,strokeWeight:2,strokeStyle:"dashed",strokeDasharray:[8,4],zIndex:60,cursor:"default"});
+        polygon.setMap(map.current);
+        planningPolygons.current.push(polygon);
+      }
+      areaLayer.current.add(new AMap.LabelMarker({position:area.properties.labelPosition,icon:{image:planningLabel(area.properties.name,area.properties.color,area.properties.areaKm2),size:[190,44],anchor:"center"}}));
     }
   },[ready,areaNames,sector]);
 
@@ -228,17 +228,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
     map.current?.setPitch(pitched ? 30 : 0);
   }, [pitched, ready]);
 
-  useEffect(() => {
-    nativePolygons.current.forEach((polygon) => ranges && !scene.current?.getLayerByName("enterprise-distribution-fill") ? polygon.show() : polygon.hide());
-    if (l7Ready) {
-      const areaFeatures = distributions.filter((feature) => sector === "全部" || feature.properties.sector === sector);
-      l7Layers.current.slice(0, 2).forEach((layer) => {
-        layer.setData({ type: "FeatureCollection", features: areaFeatures });
-        ranges ? layer.show() : layer.hide();
-      });
-      l7Layers.current[2]?.setData({ type: "FeatureCollection", features: visible });
-    }
-  }, [ranges, sector, visible, l7Ready]);
+  useEffect(()=>{
+    if(l7Ready)l7Layers.current[0]?.setData({type:"FeatureCollection",features:visible});
+  },[visible,l7Ready]);
 
   useEffect(() => {
     if (view === "map") requestAnimationFrame(() => map.current?.resize());
@@ -258,10 +250,10 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
   }
 
   function exportCoordinates() {
-    const blob = new Blob([JSON.stringify(geography, null, 2)], { type: "application/geo+json" });
+    const blob = new Blob([JSON.stringify({...geography,features:[...enterprises,...planning.features],planningRegistration:planning.registration}, null, 2)], { type: "application/geo+json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url; link.download = "xinyang-enterprises-gcj02.geojson"; link.click();
+    link.href = url; link.download = "xinyang-enterprises-planning-gcj02.geojson"; link.click();
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
@@ -269,12 +261,10 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
     <header className="spatial-head">
       <div><div className="map-eyebrow">PARK AT A GLANCE</div><h2>园区空间总览 <span className="map-count">4 个规划功能片区 · {enterprises.length} 个公开POI</span></h2></div>
       <div className="map-view-tabs" role="group" aria-label="空间视图">
-        <button type="button" aria-pressed={view==="planning"} className={view==="planning"?"on":""} onClick={()=>setView("planning")}>规划分区</button>
         <button type="button" aria-pressed={view==="map"} className={view==="map"?"on":""} onClick={()=>setView("map")}>卫星定位</button>
         {compact ? <button type="button" aria-pressed={listOpen} onClick={()=>setListOpen(open=>!open)}>企业列表</button> : <button type="button" className={view === "map" ? "on" : ""} onClick={() => setView("map")}>企业地图</button>}
         {!compact && <button type="button" className={view === "energy" ? "on" : ""} onClick={() => setView("energy")}>3D 能耗</button>}
         <button type="button" onClick={toggleFullscreen}>{fullscreen ? "退出全屏" : "大屏全屏"}</button>
-        <button type="button" onClick={()=>planningDialog.current?.showModal()}>规划图对照</button>
       </div>
     </header>
     <div className="spatial-body">
@@ -282,7 +272,6 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
         <div className="map-sectors" role="group" aria-label="产业分类">
           {(["全部", "绿色家居", "电子信息"] as const).map((name) => <button type="button" key={name} onClick={() => {setSelected("");setSector(name);setPresetRevision(n=>n+1);}} className={sector === name ? "on" : ""} aria-pressed={sector===name}>{name === "全部" ? "整体全景" : name === "绿色家居" ? "羊山片区" : "金牛物流片区"}</button>)}
         </div>
-        {view==="planning"&&<PlanningBoundaryMap sector={sector} onSector={next=>{setSector(next);setPresetRevision(value=>value+1);}}/>}
         <div className={`amap-stage ${view !== "map" ? "map-hidden" : ""}`}>
           <div ref={container} className="amap-canvas" role="img" aria-label="高德地图：信阳经开区家居与电子信息企业点位" />
           {!ready && !error && <div className="map-empty map-overlay">正在载入高德地图…</div>}
@@ -291,16 +280,15 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
             <button type="button" aria-pressed={satellite} onClick={() => setSatellite((current) => !current)}>{satellite ? "标准底图" : "卫星影像"}</button>
             <button type="button" aria-pressed={pitched} onClick={() => setPitched((current) => !current)}>{pitched ? "俯视 2D" : "倾斜 3D"}</button>
             <button type="button" aria-pressed={labels} onClick={() => setLabels((current) => !current)}>企业标识</button>
-            <button type="button" aria-pressed={areaNames} onClick={()=>setAreaNames(current=>!current)}>规划片区</button>
-            <button type="button" aria-pressed={ranges} onClick={() => setRanges((current) => !current)}>企业分布示意</button>
+            <button type="button" aria-pressed={areaNames} onClick={()=>setAreaNames(current=>!current)}>规划分区</button>
           </div>
-          <div className="map-legend"><span><i className="legend-home" />绿色家居</span><span><i className="legend-electronics" />电子信息</span><span className="map-crs">高德地图 · GCJ-02</span></div>
+          <div className="map-legend">{planning.features.map(area=><span key={area.properties.id}><i style={{background:area.properties.color}}/>{area.properties.name.replace("产业园区","")}</span>)}<span className="map-crs">规划定位示意 · GCJ-02</span></div>
         </div>
         {view === "energy" && <Energy3D year={year} ranking={visibleRanking} selected={selected} onSelect={(code) => pick.current(code)} />}
-        <div className="map-boundary-note">规划分区线按原图描绘，未作地理配准；法定边界以26号文成果为准。卫星定位展示公开企业POI。<Link href={`/enterprises?year=${year}`}>查看核实名录 ↗</Link></div>
+        <div className="map-boundary-note">规划分区叠加于卫星底图，为图件初步定位示意，可能存在偏移；非企业红线，法定边界以26号文成果为准。<Link href={`/enterprises?year=${year}`}>查看核实名录 ↗</Link></div>
       </div>
       <aside className={`map-inspector ${compact && active ? "has-selection" : ""} ${listOpen?"show-list":""}`} aria-label="企业点位详情">
-        <div className="enterprise-list-head"><b>企业档案</b><button type="button" onClick={exportCoordinates} title="导出GCJ-02点位与分布示意范围">导出坐标</button></div>
+        <div className="enterprise-list-head"><b>企业档案</b><button type="button" onClick={exportCoordinates} title="导出GCJ-02企业点位与规划示意分区">导出坐标</button></div>
         <input className="enterprise-search" aria-label="搜索地图企业" placeholder="搜索企业名称" value={query} onChange={(event) => setQuery(event.target.value)} />
         <div className="map-enterprise-list">
           {listed.map((feature) => <button type="button" key={feature.properties.code} className={selected === feature.properties.code ? "selected" : ""} onClick={() => pick.current(feature.properties.code)} aria-pressed={selected === feature.properties.code}>
@@ -332,6 +320,6 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
         <div><h3>地形基底</h3><p>ASTER GDEM V3 30米DEM已从地理空间数据云免费下载。当前地图未挂载三维地形网格。</p><a href="/geography/dem-manifest.json" download>查看地形来源与处理记录</a></div>
       </div>
     </details>}
-    <dialog className="planning-reference-dialog" ref={planningDialog}><div><b>规划辅助图 · 2023年9月</b><button type="button" aria-label="关闭规划图" onClick={()=>planningDialog.current?.close()}>×</button></div><p>4个功能片区合计约15.56km²。原图“本项目”指匹克项目，不是全部园区；正式边界以26号文划定成果为准。</p><img src="/geography/planning-reference.png" alt="信阳经开区土地利用规划图，包含绿色家居、电子信息、科创部落、科创研发四个功能片区"/></dialog>
+
   </section>;
 }

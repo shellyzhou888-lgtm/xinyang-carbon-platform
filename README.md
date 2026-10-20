@@ -13,6 +13,7 @@
 | `docs/prompts/server-agent-carbon-market-and-footprint.md` | 交给服务器 Agent 的提示词：采集 CEA/CCER 每日行情与产品碳足迹参考值并入库 |
 | `docs/visualization-and-forecast.md` | 图表库选型（ECharts 为主）、Chronos-2 预测模型与回测、TimescaleDB 时机、对照竞品还缺的功能 |
 | `docs/park-map-and-sources.md` | 规划四片区描绘、高德15个POI与Logo、公开企业核实名录、边界限制与吸碳云朵形象 |
+| `docs/dem-role-in-platform.md` | DEM当前接入状态、未来三维地形用途与精度限制 |
 | `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
 | `docs/frontend-workspaces.md` | 5个工作区的页面结构、只读数据接口、模拟数据标识与当前验证 |
 | `docs/enterprise-directory-review.md` | 22条企业/品牌/项目公开核验记录、15个POI、Logo来源与名称争议 |
