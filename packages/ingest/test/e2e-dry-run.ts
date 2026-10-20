@@ -14,7 +14,15 @@ try {
   await client.query("begin");
   const monthly = await ingestFile(client, { filePath: join(dir, "monthly.xlsx"), templateCode: "ENT_MONTHLY_ENERGY", dryRun: true, externalTransaction: true });
   const annual = await ingestFile(client, { filePath: join(dir, "annual.xlsx"), templateCode: "ENT_ANNUAL_ECONOMIC", dryRun: true, externalTransaction: true });
-  const calc = (await client.query("select engine.run_all('GIP_2026', 'XYEDZ', 2023, true) as r")).rows[0].r;
+  // PREVIEW=0 runs the formal mode (approved formulas only, results written and then rolled back).
+  const preview = process.env.PREVIEW !== "0";
+  const calc = (await client.query("select engine.run_all('GIP_2026', 'XYEDZ', 2023, $1) as r", [preview])).rows[0].r;
+  const display = (await client.query(
+    `select indicator_code, indicator_name, round(value, 4) as value, benchmark_value, score
+       from mart.v_indicator_display where version_code = 'GIP_2026' order by indicator_code`)).rows;
+  const written = (await client.query(
+    `select count(*)::int as n, count(*) filter (where achieved)::int as achieved
+       from fact.indicator_value where is_current`)).rows[0];
   const totals = (await client.query(`select round(engine.metric_value('ENG_TCE', node_id, 2023, 'GIP_2026'), 4) as tce_2023,
                                              round(engine.metric_value('CO2_TOTAL', node_id, 2023, 'GIP_2026'), 4) as co2_2023
                                         from core.org_node where code = 'XYEDZ'`)).rows[0];
@@ -23,6 +31,8 @@ try {
     annual: { rowsRead: annual.rowsRead, load: annual.load },
     energy: calc.energy, carbon: { rows: calc.carbon.rows_calculated, fallback: calc.carbon.factor_year_fallback },
     totals,
+    preview, written, display,
+    warnings: calc.indicators.warnings,
     indicators: calc.indicators.items.filter((i: any) => i.value != null)
       .map((i: any) => ({ code: i.code, name: i.name, value: Number(Number(i.value).toFixed(4)), benchmark: i.benchmark, achieved: i.achieved })),
   }, null, 2));
