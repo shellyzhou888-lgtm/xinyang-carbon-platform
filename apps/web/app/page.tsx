@@ -27,7 +27,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
         <div className="header">
           <div>
             <h1>信阳经济技术开发区 · 绿色园区能碳管理平台</h1>
-            <div className="sub">2026 年度国家级绿色工业园区申报 · 评价口径 GIP_2026</div>
+            <div className="sub">2026 年度国家级绿色工业园区申报 · 评价口径 GIP_2026 <a className="admin-link" href="/admin">数据治理 →</a></div>
           </div>
           <nav className="years">
             {YEARS.map((v) => (

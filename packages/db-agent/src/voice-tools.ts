@@ -10,7 +10,7 @@ import { logToolCall, startSession } from "./audit.js";
 import { loadConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { getParkOverview, type ParkOverview } from "./overview.js";
-import { buildTools, READ_TOOL_NAMES } from "./tools.js";
+import { buildTools, READ_TOOL_NAMES, type ToolContext } from "./tools.js";
 
 type Json = Record<string, unknown>;
 interface VoiceContext { signal: AbortSignal; taskId: string; originalQuestion?: string }
@@ -51,7 +51,10 @@ export function formatOverview(value: ParkOverview) {
 export function createVoiceTools() {
   const cfg = loadConfig({ requireModelKey: false });
   initPool(cfg.databaseUrl);
-  const tools = buildTools({ ...cfg, writeMode: "auto" }).filter((t) => VOICE_TOOLS.has(t.name));
+  // Tool state follows the voice task: a new task resets the SQL repair budget and carries its own question.
+  let task = { id: "", question: undefined as string | undefined };
+  const toolCtx: ToolContext = { getQuestion: () => task.question, sqlFailures: 0 };
+  const tools = buildTools({ ...cfg, writeMode: "auto" }, toolCtx).filter((t) => VOICE_TOOLS.has(t.name));
 
   const projectTools: Json[] = tools.map((t) => ({
     name: RENAME[t.name] ?? t.name,
@@ -60,6 +63,7 @@ export function createVoiceTools() {
     readOnly: t.name !== "run_calculation",
     execute: async (args: Json, ctx: VoiceContext) => {
       ctx.signal.throwIfAborted();
+      if (ctx.taskId !== task.id) { task = { id: ctx.taskId, question: ctx.originalQuestion }; toolCtx.sqlFailures = 0; }
       const t0 = performance.now();
       const session = await voiceSession(cfg.model);
       try {

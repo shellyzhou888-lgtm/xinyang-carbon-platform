@@ -40,7 +40,10 @@
 
 | 工具 | 作用 | 数据库角色 | 事务 |
 | --- | --- | --- | --- |
-| `get_schema_overview` | 可查询的视图与字典结构 | green_app | 只读 |
+| `search_catalog` | 检索语义目录：相关表、字段说明与剖析、口径陷阱、合规关联、已验证示例、相关治理工单（v0.13 起取代 get_schema_overview） | green_app | 只读 |
+| `plan_joins` | 在已审核关联图中规划连接路径，提示“先聚合再连接” | green_app | 只读 |
+| `query_metric` | 按指标层标准口径取基础量（综合能耗、碳排放、产值、高企产值等），含模拟占比 | green_app | 只读 |
+| `list_governance_issues` | 查看数据治理工单与洞察 | green_app | 只读 |
 | `find_entities` | 查园区、片区、企业编码与荣誉 | green_app | 只读 |
 | `get_energy_summary` | 能耗汇总（按年、月、品种、企业），含估值占比 | green_app | 只读 |
 | `get_carbon_summary` | 碳排放汇总（按口径），含因子年份回退提示 | green_app | 只读 |
@@ -48,7 +51,7 @@
 | `explain_indicator` | 公式、出处页码、判定基准、版本对照、计算输入 | green_app | 只读 |
 | `get_factors` | 因子数值、口径、出处、审核状态 | green_app | 只读 |
 | `get_data_coverage` | 真实与模拟数据底账、最近导入批次 | green_app | 只读 |
-| `query_sql` | 模型自写 SQL（单条 SELECT，限 200 行、5 秒） | **green_agent_ro**（只能读 mart、core） | 只读 |
+| `query_sql` | 模型自写 SQL（单条 SELECT，限 200 行、5 秒）；先按执行计划校验 is_current、碳排放口径、关联图、一对多求和，失败最多修复两次；成功的查询成为候选问答对 | **green_agent_ro**（读 mart、core、fact、semantic） | 只读 |
 | `run_calculation` | 折标 → 碳核算 → 指标（只用已批准公式；可预览） | green_app | 写 |
 | `import_excel` | 按模板导入 Excel（可试运行、可标记估值） | green_app | 写 |
 | `execute_write_sql` | INSERT/UPDATE；CREATE TABLE/VIEW/INDEX、ALTER TABLE ADD | green_app / **green_ddl** | 写 |
@@ -57,6 +60,9 @@
 
 - **审核和批准因子、公式**：纪要要求 AI 生成的公式必须人工校验。写工具会拦截修改审核状态的语句，Agent 只能列出待批准条目，请人工处理。
 - **删除**：数据库层禁止。修正数据时新增一行，并把旧行标记为失效。
+- **审核语义目录与治理工单**：表/字段说明、关联边、问答对、工单的审批只在网站“数据治理”页（/admin）由管理员完成；写工具拦截对 semantic 的修改。
+
+语义目录、治理检测和查询校验的原理见 [semantic-catalog-and-governance.md](semantic-catalog-and-governance.md)。
 
 ## 3. 文件结构
 

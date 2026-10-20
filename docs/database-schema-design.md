@@ -90,13 +90,15 @@ fact.indicator_value → mart 视图 → 网站页面、Agent
 | | `standard_version`、`metric_def`、`formula`、`indicator_def`、`indicator_benchmark`、`indicator_mapping`、`function_item` | 指标体系：版本、三级基础量、公式、指标、基准、版本对照、功能清单 |
 | | `alert_rule`、`strategy`、`term` | 预警规则、减碳策略库、术语库 |
 | | `import_template`、`import_field_map` | 导入模板与字段映射 |
+| | `enterprise_qualification`（0021） | 企业资格履历：高企、规上按统计年度记录，含证书与原件页码；计算按年度取值（`engine.qualified`） |
 | `raw`（4 张表） | `document`、`import_batch`、`import_record`、`api_source` | 数据湖 |
 | `fact`（11 张表） | `energy_activity`、`energy_transfer`、`statistic_value` | 月度能源活动、内部转供、三级基础量取值 |
 | | `calc_run`、`carbon_emission`、`indicator_value`、`evidence`、`function_compliance` | 计算批次、碳核算、指标值与得分、佐证、功能符合 |
 | | `alert_event`、`strategy_plan`、`forecast` | 诊断：预警 → 策略方案 → 预测 |
 | `agent`（3 张表） | `session`、`message`、`tool_call` | Pi Agent 日志 |
 | `audit`（2 张表） | `schema_migration`、`change_log` | 迁移登记、变更审计 |
-| `mart`（5 个视图） | `v_org_node`、`v_screen_honor`、`v_energy_monthly`、`v_carbon_monthly`、`v_indicator_display` | 页面与 Agent 查询入口 |
+| `mart`（5 个视图） | `v_org_node`、`v_screen_honor`、`v_energy_monthly`、`v_carbon_monthly`、`v_indicator_display` | 页面与 Agent 查询入口；`v_carbon_monthly` 自 0022 起按计算口径 `profile_code` 分组（此前会把多个口径相加） |
+| `semantic`（0022） | `topic`、`table_doc`、`column_doc`、`column_profile`、`join_edge`、`qa_pair`、`v_metric`、`check_def`、`governance_run`、`governance_issue`、`publish_event` | 语义目录（专题、表/字段业务说明、剖析、关联图、指标层、问答对）与数据治理（检测规则、运行、工单、发布事件），见 [semantic-catalog-and-governance.md](semantic-catalog-and-governance.md) |
 | `lab` | （空） | 自建表区域 |
 
 ## 4. 已入库的参考数据

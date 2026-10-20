@@ -50,6 +50,9 @@ export function guardWriteSql(sql: string): { sql: string; kind: WriteKind } {
     throw new Error("因子和公式的审核、批准必须由人工完成，Agent 不能修改审核状态");
   }
   if (/\b(audit|agent)\./.test(bare)) throw new Error("不能直接修改审计表和 Agent 日志表");
+  if (/\bsemantic\./.test(bare)) {
+    throw new Error("语义目录、关联图、问答对和治理工单的审核只能由管理员在网站“数据治理”页完成，Agent 不能直接修改");
+  }
   if (/^\s*(insert|update)\b/.test(bare)) return { sql: s, kind: "dml" };
   if (/^\s*create\s+(table|view|or\s+replace\s+view|index|unique\s+index)\b/.test(bare)) {
     if (!/\b(lab|mart|raw|fact)\./.test(bare)) throw new Error("新建对象必须指定 schema（lab、mart、raw 或 fact），建议放在 lab");

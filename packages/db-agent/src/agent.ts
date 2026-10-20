@@ -5,7 +5,7 @@ import { logToolCall, startSession } from "./audit.js";
 import type { AgentConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { systemPrompt } from "./prompt.js";
-import { buildTools, WRITE_TOOLS } from "./tools.js";
+import { buildTools, WRITE_TOOLS, type ToolContext } from "./tools.js";
 
 export interface DbAgentOptions {
   /** Channel recorded in agent.session: system (CLI), web, voice. */
@@ -33,12 +33,23 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
   const started = new Map<string, number>();
   let callsThisPrompt = 0;
 
+  // Tool state: the question being answered (stored with candidate Q&A pairs) and the SQL repair budget per question.
+  let agentRef: Agent | undefined;
+  const toolCtx: ToolContext = {
+    sessionId, sqlFailures: 0,
+    getQuestion: () => {
+      const last = [...(agentRef?.state.messages ?? [])].reverse().find((m: any) => m.role === "user") as any;
+      if (!last) return undefined;
+      return typeof last.content === "string" ? last.content : last.content.map((p: any) => p.text ?? "").join("");
+    },
+  };
+
   const agent = new Agent({
     initialState: {
       systemPrompt: systemPrompt(cfg),
       model,
       thinkingLevel: cfg.thinking,
-      tools: buildTools(cfg),
+      tools: buildTools(cfg, toolCtx),
     },
     streamFn: models.streamSimple.bind(models),
     getApiKey: async (provider) => (provider === "deepseek" ? cfg.deepseekApiKey : undefined),
@@ -77,8 +88,9 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
     },
   });
 
+  agentRef = agent;
   agent.subscribe((event) => {
-    if (event.type === "agent_start") callsThisPrompt = 0;
+    if (event.type === "agent_start") { callsThisPrompt = 0; toolCtx.sqlFailures = 0; }
   });
 
   return { agent, models, sessionId };

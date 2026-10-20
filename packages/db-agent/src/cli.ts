@@ -4,6 +4,7 @@ import { endSession, logMessage } from "./audit.js";
 import { createDbAgent } from "./agent.js";
 import { loadConfig } from "./config.js";
 import { closePool } from "./db.js";
+import { governanceIdle } from "./governance.js";
 
 /**
  * Terminal chat.
@@ -78,5 +79,6 @@ try {
 } finally {
   rl.close();
   await endSession(sessionId).catch(() => undefined);
+  await governanceIdle();   // let a background governance run started by a write tool finish
   await closePool();
 }

@@ -70,3 +70,47 @@ th { color: var(--muted); font-weight: normal; }
 .hint button { display: block; margin: 6px 0; background: var(--panel-2); border: 1px solid var(--line); color: var(--text); border-radius: 6px; padding: 6px 8px; cursor: pointer; text-align: left; width: 100%; font: inherit; font-size: 13px; }
 
 .voice-status { position: fixed; left: 20px; bottom: 16px; font-size: 12px; color: var(--muted); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; }
+
+/* admin / governance */
+.admin { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
+.admin .sub a { margin-left: 12px; }
+.btn { background: var(--accent); color: #062019; border: none; border-radius: 6px; padding: 6px 12px; font-weight: 600; cursor: pointer; font: inherit; font-size: 13px; }
+.btn.ghost { background: none; color: var(--muted); border: 1px solid var(--line); font-weight: normal; }
+.btn.small { padding: 2px 8px; font-size: 12px; }
+.kpi .value.small { font-size: 15px; }
+.tabs, .filters { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 14px; }
+.tabs a, .filters a { padding: 5px 12px; border: 1px solid var(--line); border-radius: 6px; text-decoration: none; color: var(--muted); font-size: 14px; }
+.tabs a.on, .filters a.on { background: var(--accent); color: #062019; border-color: var(--accent); }
+.filters .sep { width: 16px; }
+.issue { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; padding: 10px 14px; margin-bottom: 10px; font-size: 14px; }
+.issue.risk-high { border-left-color: var(--danger); }
+.issue.risk-medium { border-left-color: var(--warn); }
+.issue p { margin: 6px 0; line-height: 1.6; }
+.issue-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.tag.risk-high { background: rgba(239, 111, 108, 0.15); color: var(--danger); }
+.tag.risk-medium { background: rgba(242, 184, 75, 0.15); color: var(--warn); }
+.muted { color: var(--muted); font-size: 12px; }
+pre { background: var(--bg); padding: 8px; border-radius: 6px; overflow-x: auto; font-size: 12px; white-space: pre-wrap; }
+.decide { display: flex; gap: 6px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+.decide input, .doc-form input, .doc-form textarea, .col-inputs input, .issue label input { background: var(--bg); color: var(--text); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; font: inherit; font-size: 13px; }
+.decide input { flex: 1; min-width: 200px; }
+.issue label, .doc-form label { display: block; color: var(--muted); font-size: 12px; margin: 6px 0; }
+.issue label input, .doc-form input, .doc-form textarea { display: block; width: 100%; margin-top: 3px; }
+.catalog { display: grid; grid-template-columns: 320px 1fr; gap: 16px; }
+.catalog-list { display: flex; flex-direction: column; gap: 2px; max-height: 75vh; overflow-y: auto; }
+.catalog-list a { padding: 5px 8px; border-radius: 6px; text-decoration: none; color: var(--text); font-size: 13px; }
+.catalog-list a .muted { display: block; margin-left: 14px; }
+.catalog-list a.on { background: var(--panel-2); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--warn); }
+.dot.approved { background: var(--accent); }
+.dot.rejected { background: var(--danger); }
+.catalog-detail h2 { font-size: 16px; margin: 0 0 8px; }
+.doc-form { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; }
+.caveats { color: var(--warn); font-size: 13px; margin: 6px 0; }
+table.cols td { vertical-align: top; font-size: 13px; }
+.col-inputs { display: flex; gap: 6px; }
+.col-inputs input { width: 140px; }
+.col-inputs input.wide { flex: 1; }
+.col-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 4px; }
+.st-approved { color: var(--accent); }
+.header .admin-link { font-size: 13px; margin-left: 12px; }

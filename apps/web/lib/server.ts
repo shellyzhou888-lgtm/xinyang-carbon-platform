@@ -1,5 +1,12 @@
 import "server-only";
-import { createDbAgent, getParkOverview, initPool, loadConfig, logMessage } from "@xinyang/db-agent";
+import { admin, createDbAgent, getParkOverview, initPool, loadConfig, logMessage, triggerGovernance } from "@xinyang/db-agent";
+
+/** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
+export function adminApi() {
+  const cfg = loadConfig({ requireModelKey: false });
+  initPool(cfg.databaseUrl);
+  return { ...admin, reviewer: process.env.ADMIN_NAME || "管理员", runGovernance: () => triggerGovernance(loadConfig({ requireModelKey: false }), "manual") };
+}
 
 /**
  * Server-side access to the database agent. Secrets (DATABASE_URL, DEEPSEEK_API_KEY) are read from the

@@ -76,6 +76,7 @@
 | `apps/web/components/ChatPanel.tsx` | 右侧对话框 |
 | `apps/web/components/VoiceAssistant.tsx` | 挂载小云，注册 `switch_year`，年份变化时 `updateContext` |
 | `apps/web/voice-project.mjs` | 小云后台项目模块（id `xinyang-park`），注册数据库工具和 Skill |
+| `apps/web/app/admin/page.tsx` | 数据治理页（/admin）：治理工单、语义目录、问答对、关联图的审核（v0.13 起） |
 | `apps/web/voice/skills/park-energy-carbon/SKILL.md` | 告诉 Pi 什么问题用哪个工具、怎么回答 |
 | `packages/db-agent/src/voice-tools.ts` | 把数据库工具转换为小云项目工具，并写审计 |
 | `packages/db-agent/src/overview.ts` | 总览查询，网页和语音共用 |

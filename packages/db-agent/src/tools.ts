@@ -1,10 +1,14 @@
 import { StringEnum, Type, type Static, type TSchema } from "@earendil-works/pi-ai";
 import type { AgentTool } from "@earendil-works/pi-agent-core";
 import pg from "pg";
+import { createHash } from "node:crypto";
 import { isAbsolute, resolve } from "node:path";
+import { loadEdges, loadVersioned, planJoins, searchCatalog } from "./catalog.js";
 import { REPO_ROOT, type AgentConfig } from "./config.js";
 import { readOnly, sandboxSql, write } from "./db.js";
+import { triggerGovernance } from "./governance.js";
 import { guardReadSql, guardWriteSql } from "./sql-guard.js";
+import { normaliseSql, validateSql } from "./sql-validate.js";
 
 const MAX_TEXT = 12000;
 
@@ -37,19 +41,76 @@ const Profile = StringEnum(["GIP_2026", "GIP_2025", "GIP_2024", "ZCP_2025"], {
 // 只读工具
 // ---------------------------------------------------------------------------------------------
 
-const getSchemaOverview = tool({
-  name: "get_schema_overview",
-  label: "查看可查询的数据结构",
-  description: "列出 query_sql 可以查询的 mart 视图与 core 字典表及其字段说明。写 SQL 之前先调用。",
-  parameters: Type.Object({}),
-  execute: async () => readOnly(async (c) => {
+/** Per-agent state shared by the tools: the current question (for Q&A pairs) and the SQL repair budget. */
+export interface ToolContext {
+  getQuestion: () => string | undefined;
+  sessionId?: string;
+  sqlFailures: number;
+}
+const MAX_SQL_ATTEMPTS = 3;   // first try + two repairs
+
+function searchCatalogTool(ctx: ToolContext) {
+  return tool({
+    name: "search_catalog",
+    label: "检索语义目录",
+    description: "在语义目录中检索与问题相关的表/视图（业务说明、粒度、口径陷阱、字段说明与取值剖析）、基础量定义、合规关联边、"
+      + "已验证的问答示例和相关的未处理数据问题。写 SQL 之前必须先调用。",
+    parameters: Type.Object({
+      keywords: Type.Array(Type.String(), { description: "问题中的业务关键词，如 [\"用电量\",\"企业\",\"月度\"]；1–8 个", minItems: 1, maxItems: 8 }),
+    }),
+    execute: async ({ keywords }) => readOnly(async (c) => result(await searchCatalog(c, keywords, ctx.getQuestion()))),
+  });
+}
+
+const planJoinsTool = tool({
+  name: "plan_joins",
+  label: "规划连接路径",
+  description: "在已审核的关联图中查找从第一张表到其他表的最短连接路径，给出连接条件与基数，并提示先聚合再连接的陷阱。写多表 SQL 前调用。",
+  parameters: Type.Object({
+    objects: Type.Array(Type.String({ description: "schema.table，如 fact.energy_activity" }), { minItems: 2, maxItems: 5 }),
+  }),
+  execute: async ({ objects }) => readOnly(async (c) => result(planJoins(await loadEdges(c), objects))),
+});
+
+const queryMetric = tool({
+  name: "query_metric",
+  label: "按指标层取数",
+  description: "按指标层的标准口径取基础量（如 ENG_TCE 综合能耗、CO2_TOTAL 碳排放、ECO_GROSS_OUTPUT 工业总产值、ECO_VA_CONST 工业增加值、"
+    + "ECO_HIGHTECH_OUTPUT 高企产值、RES_FRESH_WATER 新鲜水量），自动处理汇总范围、版本、口径和年度资格，并给出模拟数据占比。"
+    + "能用它回答的不要自己写 SQL。编码不确定时先 search_catalog。",
+  parameters: Type.Object({
+    metric_codes: Type.Array(Type.String(), { minItems: 1, maxItems: 10, description: "基础量编码" }),
+    node_codes: Type.Array(Type.String(), { minItems: 1, maxItems: 20, description: "对象编码，园区 XYEDZ" }),
+    years: Type.Array(Year("年份"), { minItems: 1, maxItems: 10 }),
+    profile: Type.Optional(Profile),
+  }),
+  execute: async ({ metric_codes, node_codes, years, profile }) => readOnly(async (c) => {
     const { rows } = await c.query(`
-      select c.table_schema || '.' || c.table_name as object,
-             obj_description(format('%I.%I', c.table_schema, c.table_name)::regclass) as comment,
-             string_agg(c.column_name || ' ' || c.data_type, ', ' order by c.ordinal_position) as columns
-        from information_schema.columns c
-       where c.table_schema in ('mart', 'core')
-       group by c.table_schema, c.table_name order by 1`);
+      select m.code as metric, m.name, m.unit, n.code as node_code, n.name as node_name, y as year,
+             round(engine.metric_value(m.code, n.node_id, y, $4)::numeric, 4) as value,
+             round(engine.inputs_estimated_share(array[m.code], n.node_id, y, 0)::numeric, 3) as estimated_share
+        from core.metric_def m cross join core.org_node n cross join unnest($3::int[]) as y
+       where m.code = any ($1) and n.code = any ($2)
+       order by m.code, n.code, y`, [metric_codes, node_codes, years, profile ?? "GIP_2026"]);
+    const missing = metric_codes.filter((code) => !rows.some((r) => r.metric === code));
+    return result({ profile: profile ?? "GIP_2026", rows, unknown_metrics: missing });
+  }),
+});
+
+const listGovernanceIssues = tool({
+  name: "list_governance_issues",
+  label: "数据治理工单",
+  description: "查看数据治理工单与洞察：脏数据、口径歧义、关联陷阱、覆盖不足、目录缺口和规律发现。回答数据质量、口径问题或解释异常时使用。",
+  parameters: Type.Object({
+    status: Type.Optional(StringEnum(["open", "approved", "rejected", "applied", "auto_closed"], { description: "默认 open" })),
+    category: Type.Optional(StringEnum(["dirty_data", "ambiguity", "join_trap", "coverage", "catalog", "insight"], { description: "类别" })),
+  }),
+  execute: async ({ status, category }) => readOnly(async (c) => {
+    const { rows } = await c.query(`
+      select issue_id, category, risk, title, description, suggestion, evidence, status, last_seen_at::date as last_seen
+        from semantic.governance_issue
+       where status = coalesce($1, 'open') and ($2::text is null or category = $2)
+       order by case risk when 'high' then 0 when 'medium' then 1 else 2 end, issue_id desc limit 30`, [status ?? null, category ?? null]);
     return result(rows);
   }),
 });
@@ -256,31 +317,69 @@ const getDataCoverage = tool({
   }),
 });
 
-function querySql(cfg: AgentConfig) {
+/**
+ * Model-written SQL goes through the semantic query flow: guard → plan check (current versions, one carbon profile,
+ * approved joins, no fan-out sums) → trial run with row limit → result. Structured errors go back to the model,
+ * which may repair the query at most twice. Successful queries become candidate question–SQL pairs for review.
+ */
+function querySql(cfg: AgentConfig, ctx: ToolContext) {
   return tool({
     name: "query_sql",
     label: "受限 SQL 查询",
-    description: "固定工具无法回答时使用。只能写一条 SELECT/WITH 只读查询，只能访问 mart 视图和 core 字典表"
-      + `（先用 get_schema_overview 看结构），自动限制 ${cfg.sqlRowLimit} 行、超时 ${cfg.sqlTimeoutMs / 1000} 秒。`,
+    description: "固定工具和 query_metric 无法回答时使用。只能写一条 SELECT/WITH 只读查询，可访问 mart 视图、fact 事实表、core 字典和 semantic 目录。"
+      + "先 search_catalog，多表时先 plan_joins；跨表或归因类问题先拆成子问题，用 WITH 分步计算（先聚合再连接）。"
+      + `执行前会按执行计划校验，未通过时返回原因，最多修复两次；自动限制 ${cfg.sqlRowLimit} 行、超时 ${cfg.sqlTimeoutMs / 1000} 秒。`,
     parameters: Type.Object({
       sql: Type.String({ description: "一条 SELECT 或 WITH 语句" }),
       purpose: Type.String({ description: "这条查询要回答什么问题" }),
     }),
     execute: async ({ sql }) => {
+      if (ctx.sqlFailures >= MAX_SQL_ATTEMPTS) {
+        throw new Error(`本次提问已有 ${MAX_SQL_ATTEMPTS} 条 SQL 未通过校验。不要再写 SQL：向用户说明缺少什么数据或口径，或请用户澄清问题。`);
+      }
       const guarded = guardReadSql(sql, cfg.sqlRowLimit);
-      return sandboxSql(cfg.sqlTimeoutMs, async (c) => {
-        const r = await c.query(guarded);
-        return result({ row_count: r.rowCount, rows: r.rows }, { db_role: "green_agent_ro" });
-      });
+      let out;
+      try {
+        out = await sandboxSql(cfg.sqlTimeoutMs, async (c) => {
+          const edges = await loadEdges(c);
+          const versioned = await loadVersioned(c);
+          const v = await validateSql(c, guarded, sql, edges, versioned);
+          if (v.errors.length) return { v, r: undefined };
+          return { v, r: await c.query(guarded) };
+        });
+      } catch (err) {
+        ctx.sqlFailures += 1;
+        throw new Error(`SQL 无法执行：${(err as Error).message}（剩余修复次数 ${Math.max(0, MAX_SQL_ATTEMPTS - ctx.sqlFailures)}）`);
+      }
+      if (!out.r) {
+        ctx.sqlFailures += 1;
+        throw new Error(JSON.stringify({ 校验未通过: out.v.errors, 剩余修复次数: Math.max(0, MAX_SQL_ATTEMPTS - ctx.sqlFailures) }));
+      }
+      const warnings = [...out.v.warnings];
+      if (out.r.rowCount === 0) warnings.push({ code: "EMPTY", message: "结果为空：检查编码、年份和筛选条件是否正确，不要据此断言“没有”" });
+      if (!warnings.length) await saveQaCandidate(sql, out.v.objects, ctx).catch(() => undefined);
+      return result({ row_count: out.r.rowCount, rows: out.r.rows, validation: { objects: out.v.objects, joins: out.v.joins, warnings } },
+                    { db_role: "green_agent_ro" });
     },
   });
+}
+
+async function saveQaCandidate(sql: string, objects: string[], ctx: ToolContext) {
+  const question = ctx.getQuestion();
+  if (!question) return;
+  const hash = createHash("md5").update(normaliseSql(sql)).digest("hex");
+  await write("green_app", (c) => c.query(`
+    insert into semantic.qa_pair (question, sql, sql_hash, objects, origin, session_id)
+    values ($1, $2, $3, $4, 'agent_log', $5)
+    on conflict (sql_hash) do update set hit_count = semantic.qa_pair.hit_count + 1, last_used_at = now()`,
+    [question.slice(0, 1000), sql, hash, objects, ctx.sessionId ?? null]));
 }
 
 // ---------------------------------------------------------------------------------------------
 // 写工具（全自动管理）
 // ---------------------------------------------------------------------------------------------
 
-const runCalculation = tool({
+const runCalculation = (cfg: AgentConfig) => tool({
   name: "run_calculation",
   label: "执行计算",
   description: "执行折标→碳核算→指标计算并写入结果（只使用已批准的公式）。preview=true 时可试用草稿公式，结果只返回、不写入。"
@@ -292,14 +391,19 @@ const runCalculation = tool({
     preview: Type.Optional(Type.Boolean({ description: "预览模式，不写入指标结果" })),
   }),
   executionMode: "sequential",
-  execute: async ({ version, node_code, year, preview }) => write("green_app", async (c) => {
-    const r = (await c.query("select engine.run_all($1, $2, $3, $4) as r", [version, node_code, year, preview ?? false])).rows[0].r;
-    const items = (r.indicators.items as any[]).filter((i) => i.value != null)
-      .map((i) => ({ code: i.code, name: i.name, value: i.value, benchmark: i.benchmark, achieved: i.achieved, estimated_share: i.estimated_share }));
-    return result({ energy: r.energy, carbon: { rows: r.carbon.rows_calculated, factor_year_fallback: r.carbon.factor_year_fallback },
-                    indicators: { calculated: r.indicators.calculated, skipped: r.indicators.skipped, warnings: r.indicators.warnings, items } },
-                  { db_role: "green_app", wrote: !(preview ?? false) });
-  }),
+  execute: async ({ version, node_code, year, preview }) => {
+    const out = await write("green_app", async (c) => {
+      const r = (await c.query("select engine.run_all($1, $2, $3, $4) as r", [version, node_code, year, preview ?? false])).rows[0].r;
+      const items = (r.indicators.items as any[]).filter((i) => i.value != null)
+        .map((i) => ({ code: i.code, name: i.name, value: i.value, benchmark: i.benchmark, achieved: i.achieved, estimated_share: i.estimated_share }));
+      return result({ energy: r.energy, carbon: { rows: r.carbon.rows_calculated, factor_year_fallback: r.carbon.factor_year_fallback },
+                      indicators: { calculated: r.indicators.calculated, skipped: r.indicators.skipped, warnings: r.indicators.warnings, items },
+                      governance: preview ? undefined : "已在后台启动数据治理检测" },
+                    { db_role: "green_app", wrote: !(preview ?? false) });
+    });
+    if (!preview) triggerGovernance(cfg, "calc");
+    return out;
+  },
 });
 
 function importExcel(cfg: AgentConfig) {
@@ -328,7 +432,9 @@ function importExcel(cfg: AgentConfig) {
           dryRun: dry_run ?? false, note: "由数据库 Agent 导入",
           estimated: estimated_method ? { method: estimated_method, model: "db-agent" } : undefined,
         });
-        return result({ batch_id: r.batchId, rows_read: r.rowsRead, unknown_headers: r.unknownHeaders, load: r.load, dry_run: r.dryRun },
+        if (!r.dryRun) triggerGovernance(cfg, "import");
+        return result({ batch_id: r.batchId, rows_read: r.rowsRead, unknown_headers: r.unknownHeaders, load: r.load, dry_run: r.dryRun,
+                        governance: r.dryRun ? undefined : "已在后台启动数据治理检测" },
                       { db_role: "green_app", wrote: !r.dryRun });
       } finally {
         await client.end();
@@ -357,13 +463,13 @@ const executeWriteSql = tool({
   },
 });
 
-export const READ_TOOL_NAMES = ["get_schema_overview", "find_entities", "get_energy_summary", "get_carbon_summary",
-  "get_indicators", "explain_indicator", "get_factors", "get_data_coverage", "query_sql"];
+export const READ_TOOL_NAMES = ["search_catalog", "plan_joins", "query_metric", "find_entities", "get_energy_summary",
+  "get_carbon_summary", "get_indicators", "explain_indicator", "get_factors", "get_data_coverage", "list_governance_issues", "query_sql"];
 export const WRITE_TOOLS = new Set(["run_calculation", "import_excel", "execute_write_sql"]);
 
-export function buildTools(cfg: AgentConfig): AgentTool<any>[] {
-  const read = [getSchemaOverview, findEntities, getEnergySummary, getCarbonSummary, getIndicators, explainIndicator,
-                getFactors, getDataCoverage, querySql(cfg)];
+export function buildTools(cfg: AgentConfig, ctx: ToolContext = { getQuestion: () => undefined, sqlFailures: 0 }): AgentTool<any>[] {
+  const read = [searchCatalogTool(ctx), planJoinsTool, queryMetric, findEntities, getEnergySummary, getCarbonSummary, getIndicators,
+                explainIndicator, getFactors, getDataCoverage, listGovernanceIssues, querySql(cfg, ctx)];
   if (cfg.writeMode === "off") return read;
-  return [...read, runCalculation, importExcel(cfg), executeWriteSql];
+  return [...read, runCalculation(cfg), importExcel(cfg), executeWriteSql];
 }

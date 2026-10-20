@@ -8,6 +8,7 @@
 | --- | --- |
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
 | `docs/db-agent.md` | 数据库 Agent（Pi + DeepSeek）：原理、三层安全、工具与角色、使用方法、测试记录 |
+| `docs/semantic-catalog-and-governance.md` | 语义目录、数据治理工单与语义增强查询：针对 Text-to-SQL 三类问题的做法、检测规则、审批流程 |
 | `docs/web-and-voice.md` | 网站（Next.js）与小云语音接入：结构、为什么这样拆、本机启动、测试记录 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |
 | `docs/public-data-replacement-assessment.md` | 模拟数据公开来源替换评估：已核验身份、待取证数值、10 家企业采集重点、资源环境来源与口径限制 |
