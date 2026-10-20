@@ -1,0 +1,23 @@
+{
+  "name": "@xinyang/ingest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Excel 导入：解析模板 → 入湖（raw）→ 调用 engine.load_batch；可选触发计算",
+  "scripts": {
+    "ingest": "tsx src/cli.ts ingest",
+    "calc": "tsx src/cli.ts calc",
+    "typecheck": "tsc --noEmit",
+    "test:fixture": "tsx test/make-fixture.ts"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/pg": "^8.11.10",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

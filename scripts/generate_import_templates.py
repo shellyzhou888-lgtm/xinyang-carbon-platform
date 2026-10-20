@@ -13,7 +13,6 @@ import subprocess
 from pathlib import Path
 
 from openpyxl import Workbook
-from openpyxl.comments import Comment
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -133,8 +132,8 @@ def write_data_sheet(ws, code: str, tpl: dict):
         cell.fill = REQUIRED_FILL if field["req"] else OPTIONAL_FILL
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
         cell.border = BOX
-        if field["src"] in NOTES:
-            cell.comment = Comment(NOTES[field["src"]], "模板说明")
+        # No cell comments: exceljs (used by the importer) fails to read openpyxl-written comment parts.
+        # Column notes live on the 填写说明 sheet instead.
         letter = get_column_letter(col)
         ws.column_dimensions[letter].width = max(12, min(30, len(field["src"]) * 2 + 2))
         is_text = field["tgt"] in ("node_credit_code", "node_name", "period_month", "period_year",

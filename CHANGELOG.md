@@ -2,6 +2,14 @@
 
 本文件记录仓库的版本与每次任务的修改内容。仓库版本独立于方案文档内部标注的版本。
 
+## v0.9.0 - 2026-10-20
+
+- 新增并执行迁移 0013（engine schema；计算批次警告与汇总、碳排放口径列、判定基准适用条件）、0014（导入解析与计算引擎 21 个函数：单位换算、因子选择与年份回退、核算单元、企业匹配、版本化写入、load_batch、calc_energy、calc_carbon、基础量取值、公式求值、判定基准继承、calc_indicators、run_all）、0015（批准其余电力品种的折标系数 0.1229）。
+- 新增 `packages/ingest`（TypeScript）：读取 Excel 模板、原件存 `storage/uploads`、入湖并调用 `engine.load_batch`，支持 `--dry-run`、`--calc`、`--preview`；附测试夹具与端到端回滚测试。
+- 端到端验证：综合能耗、两种口径的碳排放、因子年份回退、逐行容错、企业档案回写、指标预览结果均与手算一致；测试数据全部回滚。
+- 发现 exceljs 无法读取 openpyxl 写入的单元格批注，导入模板取消表头批注（说明保留在“填写说明”页）并重新生成；验证 Excel 另存后的文件可正常导入。
+- 新增 `docs/import-and-calculation-engine.md`；`.gitignore` 增加 `storage/`、`node_modules/`。
+
 ## v0.8.1 - 2026-10-20
 
 - `园区能碳管理模型.docx` 关闭后改名为 `reference/park-energy-carbon-model.docx`，仓库中已无中文文件名。

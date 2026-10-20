@@ -2,7 +2,7 @@
 
 > 日期：2026-10-20｜数据库：服务器 PostgreSQL 17.5 `greensystem`
 > 依据：[平台功能架构与指标体系梳理](platform-architecture-and-indicators.md) v2.2
-> 状态：迁移 0001–0012 **已全部执行**，参考数据已入库；业务数据（能耗、产值等）为空，待园区提供或通过导入、估值补全写入。
+> 状态：迁移 0001–0015 **已全部执行**；导入解析与计算引擎见 [import-and-calculation-engine.md](import-and-calculation-engine.md)，参考数据已入库；业务数据（能耗、产值等）为空，待园区提供或通过导入、估值补全写入。
 
 ## 1. 先讲理念：数据湖 + 数据仓库，“结构先行、数据慢慢填”
 

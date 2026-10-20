@@ -12,3 +12,9 @@ Thumbs.db
 !.env.example
 .pgpass
 *.pgpass
+
+# 上传的原始文件（数据湖文件本体，不进仓库）
+storage/
+
+# Node 依赖
+node_modules/

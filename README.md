@@ -7,6 +7,7 @@
 | 路径 | 内容 |
 | --- | --- |
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
+| `docs/import-and-calculation-engine.md` | 导入解析与计算引擎：流程、核算规则、用法、验证结果、已知简化 |
 | `docs/database-schema-design.md` | 数据库表结构、角色权限、数据湖设计、已入库参考数据 |
 | `docs/park-enterprises-public-info.md` | 经开区片区构成、企业公开信息与大屏荣誉标识（带来源） |
 | `docs/database-connection-and-permissions.md` | 数据库连接、SSH 隧道、账户与权限记录 |
@@ -19,6 +20,7 @@
 | `policies/` | 政策原文，文件名为“年份_文号_内容_区分点”；`policies/green-industrial-park/` 含 2024 版（31 项，省级获评依据）、2025 版（17 项，含分值）、2026 版（19 项，现行申报版）三版园区评价要求 |
 | `policies/factors/` | 官方排放因子原文：2021、2023 年电力二氧化碳排放因子公告附件，生态环境部钢铁行业核算指南（附表 A.1 燃料参数） |
 | `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
+| `packages/ingest/` | Excel 导入工具（TypeScript）：解析模板 → 入湖 → 调用数据库引擎；`npm run ingest` / `npm run calc` |
 | `database/migrations/` | 数据库迁移 SQL（结构与参考数据） |
 | `scripts/` | 隧道、凭据、权限检查、迁移执行脚本 |
 
