@@ -5,3 +5,10 @@
 *.temp
 .DS_Store
 Thumbs.db
+
+# 本地数据库连接与凭据
+.env
+.env.*
+!.env.example
+.pgpass
+*.pgpass

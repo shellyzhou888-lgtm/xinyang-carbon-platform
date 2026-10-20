@@ -13,3 +13,7 @@
 ## 版本管理
 
 仓库当前版本见 [`VERSION`](VERSION)，每次任务的修改内容见 [`CHANGELOG.md`](CHANGELOG.md)。版本采用 `MAJOR.MINOR.PATCH`，每次任务完成后更新版本、记录改动、提交并推送 GitHub，同时创建对应版本标签。具体执行约定见 [`AGENTS.md`](AGENTS.md)。
+
+## 数据库连接
+
+PostgreSQL 的开发连接、账户分工和权限检查步骤见 [`docs/数据库连接与权限.md`](docs/数据库连接与权限.md)。本地连接串使用 `.env`，仓库只保存 [`.env.example`](.env.example)；网站服务端使用应用账户，管理操作单独使用管理员账户。
