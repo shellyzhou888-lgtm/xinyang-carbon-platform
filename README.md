@@ -4,15 +4,23 @@
 
 ## 主要文件
 
-- `docs/平台功能架构与指标体系梳理.md`：**当前开发依据**，按 2026-10-20 纪要和现行政策梳理的功能、架构、指标体系与 Demo 范围。
-- `docs/园区企业公开信息.md`：经开区片区构成、企业公开信息与大屏荣誉标识清单（带来源）。
-- `园区能碳管理模型.docx`：能耗与碳核算模型、数据清单、折标系数与排放因子（核心参考）。
-- `文件/`：政策原文，文件名格式为“年份_文号_名称（区分点）”。`文件/绿色工业园区/` 中有 2024 版（31 项，省级获评依据）、2025 版（17 项，含分值）、2026 版（19 项，现行申报）三版园区评价要求。
-- `信阳经开区能碳管理平台建设方案（总稿）.md`：整合后的总体建设方案。
-- `信阳经开区能碳管理平台实施方案（实例化）.md`：面向信阳经开区的实施方案。
-- `能碳管理平台系统架构设计方案.md`：平台架构设计。
-- `框架先行数据滚动接入技术方案.md`：数据滚动接入方案。
-- 其余 DOC、PDF、PPTX 文件为需求、界面和参考材料。
+| 路径 | 内容 |
+| --- | --- |
+| `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
+| `docs/database-schema-design.md` | 数据库表结构、角色权限、数据湖设计、已入库参考数据 |
+| `docs/park-enterprises-public-info.md` | 经开区片区构成、企业公开信息与大屏荣誉标识（带来源） |
+| `docs/database-connection-and-permissions.md` | 数据库连接、SSH 隧道、账户与权限记录 |
+| `docs/multi-project-db-and-db-agent.md` | 多项目分库与数据库 Agent 方案 |
+| `reference/park-energy-carbon-model.docx` | 园区能碳管理模型：数据清单、能耗与碳核算公式、折标系数与排放因子（核心参考）。**文件正在 Word 中打开，暂未改名，当前仍为根目录 `园区能碳管理模型.docx`** |
+| `reference/requirements-notes.doc` | 需求整理（会议纪要与前后端分工） |
+| `reference/park-system-ui-fields.doc` | 园区系统界面字段清单 |
+| `reference/competitor-dashboard-screenshots.pptx` | 竞品大屏截图 |
+| `reference/early-plans/` | 早期方案：总稿、实施方案、系统架构、框架先行数据接入（已被 docs 中的梳理文档取代，仅供参考） |
+| `policies/` | 政策原文，文件名为“年份_文号_内容_区分点”；`policies/green-industrial-park/` 含 2024 版（31 项，省级获评依据）、2025 版（17 项，含分值）、2026 版（19 项，现行申报版）三版园区评价要求 |
+| `policies/factors/` | 官方排放因子原文：2021、2023 年电力二氧化碳排放因子公告附件，生态环境部钢铁行业核算指南（附表 A.1 燃料参数） |
+| `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
+| `database/migrations/` | 数据库迁移 SQL（结构与参考数据） |
+| `scripts/` | 隧道、凭据、权限检查、迁移执行脚本 |
 
 ## 版本管理
 
@@ -20,8 +28,8 @@
 
 ## 数据库连接
 
-PostgreSQL 的开发连接、账户分工和权限检查步骤见 [`docs/数据库连接与权限.md`](docs/数据库连接与权限.md)。本地连接串使用 `.env`，仓库只保存 [`.env.example`](.env.example)；网站服务端使用应用账户，管理操作单独使用管理员账户。
+PostgreSQL 的开发连接、账户分工和权限检查步骤见 [`docs/database-connection-and-permissions.md`](docs/database-connection-and-permissions.md)。本地连接串使用 `.env`，仓库只保存 [`.env.example`](.env.example)；网站服务端使用应用账户，管理操作单独使用管理员账户。
 
-表结构设计与迁移见 [`docs/数据库表结构设计.md`](docs/数据库表结构设计.md)，迁移文件在 `database/migrations/`，用 `scripts/apply-migrations.ps1` 执行（先加 `-DryRun` 试跑）。
+表结构设计与迁移见 [`docs/database-schema-design.md`](docs/database-schema-design.md)，迁移文件在 `database/migrations/`，用 `scripts/apply-migrations.ps1` 执行（先加 `-DryRun` 试跑）。
 
-多个项目的分库与数据库 Agent 设计见 [`docs/多项目数据库与数据库Agent方案.md`](docs/多项目数据库与数据库Agent方案.md)。
+多个项目的分库与数据库 Agent 设计见 [`docs/multi-project-db-and-db-agent.md`](docs/multi-project-db-and-db-agent.md)。

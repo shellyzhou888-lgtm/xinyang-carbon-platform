@@ -53,7 +53,7 @@ ssh -p 2222 -i "$env:USERPROFILE\.ssh\id_ed25519" -N -L 127.0.0.1:15432:127.0.0.
 
 这说明现在就可以用 `zyz` 作为网站服务端的开发连接账户。等业务对象创建后，应直接用 `zyz` 验证页面所需查询和写入；上线前再将建表、改表职责与网站运行账户分离，收紧 `CREATE` 等多余权限。
 
-多个项目的分库方式和数据库 Agent 的角色设计见[多项目数据库与数据库 Agent 方案](多项目数据库与数据库Agent方案.md)。
+多个项目的分库方式和数据库 Agent 的角色设计见[多项目数据库与数据库 Agent 方案](multi-project-db-and-db-agent.md)。
 
 ## 2026-10-20 非 public schema 建表验证
 
@@ -71,7 +71,7 @@ ssh -p 2222 -i "$env:USERPROFILE\.ssh\id_ed25519" -N -L 127.0.0.1:15432:127.0.0.
 - 新建 `core`、`raw`、`fact`、`mart`、`agent`、`audit` 六个 schema，所有者为 `greensystem`，并为 `greensystem` 将来创建的对象配置了默认授权。
 - 安装扩展 `ltree`、`pg_trgm`。
 
-后续迁移用 `scripts/apply-migrations.ps1` 执行，先加 `-DryRun` 试跑。角色分工与表结构见 [数据库表结构设计](数据库表结构设计.md)。
+后续迁移用 `scripts/apply-migrations.ps1` 执行，先加 `-DryRun` 试跑。角色分工与表结构见 [数据库表结构设计](database-schema-design.md)。
 
 此外，`zyz` 当前具有 `CREATEDB` 属性。它可能被其他项目使用，所以这次没有收回，待确认后再处理。
 
@@ -83,5 +83,5 @@ ssh -p 2222 -i "$env:USERPROFILE\.ssh\id_ed25519" -N -L 127.0.0.1:15432:127.0.0.
 - 事件触发器 `green_block_drop` 会拦截非超级用户删除表、列、视图、schema 的操作。
 - `green_agent_ro` 可读 core。
 
-本机 `.env` 曾因 PowerShell 5.1 写入 UTF-8 BOM，导致 dotenv 等工具读不到 `DATABASE_URL`。已去掉 BOM，`set-local-db-secrets.ps1` 也改为写入不带 BOM 的文件。详见 [数据库表结构设计](数据库表结构设计.md)。
+本机 `.env` 曾因 PowerShell 5.1 写入 UTF-8 BOM，导致 dotenv 等工具读不到 `DATABASE_URL`。已去掉 BOM，`set-local-db-secrets.ps1` 也改为写入不带 BOM 的文件。详见 [数据库表结构设计](database-schema-design.md)。
 
