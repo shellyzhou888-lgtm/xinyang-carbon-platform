@@ -5,7 +5,6 @@ import { isAbsolute, resolve } from "node:path";
 import { REPO_ROOT, type AgentConfig } from "./config.js";
 import { readOnly, sandboxSql, write } from "./db.js";
 import { guardReadSql, guardWriteSql } from "./sql-guard.js";
-import { ingestFile } from "../../ingest/src/ingest.js";
 
 const MAX_TEXT = 12000;
 
@@ -322,6 +321,8 @@ function importExcel(cfg: AgentConfig) {
       await client.connect();
       try {
         await client.query("SET ROLE green_app");
+        // Loaded on demand so consumers that never import files (web page, voice) do not load the Excel parser.
+        const { ingestFile } = await import("../../ingest/src/ingest.js");
         const r = await ingestFile(client, {
           filePath: isAbsolute(file_path) ? file_path : resolve(REPO_ROOT, file_path), templateCode: template_code,
           dryRun: dry_run ?? false, note: "由数据库 Agent 导入",
@@ -356,6 +357,8 @@ const executeWriteSql = tool({
   },
 });
 
+export const READ_TOOL_NAMES = ["get_schema_overview", "find_entities", "get_energy_summary", "get_carbon_summary",
+  "get_indicators", "explain_indicator", "get_factors", "get_data_coverage", "query_sql"];
 export const WRITE_TOOLS = new Set(["run_calculation", "import_excel", "execute_write_sql"]);
 
 export function buildTools(cfg: AgentConfig): AgentTool<any>[] {

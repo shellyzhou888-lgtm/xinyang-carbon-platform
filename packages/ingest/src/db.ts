@@ -1,9 +1,20 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import pg from "pg";
 
-/** Repository root (packages/ingest/src → ../../..). */
-export const REPO_ROOT = resolve(import.meta.dirname, "..", "..", "..");
+/** Repository root: XINYANG_REPO_ROOT, or the first parent directory containing VERSION and database/ (works when bundled). */
+function findRepoRoot(): string {
+  if (process.env.XINYANG_REPO_ROOT) return process.env.XINYANG_REPO_ROOT;
+  for (const start of [import.meta.dirname, process.cwd()]) {
+    let dir = start;
+    for (let i = 0; dir && i < 8; i++) {
+      if (existsSync(resolve(dir, "VERSION")) && existsSync(resolve(dir, "database"))) return dir;
+      dir = resolve(dir, "..");
+    }
+  }
+  throw new Error("找不到项目根目录，请设置 XINYANG_REPO_ROOT");
+}
+export const REPO_ROOT = findRepoRoot();
 
 /** Reads DATABASE_URL from the environment or the repository's .env (BOM-safe). */
 export function databaseUrl(): string {

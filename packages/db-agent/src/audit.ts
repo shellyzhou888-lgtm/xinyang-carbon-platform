@@ -4,10 +4,11 @@ import { logQuery } from "./db.js";
  * Every conversation and tool call is written to agent.session / agent.message / agent.tool_call,
  * so any number the agent reported, and any change it made, can be traced afterwards.
  */
-export async function startSession(model: string, userRef: string): Promise<string> {
+export async function startSession(model: string, userRef: string, channel: "system" | "web" | "voice" = "system",
+                                   agentName = "db_agent"): Promise<string> {
   const r = await logQuery(
-    `insert into agent.session (user_ref, channel, agent_name, model) values ($1, 'system', 'db_agent', $2) returning session_id`,
-    [userRef, model],
+    `insert into agent.session (user_ref, channel, agent_name, model) values ($1, $2, $3, $4) returning session_id`,
+    [userRef, channel, agentName, model],
   );
   return r.rows[0].session_id;
 }

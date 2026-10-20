@@ -8,6 +8,8 @@ import { systemPrompt } from "./prompt.js";
 import { buildTools, WRITE_TOOLS } from "./tools.js";
 
 export interface DbAgentOptions {
+  /** Channel recorded in agent.session: system (CLI), web, voice. */
+  channel?: "system" | "web" | "voice";
   /** Called before a write tool when writeMode = "confirm"; return true to proceed. */
   confirmWrite?: (toolName: string, args: unknown) => Promise<boolean>;
   userRef?: string;
@@ -27,7 +29,7 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
   const model = models.getModel("deepseek", cfg.model);
   if (!model) throw new Error(`未找到模型 deepseek/${cfg.model}（可选：deepseek-flash、deepseek-v4-pro）`);
 
-  const sessionId = await startSession(cfg.model, opts.userRef ?? "cli");
+  const sessionId = await startSession(cfg.model, opts.userRef ?? "cli", opts.channel ?? "system", "db_agent");
   const started = new Map<string, number>();
   let callsThisPrompt = 0;
 
@@ -48,8 +50,9 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
         await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "超过单次提问的工具调用上限" });
         return { block: true, reason: `本次提问的工具调用已达上限 ${cfg.maxToolCallsPerPrompt} 次，请根据已有结果回答`, terminate: true };
       }
-      if (WRITE_TOOLS.has(toolCall.name) && cfg.writeMode === "confirm" && opts.confirmWrite) {
-        const ok = await opts.confirmWrite(toolCall.name, args);
+      if (WRITE_TOOLS.has(toolCall.name) && cfg.writeMode === "confirm") {
+        // No confirmation UI (e.g. web without a dialog) means the write is refused, never silently allowed.
+        const ok = opts.confirmWrite ? await opts.confirmWrite(toolCall.name, args) : false;
         if (!ok) {
           await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "用户拒绝执行" });
           return { block: true, reason: "用户拒绝了这次写操作" };

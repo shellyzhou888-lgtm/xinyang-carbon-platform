@@ -11,8 +11,9 @@ import pg from "pg";
 
 let pool: pg.Pool | undefined;
 
+/** Creates the shared pool once; later calls reuse it (the web app creates one agent per conversation). */
 export function initPool(connectionString: string) {
-  pool = new pg.Pool({ connectionString, max: 4 });
+  pool ??= new pg.Pool({ connectionString, max: 6 });
   return pool;
 }
 
@@ -23,6 +24,7 @@ function getPool(): pg.Pool {
 
 export async function closePool() {
   await pool?.end();
+  pool = undefined;
 }
 
 async function inTransaction<T>(begin: string, role: string, fn: (c: pg.PoolClient) => Promise<T>,

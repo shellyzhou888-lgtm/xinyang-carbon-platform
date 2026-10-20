@@ -2,6 +2,14 @@
 
 本文件记录仓库的版本与每次任务的修改内容。仓库版本独立于方案文档内部标注的版本。
 
+## v0.12.0 - 2026-10-20
+
+- 新增 `apps/web`（Next.js 16）：能碳总览页（综合能耗、碳排放、增加值、已达标指标、荣誉，含模拟数据提示条，可切换 2023–2025 年）；右侧数据库 Agent 对话框，经 `/api/agent` 以 SSE 流式返回，按浏览器会话保存 Agent，审计记录 channel=web；轻量 Markdown 渲染（不使用 innerHTML）。
+- 接入小云语音助手（`@xiaoyun/voice` v1.0.0-beta.1-power-earth.4，千问实时语音 + DeepSeek）：项目模块 `voice-project.mjs`（id xinyang-park）注册 11 个数据库工具与 `park-energy-carbon` Skill；页面动作 `switch_year`。语音只开放只读工具和重新计算，不开放导入与写 SQL；`query_sql` 改名 `park_query_sql` 以避开小云保留名；新增直达工具 `park_overview`。审计记录 channel=voice。
+- `packages/db-agent`：新增 `index.ts`（库入口）、`overview.ts`（总览查询，网页与语音共用）、`voice-tools.ts`（小云项目工具适配）；esbuild 打包到 dist，types 指向源码；连接池可重复初始化；确认写模式在无确认回调时拒绝写入；会话记录渠道与 Agent 名；导入模块改为按需加载；仓库根目录查找兼容打包环境（ingest 同步修改）。
+- 本机部署：因 3000/8765 已被另一个项目占用，网站用 3001、小云后台用 8766；测试总览、文字对话、语音直达、语音切换年份、语音后台分析全部通过。
+- 新增 `docs/web-and-voice.md`；`.gitignore` 增加 dist、.next、小云运行数据与复制的浏览器资源、本机预览配置。API Key 只在本机进程环境或被忽略的配置文件中使用，未写入仓库。
+
 ## v0.11.0 - 2026-10-20
 
 - 新增 `packages/db-agent`：基于 Pi（`@earendil-works/pi-ai`、`pi-agent-core` 1.3.0）与 DeepSeek（默认 deepseek-flash）的数据库 Agent，命令行对话；12 个工具（9 个只读查询、解释工具，3 个写工具：计算、导入 Excel、受限写 SQL）。

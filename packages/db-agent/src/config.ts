@@ -1,8 +1,23 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-/** Repository root (packages/db-agent/src → ../../..). */
-export const REPO_ROOT = resolve(import.meta.dirname, "..", "..", "..");
+/**
+ * Repository root: XINYANG_REPO_ROOT, or the first parent directory containing VERSION and database/.
+ * Found by walking up so it works from src/, from the bundled dist/, and when loaded by the web app or Xiaoyun backend.
+ * Bundlers (Next.js Turbopack) may leave import.meta.dirname undefined, so the working directory is tried as well.
+ */
+function findRepoRoot(): string {
+  if (process.env.XINYANG_REPO_ROOT) return process.env.XINYANG_REPO_ROOT;
+  for (const start of [import.meta.dirname, process.cwd()]) {
+    let dir = start;
+    for (let i = 0; dir && i < 8; i++) {
+      if (existsSync(resolve(dir, "VERSION")) && existsSync(resolve(dir, "database"))) return dir;
+      dir = resolve(dir, "..");
+    }
+  }
+  throw new Error("找不到项目根目录，请设置 XINYANG_REPO_ROOT");
+}
+export const REPO_ROOT = findRepoRoot();
 
 /** Reads KEY from the environment first, then from the repository .env (BOM-safe). Secrets never live in code. */
 function setting(key: string): string | undefined {
@@ -27,11 +42,12 @@ export interface AgentConfig {
   sqlTimeoutMs: number;
 }
 
-export function loadConfig(): AgentConfig {
+/** requireModelKey = false for consumers that only use the database tools (e.g. the Xiaoyun voice backend). */
+export function loadConfig(opts: { requireModelKey?: boolean } = {}): AgentConfig {
   const databaseUrl = setting("DATABASE_URL");
-  const deepseekApiKey = setting("DEEPSEEK_API_KEY");
+  const deepseekApiKey = setting("DEEPSEEK_API_KEY") ?? "";
   if (!databaseUrl) throw new Error("缺少 DATABASE_URL（.env 或环境变量）");
-  if (!deepseekApiKey) throw new Error("缺少 DEEPSEEK_API_KEY：请在 .env 中添加一行 DEEPSEEK_API_KEY=sk-...（.env 不会提交 git）");
+  if (!deepseekApiKey && opts.requireModelKey !== false) throw new Error("缺少 DEEPSEEK_API_KEY：请在 .env 中添加一行 DEEPSEEK_API_KEY=sk-...（.env 不会提交 git）");
   return {
     databaseUrl,
     deepseekApiKey,

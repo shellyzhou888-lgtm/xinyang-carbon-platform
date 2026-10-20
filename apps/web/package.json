@@ -1,0 +1,30 @@
+{
+  "name": "@xinyang/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "信阳经开区绿色园区能碳管理平台网站（Next.js）：总览、数据库 Agent 对话、小云语音",
+  "scripts": {
+    "build:agent": "npm run build --prefix ../../packages/db-agent",
+    "predev": "npm run build:agent",
+    "dev": "next dev --port 3001",
+    "prebuild": "npm run build:agent",
+    "build": "next build",
+    "start": "next start --port 3001",
+    "typecheck": "tsc --noEmit",
+    "voice": "xiaoyun start --env .env.xiaoyun"
+  },
+  "dependencies": {
+    "@xinyang/db-agent": "file:../../packages/db-agent",
+    "@xiaoyun/voice": "git+https://github.com/shellyzhou888-lgtm/xiaoyun-voice.git#v1.0.0-beta.1-power-earth.4",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.9"
+  }
+}

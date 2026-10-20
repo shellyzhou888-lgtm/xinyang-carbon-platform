@@ -16,5 +16,15 @@ Thumbs.db
 # 上传的原始文件（数据湖文件本体，不进仓库）
 storage/
 
-# Node 依赖
+# Node 依赖与构建产物
 node_modules/
+dist/
+.next/
+*.tsbuildinfo
+
+# 本机预览启动配置（含本机路径）
+.claude/
+
+# 小云：运行数据与从私有包复制的浏览器资源（npx xiaoyun init 重新生成）
+.xiaoyun/
+apps/web/public/xiaoyun/
