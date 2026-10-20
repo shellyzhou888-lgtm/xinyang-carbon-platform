@@ -2,15 +2,16 @@ import Link from "next/link";
 import { adminApi } from "@/lib/server";
 import { AdminNavigation } from "@/components/WorkspaceParts";
 import { selectedYear } from "@/lib/workspace";
-import { approveAllColumns, decideIssue, reviewColumn, reviewEdge, reviewQa, reviewTable, runGovernanceNow } from "./actions";
+import { approveAllColumns, decideIssue, reviewColumn, reviewEdge, reviewFootprint, reviewQa, reviewTable, runGovernanceNow } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-const TABS = [["issues", "治理工单"], ["catalog", "语义目录"], ["qa", "问答对"], ["edges", "关联图"]] as const;
+const TABS = [["issues", "治理工单"], ["catalog", "语义目录"], ["qa", "问答对"], ["edges", "关联图"], ["footprint", "产品碳足迹"]] as const;
 const RISK: Record<string, string> = { high: "高", medium: "中", low: "低" };
 const CATEGORY: Record<string, string> = { dirty_data: "脏数据", ambiguity: "口径歧义", join_trap: "关联陷阱", coverage: "覆盖不足", catalog: "目录", insight: "洞察" };
 const STATUS: Record<string, string> = { open: "待处理", approved: "已确认", applied: "已执行", rejected: "已驳回", auto_closed: "已消失",
-                                         draft: "待审核", candidate: "候选" };
+                                         draft: "待审核", candidate: "候选", retired: "已停用" };
+const BOUNDARY: Record<string, string> = { cradle_to_gate: "摇篮到大门", cradle_to_grave: "摇篮到坟墓", gate_to_gate: "大门到大门", other: "其他" };
 const RUN: Record<string, string> = { running: "运行中", succeeded: "完成", failed: "失败" };
 const ACTION: Record<string, string> = { comment_sync: "批准并回写数据库注释", run_calculation: "批准并重新计算", draft_docs: "已在语义目录起草说明" };
 
@@ -70,6 +71,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<Se
       {tab === "catalog" && <Catalog object={sp.object} />}
       {tab === "qa" && <QaPairs status={sp.status ?? "candidate"} />}
       {tab === "edges" && <Edges />}
+      {tab === "footprint" && <Footprints status={sp.status ?? "draft"} />}
     </div>
   );
 }
@@ -243,6 +245,47 @@ async function Edges() {
           ))}
         </tbody>
       </table>
+    </section>
+  );
+}
+
+async function Footprints({ status }: { status: string }) {
+  const rows = await adminApi().listFootprints(status);
+  return (
+    <section>
+      <div className="filters">
+        {["draft", "approved", "retired", "all"].map((st) => (
+          <Link key={st} href={`/admin?tab=footprint&status=${st}`} className={st === status ? "on" : ""}>{st === "approved" ? "已批准" : STATUS[st] ?? "全部"}</Link>
+        ))}
+      </div>
+      <div className="hint">公开数据库、EPD 与文献中的产品碳足迹参考值。核对功能单位、系统边界和来源后批准，批准后才作为与园区企业对照的正式参考；不适用的点“停用”（保留记录）。系统边界为空的可在这里补选。</div>
+      {rows.length === 0 && <div className="hint">暂无。</div>}
+      {rows.map((r: any) => (
+        <form key={r.ref_id} action={reviewFootprint} className="issue">
+          <input type="hidden" name="ref_id" value={r.ref_id} />
+          <div className="issue-head">
+            <b>{r.product_name}</b>
+            <span className="tag">{Number(r.value).toLocaleString("zh-CN")} {r.unit}</span>
+            <span className="muted">功能单位 {r.functional_unit} · {r.data_year ?? "年份未知"} 年 · {r.database_name ?? ""}
+              {r.quality_stars ? ` · 质量 ${"★".repeat(r.quality_stars)}` : ""} · {STATUS[r.status] ?? (r.status === "approved" ? "已批准" : r.status)}</span>
+          </div>
+          <p className="muted">适用企业：{r.applicable_nodes?.length ? r.applicable_nodes.join("、") : "通用"}
+            {r.product_category ? ` · 类别 ${r.product_category}` : ""}{r.region ? ` · 地域 ${r.region}` : ""}{r.method_standard ? ` · ${r.method_standard}` : ""}</p>
+          <p className="muted">来源：{r.source_url ? <a href={r.source_url} target="_blank" rel="noreferrer">{r.source_title}</a> : r.source_title}{r.source_page ? `（${r.source_page}）` : ""}</p>
+          {r.note && <p className="muted">备注：{r.note}</p>}
+          {r.reviewed_by && <p className="muted">审核：{r.reviewed_by} {r.reviewed_at ? new Date(r.reviewed_at).toLocaleString("zh-CN") : ""}</p>}
+          <div className="decide">
+            <select name="boundary" defaultValue={r.boundary ?? ""} style={{ background: "var(--bg)", color: "var(--text)", border: "1px solid var(--line)", borderRadius: 6, padding: "5px 8px", fontSize: 13 }}>
+              <option value="">系统边界{r.boundary ? "" : "（未标注）"}</option>
+              {Object.entries(BOUNDARY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+            <input name="note" placeholder="审核意见（可选，追加到备注）" />
+            {r.status !== "approved" && <button name="decision" value="approve" className="btn">批准</button>}
+            <button name="decision" value="save" className="btn ghost">只保存</button>
+            {r.status !== "retired" && <button name="decision" value="reject" className="btn ghost">停用</button>}
+          </div>
+        </form>
+      ))}
     </section>
   );
 }

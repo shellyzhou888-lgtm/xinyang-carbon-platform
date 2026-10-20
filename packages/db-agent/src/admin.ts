@@ -131,3 +131,28 @@ export async function reviewEdge(edgeId: number, decision: "approve" | "reject",
     update semantic.join_edge set review_status = $2, reviewed_by = $3, reviewed_at = now() where edge_id = $1`,
     [edgeId, decision === "approve" ? "approved" : "rejected", by]));
 }
+
+/** Product carbon footprint reference values (core.product_footprint_ref): human review before official use. */
+export async function listFootprints(status = "draft") {
+  return readOnly(async (c) => (await c.query(`
+    select ref_id, product_name, product_category, functional_unit, value::float as value, unit, boundary, region, data_year,
+           quality_stars, method_standard, database_name, source_title, source_url, source_page, applicable_nodes, status,
+           reviewed_by, reviewed_at, note
+      from core.product_footprint_ref
+     where is_current and ($1 = 'all' or status = $1)
+     order by array_to_string(applicable_nodes, ','), product_name, value`, [status])).rows);
+}
+
+/** approve → approved; reject → retired (kept, no longer used); save → only edits boundary / note. */
+export async function reviewFootprint(refId: number, decision: "approve" | "reject" | "save",
+                                      fields: { boundary?: string; note?: string }, by: string) {
+  const boundary = fields.boundary && ["cradle_to_gate", "cradle_to_grave", "gate_to_gate", "other"].includes(fields.boundary) ? fields.boundary : null;
+  return write("green_app", (c) => c.query(`
+    update core.product_footprint_ref
+       set boundary = coalesce($2, boundary),
+           note = case when $3::text is null then note else coalesce(note || '；', '') || $3 end,
+           status = case $4 when 'approve' then 'approved' when 'reject' then 'retired' else status end,
+           reviewed_by = case when $4 <> 'save' then $5 else reviewed_by end,
+           reviewed_at = case when $4 <> 'save' then now() else reviewed_at end
+     where ref_id = $1 and is_current`, [refId, boundary, fields.note || null, decision, by]));
+}

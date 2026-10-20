@@ -46,8 +46,8 @@ export function guardWriteSql(sql: string): { sql: string; kind: WriteKind } {
       || /\balter\s+(role|user|system|database|schema|default)\b/.test(bare)) {
     throw new Error("禁止的语句：删除、清空、授权、角色或系统级变更");
   }
-  if (/\b(core\.factor|core\.formula)\b/.test(bare) && /\b(status|approved_by|approved_at|reviewed_by)\b/.test(bare)) {
-    throw new Error("因子和公式的审核、批准必须由人工完成，Agent 不能修改审核状态");
+  if (/\b(core\.factor|core\.formula|core\.product_footprint_ref)\b/.test(bare) && /\b(status|approved_by|approved_at|reviewed_by)\b/.test(bare)) {
+    throw new Error("因子、公式和产品碳足迹参考值的审核、批准必须由人工完成，Agent 不能修改审核状态");
   }
   if (/\b(audit|agent)\./.test(bare)) throw new Error("不能直接修改审计表和 Agent 日志表");
   if (/\bsemantic\./.test(bare)) {

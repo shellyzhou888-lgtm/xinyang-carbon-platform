@@ -54,3 +54,10 @@ export async function runGovernanceNow() {
   adminApi().runGovernance();
   revalidatePath("/admin");
 }
+
+export async function reviewFootprint(f: FormData) {
+  const a = adminApi();
+  await a.reviewFootprint(Number(f.get("ref_id")), f.get("decision") as "approve" | "reject" | "save",
+                          { boundary: s(f, "boundary"), note: s(f, "note") }, a.reviewer);
+  revalidatePath("/admin");
+}
