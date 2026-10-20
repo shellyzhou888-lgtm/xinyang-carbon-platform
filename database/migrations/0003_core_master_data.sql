@@ -1,4 +1,4 @@
--- 0002 主数据与配置（core）
+-- 0003 主数据与配置（core）
 -- 执行身份：postgres 连接后 SET ROLE greensystem，使对象归 greensystem 所有并套用 0001 的默认授权。
 -- 事务由执行脚本控制（psql --single-transaction）。
 
@@ -49,6 +49,7 @@ CREATE TABLE core.org_node (
   valid_from         date,
   valid_to           date,
   remark             text,
+  attributes         jsonb NOT NULL DEFAULT '{}'::jsonb,   -- 扩展属性：未预设的字段先放这里，不改表结构
   created_at         timestamptz NOT NULL DEFAULT now(),
   updated_at         timestamptz NOT NULL DEFAULT now(),
   CHECK (parent_id IS NOT NULL OR node_type = 'park')
@@ -109,6 +110,7 @@ CREATE TABLE core.enterprise_profile (
   high_tech_cert_no      text,
   energy_limit_standard  text,                 -- 适用的单位产品能耗限额国标（第 6 项指标）
   source_url             text,
+  attributes             jsonb NOT NULL DEFAULT '{}'::jsonb,
   updated_at             timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX enterprise_name_trgm ON core.enterprise_profile USING gin (legal_name gin_trgm_ops);
@@ -197,7 +199,7 @@ CREATE TABLE core.factor (
   energy_type_code  text NOT NULL REFERENCES core.energy_type(code),
   basis             text NOT NULL DEFAULT 'default' CHECK (basis IN
                       ('default','equivalent','calorific_equal','measured')),
-  value             numeric(24,10) NOT NULL,
+  value             numeric(24,10),            -- 采用值；标准只给区间时为空，待确定口径后填写
   value_low         numeric(24,10),            -- 标准给出区间时的下限
   value_high        numeric(24,10),
   unit              text NOT NULL,             -- kgce/kg、kJ/kg、tCO2/TJ、kgCO2/kWh …
@@ -208,7 +210,10 @@ CREATE TABLE core.factor (
   status            text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','approved','retired')),
   approved_by       text,
   approved_at       timestamptz,
-  UNIQUE (factor_kind, energy_type_code, basis, source_id, valid_from)
+  note              text,
+  UNIQUE (factor_kind, energy_type_code, basis, source_id, valid_from),
+  CHECK (value IS NOT NULL OR (value_low IS NOT NULL AND value_high IS NOT NULL)),
+  CHECK (status <> 'approved' OR (value IS NOT NULL AND approved_by IS NOT NULL))
 );
 COMMENT ON TABLE  core.factor IS '折标系数、低位发热量、排放因子；带出处和生效期，审核通过后才参与计算';
 COMMENT ON COLUMN core.factor.basis IS '电力、热力折标的当量值/等价值；其余为 default 或 measured（实测）';
@@ -253,7 +258,7 @@ CREATE TABLE core.formula (
   description  text,
   origin       text NOT NULL DEFAULT 'human' CHECK (origin IN ('human','ai')),
   status       text NOT NULL DEFAULT 'draft' CHECK (status IN ('draft','approved','retired')),
-  created_by   text NOT NULL DEFAULT current_user,
+  created_by   text NOT NULL DEFAULT session_user,
   created_at   timestamptz NOT NULL DEFAULT now(),
   reviewed_by  text,
   reviewed_at  timestamptz,
@@ -356,7 +361,46 @@ CREATE TABLE core.term (
 CREATE INDEX term_trgm ON core.term USING gin (term gin_trgm_ops);
 COMMENT ON TABLE core.term IS '术语库：页面命名与 Agent 解释';
 
+
+-- =====================================================================
+-- 6. 导入模板与字段映射（数据湖 → 正式数据）
+-- =====================================================================
+
+CREATE TABLE core.import_template (
+  template_id    bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  code           text NOT NULL,
+  revision       smallint NOT NULL DEFAULT 1,
+  name           text NOT NULL,
+  target         text NOT NULL CHECK (target IN
+                   ('energy_activity','statistic_value','energy_transfer','org_node','enterprise_profile',
+                    'honor','green_building','function_compliance','lab_table','raw_only')),
+  file_kind      text NOT NULL DEFAULT 'excel' CHECK (file_kind IN ('excel','csv','json','api','form')),
+  sheet_name     text,
+  header_row     smallint DEFAULT 1,
+  lab_table      text,                         -- target = lab_table 时写入的 lab 表名
+  description    text,
+  is_active      boolean NOT NULL DEFAULT true,
+  created_by     text NOT NULL DEFAULT session_user,
+  created_at     timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (code, revision)
+);
+COMMENT ON TABLE core.import_template IS '导入模板：新的表格格式只需新增模板，不改表结构；raw_only 表示只入湖、暂不解析';
+
+CREATE TABLE core.import_field_map (
+  map_id            bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  template_id       bigint NOT NULL REFERENCES core.import_template(template_id),
+  source_field      text NOT NULL,             -- 表格列名或 JSON 路径
+  target_field      text NOT NULL,             -- 目标表字段，如 quantity、period_month、node_code
+  metric_code       text REFERENCES core.metric_def(code),
+  energy_type_code  text REFERENCES core.energy_type(code),
+  unit_code         text REFERENCES core.unit(code),
+  transform         jsonb,                     -- 例：{"multiply":10000} 万千瓦时 → 千瓦时
+  is_required       boolean NOT NULL DEFAULT false,
+  UNIQUE (template_id, source_field, target_field)
+);
+COMMENT ON TABLE core.import_field_map IS '字段映射：表格某一列对应哪个能源品种、基础量、单位';
+
 RESET ROLE;
 
 INSERT INTO audit.schema_migration (version, description)
-VALUES ('0002', '主数据与配置：对象树、企业档案、荣誉、能源品种、因子库、指标体系、诊断配置');
+VALUES ('0003', '主数据与配置：对象树、企业档案、荣誉、能源品种、因子库、指标体系、诊断配置');

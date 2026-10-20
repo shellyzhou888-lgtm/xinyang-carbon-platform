@@ -1,4 +1,4 @@
--- 0004 Agent 日志、变更审计、mart 只读视图
+-- 0005 Agent 日志、变更审计、mart 只读视图
 -- 执行身份：postgres 连接后 SET ROLE greensystem。事务由执行脚本控制。
 
 SET ROLE greensystem;
@@ -145,4 +145,4 @@ COMMENT ON VIEW mart.v_indicator_display IS '前台达标展示：只含当前�
 RESET ROLE;
 
 INSERT INTO audit.schema_migration (version, description)
-VALUES ('0004', 'Agent 会话与工具调用日志、变更审计触发器、mart 只读视图');
+VALUES ('0005', 'Agent 会话与工具调用日志、变更审计触发器、mart 只读视图');

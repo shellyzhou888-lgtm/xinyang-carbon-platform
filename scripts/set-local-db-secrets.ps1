@@ -33,7 +33,7 @@ try {
 }
 
 $databaseUrl = "postgresql://zyz:$encodedPassword@127.0.0.1:15432/greensystem"
-Set-Content -LiteralPath $envPath -Value "DATABASE_URL=`"$databaseUrl`"" -Encoding utf8
+[IO.File]::WriteAllText($envPath, "DATABASE_URL=`"$databaseUrl`"`n", (New-Object System.Text.UTF8Encoding $false))  # no BOM, otherwise dotenv reads the key with a BOM prefix
 Protect-LocalFile $envPath
 
 New-Item -ItemType Directory -Path $secretDirectory -Force | Out-Null

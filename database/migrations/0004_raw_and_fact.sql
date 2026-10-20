@@ -1,4 +1,4 @@
--- 0003 数据湖（raw）与事实、计算结果（fact）
+-- 0004 数据湖（raw）与事实、计算结果（fact）
 -- 执行身份：postgres 连接后 SET ROLE greensystem。事务由执行脚本控制。
 --
 -- 事实表共同约定：
@@ -21,7 +21,7 @@ CREATE TABLE raw.document (
   size_bytes    bigint,
   sha256        text,
   doc_kind      text NOT NULL CHECK (doc_kind IN ('import_file','invoice','evidence','report','policy','other')),
-  uploaded_by   text NOT NULL DEFAULT current_user,
+  uploaded_by   text NOT NULL DEFAULT session_user,
   uploaded_at   timestamptz NOT NULL DEFAULT now(),
   note          text
 );
@@ -29,14 +29,14 @@ COMMENT ON TABLE raw.document IS '文件元数据：导入表格、发票、佐�
 
 CREATE TABLE raw.import_batch (
   batch_id           bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  source_type        text NOT NULL CHECK (source_type IN ('manual','excel','api','estimated','system')),
-  source_name        text,                     -- 模板名、接口名或估值模型名
+  source_type        text NOT NULL CHECK (source_type IN ('form','file_upload','api','estimated','system')),
+  source_name        text,                     -- 接口名、估值模型名或上传说明
   document_id        bigint REFERENCES raw.document(document_id),
-  template_code      text,
-  submitted_by       text NOT NULL DEFAULT current_user,
+  template_id        bigint REFERENCES core.import_template(template_id),   -- 为空表示只入湖，待配置模板后再解析
+  submitted_by       text NOT NULL DEFAULT session_user,
   submitted_at       timestamptz NOT NULL DEFAULT now(),
   status             text NOT NULL DEFAULT 'received' CHECK (status IN
-                       ('received','parsed','validated','loaded','partially_loaded','rejected')),
+                       ('received','parsed','validated','loaded','partially_loaded','rejected','raw_only')),
   row_count          integer,
   error_count        integer,
   estimation_method  text,                     -- AI 估值批次：方法说明
@@ -71,7 +71,7 @@ CREATE TABLE raw.api_source (
   note           text
 );
 
--- 0002 中预留的佐证文件外键
+-- 0003 中预留的佐证文件外键
 ALTER TABLE core.honor
   ADD CONSTRAINT honor_evidence_fk FOREIGN KEY (evidence_document_id) REFERENCES raw.document(document_id);
 ALTER TABLE core.green_building
@@ -100,8 +100,9 @@ CREATE TABLE fact.energy_activity (
   record_id            bigint REFERENCES raw.import_record(record_id),
   is_current           boolean NOT NULL DEFAULT true,
   superseded_by        bigint REFERENCES fact.energy_activity(activity_id),
+  attributes           jsonb NOT NULL DEFAULT '{}'::jsonb,
   note                 text,
-  created_by           text NOT NULL DEFAULT current_user,
+  created_by           text NOT NULL DEFAULT session_user,
   created_at           timestamptz NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX energy_activity_current_uq
@@ -148,7 +149,8 @@ CREATE TABLE fact.statistic_value (
   record_id      bigint REFERENCES raw.import_record(record_id),
   is_current     boolean NOT NULL DEFAULT true,
   superseded_by  bigint REFERENCES fact.statistic_value(stat_id),
-  created_by     text NOT NULL DEFAULT current_user,
+  attributes     jsonb NOT NULL DEFAULT '{}'::jsonb,
+  created_by     text NOT NULL DEFAULT session_user,
   created_at     timestamptz NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX statistic_value_current_uq
@@ -170,7 +172,7 @@ CREATE TABLE fact.calc_run (
   formula_ids    bigint[],                     -- 本次使用的公式版本
   factor_ids     bigint[],                     -- 本次使用的因子
   status         text NOT NULL DEFAULT 'running' CHECK (status IN ('running','succeeded','failed')),
-  triggered_by   text NOT NULL DEFAULT current_user,
+  triggered_by   text NOT NULL DEFAULT session_user,
   started_at     timestamptz NOT NULL DEFAULT now(),
   finished_at    timestamptz,
   error_message  text
@@ -215,7 +217,7 @@ CREATE TABLE fact.indicator_value (
   review_status    text NOT NULL DEFAULT 'auto' CHECK (review_status IN ('auto','submitted','approved','rejected')),
   is_current       boolean NOT NULL DEFAULT true,
   superseded_by    bigint REFERENCES fact.indicator_value(value_id),
-  created_by       text NOT NULL DEFAULT current_user,
+  created_by       text NOT NULL DEFAULT session_user,
   created_at       timestamptz NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX indicator_value_current_uq
@@ -283,7 +285,7 @@ CREATE TABLE fact.strategy_plan (
   expected_co2_reduction numeric(20,6),
   forecast_run_id        bigint REFERENCES fact.calc_run(run_id),
   status                 text NOT NULL DEFAULT 'proposed' CHECK (status IN ('proposed','adopted','implemented','rejected')),
-  created_by             text NOT NULL DEFAULT current_user,
+  created_by             text NOT NULL DEFAULT session_user,
   created_at             timestamptz NOT NULL DEFAULT now()
 );
 
@@ -306,4 +308,4 @@ CREATE INDEX forecast_lookup_idx ON fact.forecast (node_id, target_kind, scenari
 RESET ROLE;
 
 INSERT INTO audit.schema_migration (version, description)
-VALUES ('0003', '数据湖与事实：文件、导入批次、能源活动、统计台账、碳核算、指标值、佐证、预警、策略、预测');
+VALUES ('0004', '数据湖与事实：文件、导入批次、能源活动、统计台账、碳核算、指标值、佐证、预警、策略、预测');
