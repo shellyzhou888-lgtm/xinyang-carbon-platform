@@ -8,6 +8,7 @@
 | --- | --- |
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
 | `docs/import-and-calculation-engine.md` | 导入解析与计算引擎：流程、核算规则、用法、验证结果、已知简化 |
+| `docs/national-ghg-factor-database-assessment.md` | 国家温室气体排放因子数据库第二版：本项目可用资料、口径差异与接入顺序 |
 | `docs/database-schema-design.md` | 数据库表结构、角色权限、数据湖设计、已入库参考数据 |
 | `docs/park-enterprises-public-info.md` | 经开区片区构成、企业公开信息与大屏荣誉标识（带来源） |
 | `docs/database-connection-and-permissions.md` | 数据库连接、SSH 隧道、账户与权限记录 |
