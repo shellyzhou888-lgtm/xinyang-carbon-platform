@@ -1,0 +1,472 @@
+{
+  "schema_version": "1.0",
+  "checked_on": "2026-10-20",
+  "scope": {
+    "database": "greensystem",
+    "inventory_file": "docs/data-inventory.md",
+    "years": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "enterprise_count": 10,
+    "numeric_estimated_records": {
+      "monthly_energy": 1895,
+      "annual_economic": 133,
+      "product_output": 5,
+      "park_resource_environment": 85,
+      "total": 2118
+    }
+  },
+  "conclusion": {
+    "new_numeric_records_ready_for_direct_replacement": 0,
+    "business_database_modified": false,
+    "meaning": "本清单记录来源可用程度，不是正式导入文件；身份资料须按证书有效期使用。网页不可访问或只有检索片段不算取得完整原文。"
+  },
+  "status_definitions": {
+    "confirmed_original": "原始披露文件已下载、相关页已读",
+    "confirmed_hosted_copy": "公开托管的名单文件已下载并核对，正式录入补原发布公告或证书",
+    "indexed_only": "检索定位到片段，原页未成功核验",
+    "scope_mismatch": "原文存在，但主体、时点或指标不匹配",
+    "needs_entity_mapping": "原件列有多个法人，现有节点需先确认范围",
+    "channel_only": "渠道对应所需字段，但尚未取得本项目企业记录",
+    "provisional": "公示或一般报道，缺最终认定证据"
+  },
+  "sources": [
+    {
+      "id": "S01",
+      "title": "谷麦光电科技股份有限公司招股说明书（申报稿，2022-08披露）",
+      "url": "https://reportdocs.static.szse.cn/UpFiles/rasinfodisc1/202208/RAS_202208_000182A5A26A383F970B05143F7CA03F.pdf",
+      "access": "downloaded",
+      "bytes": 9130828,
+      "sha256": "50a0671538e726bb31f8f40144094ffe7d594da652796c6357c1aa92de7f0351",
+      "cache": "storage/research/2026-10-20/gumai-2022-prospectus.pdf",
+      "printed_pages": [
+        52,
+        53,
+        138,
+        154,
+        238
+      ],
+      "pdf_pages_1_based": [
+        53,
+        54,
+        139,
+        155,
+        239
+      ],
+      "visual_checked_pdf_pages": [
+        139,
+        155
+      ]
+    },
+    {
+      "id": "S02",
+      "title": "信阳市绿色建材供应商及本地特色建材产品目录",
+      "url": "https://xinyang.zfcg.henan.gov.cn/webfile/xinyang/rootfiles/2023/06/25/1686703640122773-1686703640125089.pdf",
+      "access": "downloaded",
+      "bytes": 5091520,
+      "sha256": "4793666c2e30d34c8dbf0a3cfed7fc0b2211c4004b7a5ec6cd1d19b0920a7f95",
+      "cache": "storage/research/2026-10-20/yonghaoxuan-gov-procurement.pdf",
+      "printed_pages": [
+        73,
+        81,
+        83,
+        106,
+        108
+      ],
+      "pdf_pages_1_based": [
+        75,
+        83,
+        85,
+        108,
+        110
+      ],
+      "visual_checked_pdf_pages": [
+        83
+      ],
+      "note": "文件中企业简介包含历史资料；URL的2023上传时间不是全部数值的统计年份。"
+    },
+    {
+      "id": "S03",
+      "title": "河南省认定机构2024年认定报备的第一批高新技术企业名单",
+      "url": "https://www.sme.com.cn/api/pub/download/file/sme_file_1731468047537.pdf",
+      "access": "downloaded_hosted_list",
+      "bytes": 384844,
+      "sha256": "2165791bbba5a386484b5cc0b3ae8a51c2f3a6a0f12386886ac0469e4ed1ca3d",
+      "cache": "storage/research/2026-10-20/henan-2024-hightech-first-batch.pdf",
+      "pdf_pages_1_based": [
+        59
+      ],
+      "visual_checked_pdf_pages": [
+        59
+      ],
+      "note": "1763行核验名称和证号；补原发布公告/证书以落实有效期。"
+    },
+    {
+      "id": "S04",
+      "title": "在实现“美好生活看信阳”中出重彩（2022-02-16报道线索）",
+      "url": "https://mp.weixin.qq.com/s?__biz=MzU3NjY4MzUwNw==&mid=2247547043&idx=2&sn=1a9ec85803680bad13226f6266df69c6&chksm=fd12543fca65dd29286bed23ec502cf83894a437dc94e0a9870ef6163779a42d04e634de2e00&scene=27",
+      "access": "indexed_snippet_only",
+      "note": "HTTP200返回访问检查页面，不是成功读取新闻正文；发布日期和统计年度待原文确认。"
+    },
+    {
+      "id": "S05",
+      "title": "永豪轩1#标准厂房工程竣工备案公示",
+      "url": "http://zfcxjsj.xinyang.gov.cn/index.php?c=article&id=5881&cateid=A0002001900070002",
+      "access": "indexed_snippet_only_http_403"
+    },
+    {
+      "id": "S06",
+      "title": "现代筑美塑料模板生产线环评受理项目信息",
+      "url": "https://sthjj.xinyang.gov.cn/index.php?a=procontent&id=2752",
+      "access": "indexed_snippet_only_http_403"
+    },
+    {
+      "id": "S07",
+      "title": "河南省2021年第一批认定报备高新技术企业公示名单（第三方托管）",
+      "url": "https://qccdata.qichacha.com/TechnologyCompany/2388640416a806be58222950deb8a4f6.pdf",
+      "access": "search_index_only",
+      "note": "公示名单不能等同最终认定证书；现代筑美为序号1054。"
+    },
+    {
+      "id": "S08",
+      "title": "重点项目看信阳：星原智能专注创新研发",
+      "url": "http://wap.baoxiaofeng.com/news/121037.html",
+      "access": "search_index_only"
+    },
+    {
+      "id": "S09",
+      "title": "生态环境部企业环境信息依法披露格式准则",
+      "url": "https://www.mee.gov.cn/xxgk2018/xxgk/xxgk05/202201/t20220110_966488.html",
+      "access": "official_search_text",
+      "note": "只用于证明环境披露字段，不证明本项目企业已经有可下载记录。"
+    },
+    {
+      "id": "S10",
+      "title": "全国排污许可证公开端",
+      "url": "https://permit.mee.gov.cn/",
+      "access": "project_reports_not_retrieved",
+      "note": "已检索及尝试入口，未取得本项目企业年度执行报告。"
+    },
+    {
+      "id": "S11",
+      "title": "市场监管总局企业信息公示暂行条例",
+      "url": "https://www.samr.gov.cn/xyjgs/flfg/art/2024/art_be55c2e3a54a43e5ab12794c9dc87600.html",
+      "access": "official_search_text",
+      "note": "从业人数、收入等由企业选择是否向社会公示。"
+    },
+    {
+      "id": "S12",
+      "title": "河南企业环境信息披露公开查询入口",
+      "url": "http://222.143.24.250:8247/home/home",
+      "access": "browser_timeout",
+      "note": "入口由公开发行人披露索引定位，本次未取得企业条目。"
+    },
+    {
+      "id": "S13",
+      "title": "河南省政府：信阳万华无醛生态产业园正式投产",
+      "url": "https://www.henan.gov.cn/2023/01-04/2667025.html",
+      "access": "official_search_text",
+      "note": "主要是投资、产能与规划信息，不代表逐年实产量。"
+    },
+    {
+      "id": "S14",
+      "title": "信阳日报：追“光”之旅 致“电”未来（2024-01-29）",
+      "url": "https://ribao.xyxww.com.cn/html/2024-01/29/content_137835.htm",
+      "access": "search_text",
+      "note": "今上6-8亿元为2024目标。"
+    },
+    {
+      "id": "S15",
+      "title": "河南省政府：亚丹生态科技（信阳）有限公司正式投产",
+      "url": "https://www.henan.gov.cn/2023/08-07/2793273.html",
+      "access": "official_search_text",
+      "note": "提及3月签约、4月试生产，不是分月用量。"
+    },
+    {
+      "id": "S16",
+      "title": "信阳永豪轩资质查询（第三方）",
+      "url": "https://www.huaxiataike.com/company/K8hIh0cTXptT60laIqc.html",
+      "access": "search_index_only",
+      "note": "2023续认GR202341003041仅为待补官方原件的线索。"
+    }
+  ],
+  "candidates": [
+    {
+      "id": "PD001",
+      "node": "E_GUMAI",
+      "field": "enterprise_profile.is_high_tech",
+      "status": "confirmed_original",
+      "value": true,
+      "certificate": "GR202141000133",
+      "issued_on": "2021-10-28",
+      "validity_as_printed": "三年",
+      "supported_reporting_years": [
+        2021,
+        2022,
+        2023
+      ],
+      "source_ids": [
+        "S01"
+      ],
+      "action": "用子公司证据替换原模拟依据；保留证书有效期，不用当前单一布尔值倒填全部年份。"
+    },
+    {
+      "id": "PD002",
+      "node": "E_GUMAI",
+      "field": "enterprise_profile.is_high_tech",
+      "status": "confirmed_hosted_copy",
+      "value": true,
+      "certificate": "GR202441001763",
+      "recognition_year": 2024,
+      "source_ids": [
+        "S03"
+      ],
+      "action": "名称证号已经核验；正式录入补原发布公告/证书和有效期。"
+    },
+    {
+      "id": "PD003",
+      "node": "E_YONGHAOXUAN",
+      "field": "enterprise_profile.is_high_tech / is_above_scale",
+      "status": "confirmed_original",
+      "historical_events": [
+        {
+          "field": "is_high_tech",
+          "year": 2020,
+          "value": true
+        },
+        {
+          "field": "is_above_scale",
+          "year": 2016,
+          "value": true
+        }
+      ],
+      "source_ids": [
+        "S02",
+        "S16"
+      ],
+      "action": "模拟高企否有反向证据；需补2023续认证书与各年规上名单，不把历史状态直接外推全部年份。"
+    },
+    {
+      "id": "PD004",
+      "node": "E_ZHUMEI",
+      "field": "enterprise_profile.legal_name",
+      "status": "confirmed_original",
+      "value": "河南省现代筑美家居有限公司",
+      "source_ids": [
+        "S02",
+        "S06"
+      ],
+      "action": "可完善法人全称，再按名称与信用代码查询其他资料。"
+    },
+    {
+      "id": "PD005",
+      "node": "E_BAIDE",
+      "field": "enterprise_profile.legal_name",
+      "status": "confirmed_original",
+      "value": "信阳百德实业有限公司",
+      "source_ids": [
+        "S02"
+      ],
+      "action": "可补品牌与法人的对应关系。"
+    },
+    {
+      "id": "PD006",
+      "node": "E_TIANYI",
+      "field": "enterprise_identity_and_accounting_scope",
+      "status": "needs_entity_mapping",
+      "entities": [
+        "信阳天一美家实业有限公司",
+        "信阳天一红木实业有限公司",
+        "信阳天一窗业有限公司"
+      ],
+      "source_ids": [
+        "S02"
+      ],
+      "action": "先明确一个企业节点覆盖哪些法人/厂区，旗下公司的高企不能直接赋给母公司。"
+    },
+    {
+      "id": "PD007",
+      "node": "E_YONGHAOXUAN",
+      "field": "ECO_GROSS_OUTPUT",
+      "year": 2021,
+      "status": "indexed_only",
+      "candidate_value": 35000,
+      "unit": "万元",
+      "simulated_value": 52000,
+      "source_ids": [
+        "S04"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "取得完整原文，确认过去一年指2021及工业总产值口径后再录入。"
+    },
+    {
+      "id": "PD008",
+      "node": "XYEDZ",
+      "field": "new_industrial_building_area_component",
+      "status": "indexed_only",
+      "candidate_value": 2984.2,
+      "unit": "m2",
+      "project": "信阳永豪轩家具产业园1#标准厂房",
+      "completed_on": "2021-09-25",
+      "filed_on": "2022-11-29",
+      "source_ids": [
+        "S05"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "核验红线、竣工年度及统计基准；仅为一个项目，未证明绿色星级，不能覆盖园区整年面积。"
+    },
+    {
+      "id": "PD009",
+      "node": "E_GUMAI",
+      "field": "ELEC_GRID / RES_FRESH_WATER",
+      "year": 2021,
+      "status": "scope_mismatch",
+      "source_values": {
+        "electricity_kwh": 24774600,
+        "water_t": 72600
+      },
+      "source_ids": [
+        "S01"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "整体采购表未拆分信阳子公司，不能作为本地企业值或分摊成真实月度数据。"
+    },
+    {
+      "id": "PD010",
+      "node": "E_YONGHAOXUAN",
+      "field": "ECO_EMPLOYEES",
+      "status": "scope_mismatch",
+      "source_value": 689,
+      "unit": "人",
+      "year": null,
+      "source_ids": [
+        "S02"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "为未标统计年份的当前在岗人数，不能按文件上传年当作年末从业人数。"
+    },
+    {
+      "id": "PD011",
+      "node": "E_WANHUA",
+      "field": "actual_annual_product_output",
+      "status": "scope_mismatch",
+      "source_value": 700000,
+      "unit": "m3/year",
+      "source_ids": [
+        "S13"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "产能不是实际年产量；还要区分信阳线和集团各地总产能。"
+    },
+    {
+      "id": "PD012",
+      "node": "E_JINSHANG",
+      "field": "ECO_GROSS_OUTPUT",
+      "year": 2024,
+      "status": "scope_mismatch",
+      "source_target_range": [
+        60000,
+        80000
+      ],
+      "unit": "万元",
+      "source_ids": [
+        "S14"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "生产销售目标不作为完成值，也不取中值或反推上年实际值。"
+    },
+    {
+      "id": "PD013",
+      "node": "E_ZHUMEI",
+      "field": "enterprise_profile.is_high_tech",
+      "year": 2021,
+      "status": "provisional",
+      "source_ids": [
+        "S07"
+      ],
+      "action": "只有认定报备公示线索，补最终备案与证号、有效期。"
+    },
+    {
+      "id": "PD014",
+      "node": "E_XINGYUAN",
+      "field": "enterprise_profile.is_high_tech",
+      "status": "provisional",
+      "source_ids": [
+        "S08"
+      ],
+      "action": "新闻称高新技术企业，尚未取得正式证书与有效期。"
+    },
+    {
+      "id": "PD015",
+      "node": "partial_enterprise_coverage",
+      "fields": [
+        "RES_FRESH_WATER",
+        "RES_WATER_REUSED",
+        "ENV_WASTEWATER",
+        "COD",
+        "NH3N",
+        "SO2",
+        "NOX",
+        "RES_SW_GENERATED",
+        "RES_SW_UTILIZED",
+        "RES_SW_STOCK_UTILIZED"
+      ],
+      "years": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "status": "channel_only",
+      "source_ids": [
+        "S09",
+        "S10",
+        "S12"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "查询各企业年度执行与披露报告；实际排放量与许可限值、企业与园区合计必须区分。"
+    },
+    {
+      "id": "PD016",
+      "node": "all_enterprises",
+      "fields": [
+        "ECO_EMPLOYEES",
+        "annual_revenue"
+      ],
+      "status": "channel_only",
+      "source_ids": [
+        "S11"
+      ],
+      "numeric_replacement_ready": false,
+      "action": "工商年报相关字段可选择不公示，营业收入和参保人数也不能替代工业总产值与年末从业人数。"
+    },
+    {
+      "id": "PD017",
+      "node": "E_YADAN",
+      "field": "production_start_month",
+      "year": 2023,
+      "status": "provisional",
+      "candidate_trial_start": "2023-04",
+      "simulated_start": "2023-08",
+      "source_ids": [
+        "S15"
+      ],
+      "action": "公开报道提及4月试生产；核实是否需补4-7月实际活动，报道不能生成月度用量。"
+    }
+  ],
+  "retrieval_notes": [
+    "Metaso搜索在本次工作中提示余额不足后，改用其他公开搜索渠道。",
+    "搜索引擎摘要和自动生成总结不当作完整原件；候选数值未写入业务数据库。",
+    "只缓存下载资料；未尝试绕过登录、验证码或访问限制。"
+  ],
+  "review_notes": [
+    "现有enterprise_profile资格字段未按历史有效期建模，历史指标引用资格时需要补充时效规则。",
+    "新鲜水购入量、取水量和工业新鲜水量需要核对定义，不能仅换单位后等同。",
+    "年度实际值按月拆分后仍须标estimated。"
+  ]
+}
