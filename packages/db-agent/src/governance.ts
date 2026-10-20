@@ -14,7 +14,7 @@ import { initPool, readOnly, write } from "./db.js";
  */
 
 export type GovernanceTrigger = "import" | "calc" | "manual" | "schedule";
-export interface GovernanceOptions { trigger: GovernanceTrigger; useModel?: boolean; maxDocTables?: number; log?: (msg: string) => void }
+export interface GovernanceOptions { trigger: GovernanceTrigger; useModel?: boolean; maxDocTables?: number; maxIssueTexts?: number; log?: (msg: string) => void }
 
 interface Finding { subject: string; title: string; detail: unknown }
 
@@ -113,7 +113,13 @@ export async function runGovernance(cfg: AgentConfig, opts: GovernanceOptions) {
 
     // 4. model writes explanations and drafts missing descriptions
     if (opts.useModel !== false && cfg.deepseekApiKey) {
-      summary.ai_written = await writeIssueTexts(cfg, newIssueIds, log);
+      // New tickets first, then any open ticket still without a written explanation (e.g. from a --no-model run).
+      const pending = await readOnly(async (c) => (await c.query(`
+        select issue_id from semantic.governance_issue
+         where status = 'open' and not ai_written and category <> 'catalog'
+         order by (issue_id = any ($1)) desc, case risk when 'high' then 0 when 'medium' then 1 else 2 end, issue_id
+         limit $2`, [newIssueIds, opts.maxIssueTexts ?? 60])).rows.map((r) => Number(r.issue_id)));
+      summary.ai_written = await writeIssueTexts(cfg, pending, log);
       summary.docs_drafted = await draftDocs(cfg, opts.maxDocTables ?? 8, log);
     }
 
@@ -157,7 +163,7 @@ async function writeIssueTexts(cfg: AgentConfig, ids: number[], log: (m: string)
 }
 
 const DOC_SYSTEM = `你是数据库文档撰写助手。根据表说明、字段名、类型和剖析结果（空值数、唯一值数、最值、高频值），为缺少说明的字段起草中文业务说明。
-只描述能从这些信息确定的内容；看不出含义时 description 写“含义待确认：”加你的推测。输出 JSON：
+只描述字段的业务含义和取值规则，不要写当前数据的统计（年份范围、行数、空值情况），这些由剖析自动提供；只写能从这些信息确定的内容；看不出含义时 description 写“含义待确认：”加你的推测。输出 JSON：
 {"columns":[{"column_name":"…","business_name":"不超过 10 字","description":"不超过 60 字","unit":"有单位才填，否则 null"}]}`;
 
 async function draftDocs(cfg: AgentConfig, maxTables: number, log: (m: string) => void): Promise<number> {

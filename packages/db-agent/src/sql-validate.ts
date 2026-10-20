@@ -121,6 +121,17 @@ export async function validateSql(c: pg.ClientBase, wrappedSql: string, rawSql: 
       }
     }
   }
+  // 5. energy quantities: flows mean different things; send_out must be subtracted
+  const sumsEnergy = scans.some((s) => s.object === "fact.energy_activity")
+    && aggs.some((o) => /\bsum\([^)]*\b(tce|quantity|quantity_std)\b/.test(o));
+  if (sumsEnergy && !/\bflow\b/.test(lower)) {
+    v.errors.push({ code: "FLOW_MIX", message: "对能源量求和但没有区分 flow：发电、自用、上网与消费混在一起会重复或错算",
+                    hint: "综合能耗 = consumption + receive − send_out；只算消费时加 flow = 'consumption'" });
+  }
+  if (sumsEnergy && /'send_out'/.test(lower) && !/send_out'\s*then\s*-/.test(lower) && !/-\s*(\w+\.)?(tce|quantity|quantity_std)\b/.test(lower)) {
+    v.errors.push({ code: "SEND_OUT_SIGN", message: "包含 send_out（送出）但没有把它减去，综合能耗会偏大",
+                    hint: "用 sum(case a.flow when 'send_out' then -a.tce else a.tce end)，并只取 consumption、receive、send_out" });
+  }
   if ((v.estimated_rows ?? 0) > 100000) {
     v.warnings.push({ code: "LARGE", message: `预计返回约 ${v.estimated_rows} 行，请增加筛选或先聚合` });
   }

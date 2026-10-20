@@ -15,7 +15,7 @@ export async function governanceSummary() {
     const issues = (await c.query(`select status, risk, count(*)::int n from semantic.governance_issue group by 1, 2`)).rows;
     const docs = (await c.query(`
       select 'table' kind, review_status, count(*)::int n from semantic.table_doc where queryable group by 2
-      union all select 'column', review_status, count(*)::int from semantic.column_doc c join semantic.table_doc t using (object)
+      union all select 'column', c.review_status, count(*)::int from semantic.column_doc c join semantic.table_doc t using (object)
        where t.queryable and c.description is not null group by 2`)).rows;
     const qa = (await c.query(`select status, count(*)::int n from semantic.qa_pair group by 1`)).rows;
     const edges = (await c.query(`select review_status, count(*)::int n from semantic.join_edge group by 1`)).rows;
@@ -82,7 +82,8 @@ export async function reviewTableDoc(object: string, fields: { business_name?: s
   return write("green_app", (c) => c.query(`
     update semantic.table_doc set business_name = coalesce($2, business_name), description = coalesce($3, description),
            grain = coalesce($4, grain), usage_notes = coalesce($5, usage_notes),
-           origin = case when $2 is not null or $3 is not null or $4 is not null or $5 is not null then 'admin' else origin end,
+           origin = case when ($2 is not null and $2 is distinct from business_name) or ($3 is not null and $3 is distinct from description)
+                       or ($4 is not null and $4 is distinct from grain) or ($5 is not null and $5 is distinct from usage_notes) then 'admin' else origin end,
            review_status = case $6 when 'approve' then 'approved' when 'reject' then 'rejected' else review_status end,
            reviewed_by = case when $6 <> 'save' then $7 else reviewed_by end, reviewed_at = case when $6 <> 'save' then now() else reviewed_at end,
            updated_at = now()
@@ -93,7 +94,8 @@ export async function reviewColumnDoc(object: string, column: string, fields: { 
                                       decision: "approve" | "reject" | "save", by: string) {
   return write("green_app", (c) => c.query(`
     update semantic.column_doc set business_name = coalesce($3, business_name), description = coalesce($4, description), unit = coalesce($5, unit),
-           origin = case when $3 is not null or $4 is not null or $5 is not null then 'admin' else origin end,
+           origin = case when ($3 is not null and $3 is distinct from business_name) or ($4 is not null and $4 is distinct from description)
+                       or ($5 is not null and $5 is distinct from unit) then 'admin' else origin end,
            review_status = case $6 when 'approve' then 'approved' when 'reject' then 'rejected' else review_status end,
            reviewed_by = case when $6 <> 'save' then $7 else reviewed_by end, reviewed_at = case when $6 <> 'save' then now() else reviewed_at end,
            updated_at = now()

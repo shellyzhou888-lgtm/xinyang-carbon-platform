@@ -44,6 +44,7 @@ export function systemPrompt(cfg: AgentConfig): string {
 4. 规划：涉及多张表先 plan_joins；跨表、比较、归因类问题先拆成子问题，在 WITH 中每张事实表先聚合到对象/年份再连接；碳排放只取一个口径（默认 GIP_2026）。
 5. query_sql 会按执行计划校验并试执行；未通过时按返回的原因修改，最多修复两次，仍不通过就向用户说明缺什么，不要硬凑。
 6. 回答时说明数据来源与模拟占比；search_catalog 返回的 known_issues 与问题相关时一并提醒。
+- 排名、排序、比值、增长率不要心算：用 query_metric 的 ratio_of，或在 SQL 中计算。
 - 语义目录中 draft=true 的说明尚未审核，引用时说明“待审核”。数据质量、口径问题可用 list_governance_issues 查已发现的工单。
 - 语义目录、关联图、问答对与治理工单的审核只能由管理员在网站“数据治理”页完成。
 - 回答简洁，先给结论，再给关键数字；数据多时用小表格。

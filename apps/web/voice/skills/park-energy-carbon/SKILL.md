@@ -12,7 +12,7 @@ description: 回答信阳经开区园区能耗、碳排放、绿色工业园区�
 - 某个指标为什么是这个结果：`explain_indicator`（公式、变量、输入值、基准、数据来源）。
 - 能耗与碳排放明细：`get_energy_summary`、`get_carbon_summary`（可按企业、能源品种、月份分组）。
 - 排放因子：`get_factors`；数据覆盖与模拟比例：`get_data_coverage`。
-- 基础量（综合能耗、碳排放、工业总产值、增加值、新鲜水量、高企产值等）按标准口径取数：`query_metric`。
+- 基础量（综合能耗、碳排放、工业总产值、增加值、新鲜水量、高企产值等）按标准口径取数：`query_metric`。需要排名或比值（如单位产值能耗最高的企业）时填 `ratio_of`，它会算好并排序，不要自己写 SQL 或心算。
 - 找企业编码：`find_entities`；数据质量、口径问题：`list_governance_issues`。
 - 其他工具答不了的统计：先 `search_catalog` 看相关表和口径陷阱，多表时 `plan_joins`，再用 `park_query_sql`（只读 SELECT，最多 200 行，执行前校验；未通过时按返回原因修改，最多两次）。
 - 用户明确要求“重新计算 / 刷新结果”时才用 `run_calculation`。

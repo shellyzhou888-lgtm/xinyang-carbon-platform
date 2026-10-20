@@ -83,8 +83,11 @@ const queryMetric = tool({
     node_codes: Type.Array(Type.String(), { minItems: 1, maxItems: 20, description: "对象编码，园区 XYEDZ" }),
     years: Type.Array(Year("年份"), { minItems: 1, maxItems: 10 }),
     profile: Type.Optional(Profile),
+    ratio_of: Type.Optional(Type.Array(Type.String(), { minItems: 2, maxItems: 2,
+      description: "需要比值或排名时填 [分子编码, 分母编码]，如 [\"ENG_TCE\",\"ECO_GROSS_OUTPUT\"]；返回按比值从高到低排序的结果，不要自己心算排序" })),
   }),
-  execute: async ({ metric_codes, node_codes, years, profile }) => readOnly(async (c) => {
+  execute: async ({ metric_codes, node_codes, years, profile, ratio_of }) => readOnly(async (c) => {
+    if (ratio_of) metric_codes = [...new Set([...metric_codes, ...ratio_of])];
     const { rows } = await c.query(`
       select m.code as metric, m.name, m.unit, n.code as node_code, n.name as node_name, y as year,
              round(engine.metric_value(m.code, n.node_id, y, $4)::numeric, 4) as value,
@@ -93,7 +96,19 @@ const queryMetric = tool({
        where m.code = any ($1) and n.code = any ($2)
        order by m.code, n.code, y`, [metric_codes, node_codes, years, profile ?? "GIP_2026"]);
     const missing = metric_codes.filter((code) => !rows.some((r) => r.metric === code));
-    return result({ profile: profile ?? "GIP_2026", rows, unknown_metrics: missing });
+    let ratios;
+    if (ratio_of) {
+      const [num, den] = ratio_of;
+      const val = (node: string, y: number, m: string) => rows.find((r) => r.node_code === node && r.year === y && r.metric === m);
+      ratios = node_codes.flatMap((node) => years.map((y) => {
+        const a = val(node, y, num), b = val(node, y, den);
+        const ratio = a?.value != null && b?.value != null && Number(b.value) !== 0 ? Number(a.value) / Number(b.value) : null;
+        return { node_code: node, node_name: a?.node_name ?? b?.node_name, year: y, numerator: a?.value ?? null, denominator: b?.value ?? null,
+                 ratio: ratio == null ? null : Number(ratio.toPrecision(6)), unit: `${a?.unit ?? num}/${b?.unit ?? den}`,
+                 estimated_share: Math.max(Number(a?.estimated_share ?? 0), Number(b?.estimated_share ?? 0)) };
+      })).sort((x, y) => (y.ratio ?? -Infinity) - (x.ratio ?? -Infinity)).map((r, i) => ({ rank: r.ratio == null ? null : i + 1, ...r }));
+    }
+    return result({ profile: profile ?? "GIP_2026", ...(ratios ? { ratios_sorted_desc: ratios } : { rows }), unknown_metrics: missing });
   }),
 });
 
