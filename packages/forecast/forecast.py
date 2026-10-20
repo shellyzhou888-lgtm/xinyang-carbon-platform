@@ -10,6 +10,7 @@
   python forecast.py backtest                 # 用截至前一年的数据预测最近 12 个月，输出误差
   python forecast.py run                      # 预测未来 12 个月，只打印
   python forecast.py run --write              # 预测并写入 fact.forecast（每个对象、能耗与碳排放各一组）
+  python forecast.py roadmap [--write]        # 碳达峰路线图：2026 取 Chronos-2 预测，2027–2030 按基准 / 低碳情景外推
 
 注意：当前园区数据绝大部分是模拟值，回测误差只说明方法可行，不代表真实数据上的精度。
 """
@@ -168,9 +169,88 @@ def run(conn, profile: str, horizon: int, write: bool):
     print(f"\n已写入 fact.forecast：计算批次 {run_id}，{len(rows)} 行")
 
 
+ROADMAP = {
+    # 基准情景：能耗增速从 2026 年预测增速线性回落到 2030 年 4%；碳排放 / 能耗比每年下降 1%（电网逐步低碳化）
+    "ROADMAP_BASE": {"growth_end": 0.04, "efficiency_pp": 0.0, "co2_factor_decline": 0.01,
+                     "label": "基准情景：延续现有增长，电网逐步低碳化"},
+    # 低碳情景：在基准增速上每年少 3 个百分点（节能策略），碳排放 / 能耗比每年下降 6%（绿电占比 2030 年提高到 40%、光伏扩容）
+    "ROADMAP_LOWCARBON": {"growth_end": 0.04, "efficiency_pp": 0.03, "co2_factor_decline": 0.06,
+                          "label": "低碳情景：节能策略 + 绿电 40% + 光伏扩容"},
+}
+
+
+def roadmap(conn, profile: str, write: bool, end_year: int = 2030):
+    """园区年度能耗与碳排放路线图：2021–2025 实际，2026 取最新 Chronos-2 预测，2027–2030 按情景假设外推。"""
+    df = load_series(conn, profile)
+    park = df[df.item_id == "XYEDZ"].assign(year=lambda d: d.timestamp.dt.year).groupby("year")[["tce", "co2"]].sum()
+    last_year = int(park.index.max())
+    cur = conn.cursor()
+    cur.execute("""select f.target_kind, sum(f.value)::float from fact.forecast f join core.org_node n using (node_id)
+                    where n.code = 'XYEDZ' and f.scenario_code = 'baseline' and extract(year from f.period_month) = %s
+                      and f.run_id = (select max(run_id) from fact.forecast g where g.node_id = f.node_id and g.scenario_code = 'baseline')
+                    group by 1""", (last_year + 1,))
+    fc = dict(cur.fetchall())
+    if not fc:
+        raise SystemExit(f"没有 {last_year + 1} 年的基准预测，请先运行 python forecast.py run --write")
+    first = {"tce": fc["energy_tce"], "co2": fc["co2_t"]}
+    g0 = first["tce"] / park.loc[last_year, "tce"] - 1
+    peak_target = None
+    cur.execute("select to_regclass('fact.target') is not null")
+    if cur.fetchone()[0]:   # 目标表由迁移 0025 建立
+        cur.execute("select value::float from fact.target t join core.org_node n using (node_id) "
+                    "where n.code = 'XYEDZ' and t.is_current and t.target_kind = 'carbon_peak_t' order by year limit 1")
+        peak_target = (cur.fetchone() or [None])[0]
+    years = list(range(last_year + 1, end_year + 1))
+    out = {}
+    for code, s in ROADMAP.items():
+        tce, co2 = [first["tce"]], [first["co2"]]
+        factor = first["co2"] / first["tce"]
+        for i, y in enumerate(years[1:], start=1):
+            g = g0 + (s["growth_end"] - g0) * i / (len(years) - 1) - s["efficiency_pp"]
+            tce.append(tce[-1] * (1 + max(g, -0.05)))
+            factor *= 1 - s["co2_factor_decline"]
+            co2.append(tce[-1] * factor)
+        series = pd.DataFrame({"year": years, "tce": tce, "co2": co2})
+        hist_co2 = list(park["co2"]) + co2
+        peak_i = int(np.argmax(hist_co2))
+        all_years = list(park.index) + years
+        out[code] = {"label": s["label"], "series": series,
+                     "peak_year": int(all_years[peak_i]) if all_years[peak_i] < end_year else None,
+                     "peak_co2_t": round(float(max(hist_co2)), 1)}
+        print(f"\n{code} {s['label']}")
+        print(series.round(0).to_string(index=False))
+        print(f"  达峰年份：{out[code]['peak_year'] or f'{end_year} 年前未达峰'}；峰值 {out[code]['peak_co2_t']:,.0f} tCO2"
+              + (f"；模拟达峰上限 {peak_target:,.0f}" if peak_target else ""))
+    if not write:
+        return
+    with conn:
+        cur = conn.cursor()
+        cur.execute("SET LOCAL ROLE green_app")
+        cur.execute("""insert into fact.calc_run (run_type, version_id, period_from, period_to, params, status)
+                       select 'forecast', version_id, %s, %s, %s, 'running' from core.standard_version where code = %s returning run_id""",
+                    (f"{years[0]}-01-01", f"{end_year}-01-01",
+                     json.dumps({"model": "scenario-roadmap", "first_year_from": "chronos-2 baseline", "profile": profile,
+                                 "scenarios": {k: {**{kk: vv for kk, vv in ROADMAP[k].items()}, "peak_year": v["peak_year"], "peak_co2_t": v["peak_co2_t"]}
+                                               for k, v in out.items()},
+                                 "carbon_peak_target_t": peak_target,
+                                 "note": "年度值记在每年 1 月（target_code = annual）；情景参数为模拟假设"}, ensure_ascii=False),
+                     profile))
+        run_id = cur.fetchone()[0]
+        rows = []
+        for code, v in out.items():
+            for r in v["series"].itertuples():
+                rows.append((run_id, "energy_tce", code, f"{r.year}-01-01", r.tce))
+                rows.append((run_id, "co2_t", code, f"{r.year}-01-01", r.co2))
+        cur.executemany("""insert into fact.forecast (run_id, node_id, target_kind, target_code, scenario_code, period_month, value)
+                           select %s, node_id, %s, 'annual', %s, %s, %s from core.org_node where code = 'XYEDZ'""", rows)
+        cur.execute("update fact.calc_run set status = 'succeeded', finished_at = now(), summary = %s where run_id = %s",
+                    (json.dumps({"rows": len(rows)}), run_id))
+    print(f"\n已写入路线图：计算批次 {run_id}，{len(rows)} 行")
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("command", choices=["backtest", "run"])
+    ap.add_argument("command", choices=["backtest", "run", "roadmap"])
     ap.add_argument("--horizon", type=int, default=12)
     ap.add_argument("--profile", default="GIP_2026")
     ap.add_argument("--write", action="store_true")
@@ -180,6 +260,8 @@ def main():
     try:
         if a.command == "backtest":
             backtest(conn, a.profile, a.horizon)
+        elif a.command == "roadmap":
+            roadmap(conn, a.profile, a.write)
         else:
             run(conn, a.profile, a.horizon, a.write)
     finally:

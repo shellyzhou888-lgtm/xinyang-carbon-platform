@@ -1,0 +1,66 @@
+# 碳管理补充数据：目标预算、路线图、预警策略、分项计量、碳价与产品碳足迹
+
+文档版本：v1.0（2026-10-20）
+
+对照竞品截图缺少的功能，本项目还没有真实数据。按项目负责人要求：**碳价、产品碳足迹**从公开渠道采集（由服务器上的 Agent 导入）；**其余先用模拟数据**，全部标记 `data_source = estimated`，取得正式资料后替换。
+
+## 1. 数据库（迁移 0025）
+
+| 对象 | 内容 | 数据来源 |
+| --- | --- | --- |
+| `core.carbon_market` | 碳市场字典：CEA（全国碳排放配额，上海环境能源交易所，2021-07-16 开市）、CCER（核证自愿减排量，北京绿色交易所，2025-03-07 首批交易） | 迁移写入 |
+| `fact.carbon_market_price` | 每日行情：开高低收、均价、成交量与成交额（挂牌 / 大宗） | 服务器 Agent 采集，`manual` |
+| `core.product_footprint_ref` | 产品碳足迹参考值：功能单位、数值、系统边界、数据年份、质量星级、来源；`status` 需人工审核 | 服务器 Agent 采集，`manual`，默认 `draft` |
+| `fact.target` | 用能预算、碳排放预算、能耗 / 碳排放强度目标、绿电与可再生能源占比、达峰上限 | 模拟 |
+| `core.metric_def` 新增 | `ENG_STORAGE_CHARGE`、`ENG_STORAGE_DISCHARGE`、`ENG_EV_CHARGE`（kWh） | — |
+| `core.alert_rule` 新增 / 更新 | `INTENSITY_HIGH`（企业单位产值能耗超园区平均 2 倍）、`INDICATOR_NOT_ACHIEVED`（主版本指标未达标，按指标推荐策略类别）；`BUDGET_OVERRUN` 改为对比 `fact.target` | 迁移写入 |
+| `engine.evaluate_alerts(年份)` | 执行预警 → 根因（下级对象贡献排序）→ 策略推荐（节能量 tce 或减碳量 tCO2），写 `fact.alert_event`、`fact.strategy_plan` | — |
+
+## 2. 模拟数据（`packages/ingest/sim/simulate-extended.ts`）
+
+固定随机种子，可重复运行（重跑时把上一批的当前记录置为失效再写新记录）。假设全部写在导入批次的 `estimation_inputs` 中。
+
+| 内容 | 模拟方法 |
+| --- | --- |
+| 厂区 / 产线与分项计量 | 万华（一期厂区：刨花板线、公辅；二期厂区自 2023 年：秸秆板连续压机线、热能中心与公辅）、谷麦（SMD/CSP 封装、背光模组、洁净空调与公辅）、今上（芯片制造、封装测试、动力站）。企业月度电、气、热按比例分摊到厂区和产线，写入 `fact.energy_transfer`，合计等于企业消费量，不进入能耗核算 |
+| 用能 / 碳排放预算 | 上一年实际 × 1.12（2026 年 × 1.10），假设产值增长约 15%、能耗强度下降约 3% |
+| 强度目标 | 以 2021 年为基期，参照“十四五”单位 GDP 能耗降低 13.5%、二氧化碳排放降低 18%；2030 年按同幅度再降 |
+| 绿电、可再生能源、达峰 | 绿电占比 2025 年 15% → 2030 年 40%；可再生能源 2030 年 15%（2024 版引领值）；2028 年前达峰，峰值不超过 2025 年的 1.25 倍 |
+| 储能与充电桩 | 园区公共设施 2 MWh 储能自 2024-07 投运，每月约 26 个循环、往返效率 88%；充电桩 2023 年起月均约 1.2 万 kWh，月增约 3.5% |
+| 策略参数 | 节能率或减碳率（如洁净空调群控 8%、余热回收 4%、绿电交易减碳 15%），标记 `simulated`，需按企业节能诊断核实 |
+
+## 3. 碳达峰路线图（`packages/forecast/forecast.py roadmap --write`）
+
+2021–2025 年为实际值（当前为模拟），2026 年取 Chronos-2 基准预测，2027–2030 年按情景外推：
+
+| 情景 | 假设 | 结果（试算） |
+| --- | --- | --- |
+| 基准 | 能耗增速由 2026 年预测增速线性回落到 2030 年 4%；碳排放 / 能耗比每年降 1% | 2030 年前未达峰，2030 年约 42.9 万 tCO2 |
+| 低碳 | 增速每年少 3 个百分点（节能策略）；碳排放 / 能耗比每年降 6%（绿电 40%、光伏扩容） | 2027 年达峰，峰值约 33.7 万 tCO2，低于模拟达峰上限 |
+
+结果写入 `fact.forecast`（`scenario_code = ROADMAP_BASE / ROADMAP_LOWCARBON`，`target_code = annual`，年度值记在每年 1 月）。
+
+## 4. 运行顺序
+
+1. 管理员执行迁移 0025（`scripts/apply-migrations.ps1`）。
+2. `cd packages/ingest && npx tsx sim/simulate-extended.ts`：写模拟数据并运行 2023–2026 年预警与策略推荐。
+3. `cd packages/forecast && .venv\Scripts\python.exe forecast.py roadmap --write`：写路线图。
+4. 把 [`docs/prompts/server-agent-carbon-market-and-footprint.md`](prompts/server-agent-carbon-market-and-footprint.md) 交给服务器 Agent，采集碳价与产品碳足迹。
+5. `cd packages/db-agent && npm run govern`：刷新语义目录与治理检测。
+
+## 5. 给网站页面的数据接口
+
+`packages/db-agent` 导出 `getCarbonManagementData(年份)`，返回：目标列表、用能 / 碳排放的月度累计实际值与预算累计线、路线图情景、各碳市场最新价与月度均价、产品碳足迹参考值、当年预警对应的策略推荐（节能量与减碳量）、储能与充电月度数据。0025 未执行时返回 `available: false` 和空数据。
+
+预警与策略也可直接读 `fact.alert_event`、`fact.strategy_plan`；能流桑基图读 `fact.energy_transfer`（企业 → 厂区 → 产线）。
+
+## 6. 替换为真实数据
+
+| 数据 | 真实来源 |
+| --- | --- |
+| 预算与目标 | 园区年度节能目标责任书、碳达峰实施方案 |
+| 厂区 / 产线分项 | 企业能源管理中心或分项计量表 |
+| 储能与充电 | 储能 EMS、充电运营平台导出 |
+| 策略参数 | 企业节能诊断报告、项目可研 |
+
+替换方式：按新数据导入并把模拟记录置为失效（`is_current = false`），不删除。

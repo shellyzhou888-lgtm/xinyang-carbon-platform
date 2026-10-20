@@ -9,6 +9,8 @@
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
 | `docs/db-agent.md` | 数据库 Agent（Pi + DeepSeek）：原理、三层安全、工具与角色、使用方法、测试记录 |
 | `docs/semantic-catalog-and-governance.md` | 语义目录、数据治理工单与语义增强查询：针对 Text-to-SQL 三类问题的做法、检测规则、审批流程 |
+| `docs/carbon-management-data.md` | 碳管理补充数据：目标预算、碳达峰路线图、预警与策略推荐、厂区/产线分项、储能充电（模拟），碳价与产品碳足迹（公开采集） |
+| `docs/prompts/server-agent-carbon-market-and-footprint.md` | 交给服务器 Agent 的提示词：采集 CEA/CCER 每日行情与产品碳足迹参考值并入库 |
 | `docs/visualization-and-forecast.md` | 图表库选型（ECharts 为主）、Chronos-2 预测模型与回测、TimescaleDB 时机、对照竞品还缺的功能 |
 | `docs/park-map-and-sources.md` | 高德与L7地图、10家企业GCJ-02点位来源、分布示意范围与红线缺口、ECharts-GL、吸碳云朵形象 |
 | `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
