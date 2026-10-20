@@ -15,7 +15,7 @@
 | `docs/park-map-and-sources.md` | 高德与L7地图、10家企业GCJ-02点位来源、分布示意范围与红线缺口、ECharts-GL、吸碳云朵形象 |
 | `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
 | `docs/web-and-voice.md` | 网站（Next.js）与小云语音接入：结构、为什么这样拆、本机启动、测试记录 |
-| `docs/deploy-xiaoyun.md` | 小云服务器部署：私有 GitHub 依赖、环境变量、HTTPS/WebSocket 代理与验证 |
+| `docs/deploy-xiaoyun.md` | 小云服务器部署：公开 GitHub 依赖、环境变量、HTTPS/WebSocket 代理与验证 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |
 | `docs/public-data-replacement-assessment.md` | 模拟数据公开来源替换评估：已核验身份、待取证数值、10 家企业采集重点、资源环境来源与口径限制 |
 | `docs/import-and-calculation-engine.md` | 导入解析与计算引擎：流程、核算规则、用法、验证结果、已知简化 |

@@ -1,10 +1,10 @@
 # 小云服务器部署
 
-小云源码在私有仓库 [`xiaoyun-voice`](https://github.com/shellyzhou888-lgtm/xiaoyun-voice)，网站依赖在 `apps/web/package.json` 中固定为 `v1.0.0-beta.1-power-earth.4`。服务器安装网站依赖时必须具备该仓库的读取权限；源码和构建产物由安装过程取得，不需要把本机 `node_modules`、`backend/` 或语音运行数据提交到本仓库。
+小云源码在公开仓库 [`xiaoyun-voice`](https://github.com/shellyzhou888-lgtm/xiaoyun-voice)，网站依赖在 `apps/web/package.json` 中固定为 `v1.0.0-beta.1-power-earth.4`。该标签现可公开读取，服务器安装网站依赖无需小云仓库凭据；源码和构建产物由安装过程取得，不需要把本机 `node_modules`、`backend/` 或语音运行数据提交到本仓库。
 
 ## 安装与构建
 
-1. 在部署服务器配置该私有仓库的读取权限，使用与 `apps/web/package.json` 中 HTTPS Git 依赖兼容的 Git 凭据。先确认服务器上的 `git ls-remote https://github.com/shellyzhou888-lgtm/xiaoyun-voice.git refs/tags/v1.0.0-beta.1-power-earth.4` 成功。若使用 SSH deploy key，还需在服务器的 Git 配置中将该 HTTPS 仓库地址映射为 SSH 地址。不要把令牌写进仓库、依赖 URL 或构建日志。
+1. 在部署服务器确认 `git ls-remote https://github.com/shellyzhou888-lgtm/xiaoyun-voice.git refs/tags/v1.0.0-beta.1-power-earth.4` 成功。小云仓库现可公开读取；不要把令牌写进仓库、依赖 URL 或构建日志。
 2. 安装 Node.js 24 或更高版本及 Python 3.12 或更高版本。在 `packages/db-agent` 和 `apps/web` 各运行 `npm ci`。Git 依赖的 `prepare` 脚本会构建小云浏览器资源和后台。随后在 `apps/web` 运行 `npx xiaoyun init`，把完整 Worker、WASM 和音频资源复制到 `apps/web/public/xiaoyun/`。该目录是可再生构建资源，已被 Git 忽略；每次部署重新生成。
 3. 在 `apps/web/.env.xiaoyun` 填写后台密钥和部署配置：`PORT=8766`、`HOST=127.0.0.1`、`VOICE_PROJECT_MODULE=./voice-project.mjs`、`ALLOWED_ORIGINS=https://网站域名`。按服务器情况设置 `PYTHON_EXECUTABLE` 和数据库连接环境变量。此文件含密钥，不提交 GitHub。若反向代理在另一台机器，需将 `HOST` 改为可被代理访问的内网地址，并限制网络入口。
 4. 在构建网站**之前**设置 `NEXT_PUBLIC_XIAOYUN_BACKEND_URL=https://小云后台域名`（可放在 `apps/web/.env.production.local`）。这是浏览器可访问的公开 HTTPS 地址，不是服务器的 `127.0.0.1`。Next.js 会在构建时写入 `NEXT_PUBLIC_` 值，修改后需要重新构建网站。运行 `npm run build`，以独立常驻进程在 `apps/web` 运行 `npm run voice`，网站进程运行 `npm start`。
