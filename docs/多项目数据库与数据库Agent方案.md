@@ -20,6 +20,8 @@
 
 `zyz` 是非超级用户，`CREATEDB=false`；它当前可以在 `greensystem.public` 建表，但不能自行执行 `CREATE DATABASE`。因此，教师先前提供的另一个“应用账户”若确实能新建数据库，可能被授予了 `CREATEDB`，也可能是在云平台控制台由更高权限的身份代为创建。仅凭账户名称无法判断。[创建数据库的权限说明](https://www.postgresql.org/docs/17/manage-ag-createdb.html)
 
+此外，已实际验证 `zyz` 可以在 `greensystem` 中新建非 `public` 的 schema，并在自己新建的 schema 内建表；测试对象在事务回滚后没有留存。具体记录见[数据库连接与权限](数据库连接与权限.md)。
+
 ## 多项目如何分开
 
 建议每个独立项目使用一个数据库：现有校园项目保留 `carbonsystem`，本园区项目使用 `greensystem`，新项目再建独立数据库。一个项目内部再用 schema 区分业务数据、登录、分析等模块。这样迁移、备份、权限和连接串都能按项目管理。
