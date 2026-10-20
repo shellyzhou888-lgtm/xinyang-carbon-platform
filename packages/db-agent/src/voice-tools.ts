@@ -11,6 +11,7 @@ import { loadConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { getParkOverview, type ParkOverview } from "./overview.js";
 import { buildTools, READ_TOOL_NAMES, type ToolContext } from "./tools.js";
+import { callKey } from "./trajectory.js";
 
 type Json = Record<string, unknown>;
 interface VoiceContext { signal: AbortSignal; taskId: string; originalQuestion?: string }
@@ -52,7 +53,7 @@ export function createVoiceTools() {
   const cfg = loadConfig({ requireModelKey: false });
   initPool(cfg.databaseUrl);
   // Tool state follows the voice task: a new task resets the SQL repair budget and carries its own question.
-  let task = { id: "", question: undefined as string | undefined };
+  let task = { id: "", question: undefined as string | undefined, succeeded: new Set<string>() };
   const toolCtx: ToolContext = { getQuestion: () => task.question, sqlFailures: 0 };
   const tools = buildTools({ ...cfg, writeMode: "auto" }, toolCtx).filter((t) => VOICE_TOOLS.has(t.name));
 
@@ -63,7 +64,10 @@ export function createVoiceTools() {
     readOnly: t.name !== "run_calculation",
     execute: async (args: Json, ctx: VoiceContext) => {
       ctx.signal.throwIfAborted();
-      if (ctx.taskId !== task.id) { task = { id: ctx.taskId, question: ctx.originalQuestion }; toolCtx.sqlFailures = 0; }
+      if (ctx.taskId !== task.id) { task = { id: ctx.taskId, question: ctx.originalQuestion, succeeded: new Set() }; toolCtx.sqlFailures = 0; }
+      // Repeated-call guard (HarnessSQL): an identical call that already succeeded in this task is not run again.
+      const key = callKey(t.name, args);
+      if (task.succeeded.has(key)) throw new Error("与本任务中已成功的调用完全相同，结果已在上文，请直接使用；需要不同结果时请修改参数");
       const t0 = performance.now();
       const session = await voiceSession(cfg.model);
       try {
@@ -71,6 +75,7 @@ export function createVoiceTools() {
         const details = (r.details ?? {}) as { db_role?: string; data?: unknown };
         await logToolCall(session, { name: t.name, args, dbRole: details.db_role ?? "green_app(read only)",
                                      durationMs: performance.now() - t0, status: "ok" });
+        task.succeeded.add(key);
         return details.data;
       } catch (err) {
         await logToolCall(session, { name: t.name, args, durationMs: performance.now() - t0, status: "error",

@@ -5,7 +5,10 @@ import { logToolCall, startSession } from "./audit.js";
 import type { AgentConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { systemPrompt } from "./prompt.js";
+import { normaliseSql } from "./sql-validate.js";
 import { buildTools, WRITE_TOOLS, type ToolContext } from "./tools.js";
+import { callKey, recordTrajectory } from "./trajectory.js";
+import { createHash } from "node:crypto";
 
 export interface DbAgentOptions {
   /** Channel recorded in agent.session: system (CLI), web, voice. */
@@ -32,6 +35,8 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
   const sessionId = await startSession(cfg.model, opts.userRef ?? "cli", opts.channel ?? "system", "db_agent");
   const started = new Map<string, number>();
   let callsThisPrompt = 0;
+  // Per-question run state (repeated-call guard and trajectory log, after HarnessSQL arXiv 2610.12274)
+  const run = { started: new Date().toISOString(), succeeded: new Map<string, number>(), blocked: 0, errors: 0, sqlHashes: [] as string[] };
 
   // Tool state: the question being answered (stored with candidate Q&A pairs) and the SQL repair budget per question.
   let agentRef: Agent | undefined;
@@ -61,6 +66,13 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
         await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "超过单次提问的工具调用上限" });
         return { block: true, reason: `本次提问的工具调用已达上限 ${cfg.maxToolCallsPerPrompt} 次，请根据已有结果回答`, terminate: true };
       }
+      // An identical call that already succeeded in this question returns nothing new: remind instead of re-running.
+      const prior = run.succeeded.get(callKey(toolCall.name, args));
+      if (prior) {
+        run.blocked += 1;
+        await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "与本次提问中已成功的调用完全相同" });
+        return { block: true, reason: `与本次提问第 ${prior} 次调用完全相同，结果已在上文，请直接使用；需要不同结果时请修改参数或换用其他工具` };
+      }
       if (WRITE_TOOLS.has(toolCall.name) && cfg.writeMode === "confirm") {
         // No confirmation UI (e.g. web without a dialog) means the write is refused, never silently allowed.
         const ok = opts.confirmWrite ? await opts.confirmWrite(toolCall.name, args) : false;
@@ -80,6 +92,13 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
       const rows = Array.isArray(details.data) ? details.data.length
         : typeof details.data?.row_count === "number" ? details.data.row_count : undefined;
       const errorText = isError ? result.content.map((c: any) => c.text ?? "").join(" ").slice(0, 2000) : undefined;
+      if (isError) run.errors += 1;
+      else {
+        run.succeeded.set(callKey(toolCall.name, args), callsThisPrompt);
+        if (toolCall.name === "query_sql" && typeof (args as any)?.sql === "string") {
+          run.sqlHashes.push(createHash("md5").update(normaliseSql((args as any).sql)).digest("hex"));
+        }
+      }
       await logToolCall(sessionId, {
         name: toolCall.name, args, dbRole: details.db_role ?? (WRITE_TOOLS.has(toolCall.name) ? undefined : "green_app(read only)"),
         rowCount: rows, durationMs: performance.now() - t0, status: isError ? "error" : "ok", error: errorText,
@@ -90,7 +109,16 @@ export async function createDbAgent(cfg: AgentConfig, opts: DbAgentOptions = {})
 
   agentRef = agent;
   agent.subscribe((event) => {
-    if (event.type === "agent_start") { callsThisPrompt = 0; toolCtx.sqlFailures = 0; }
+    if (event.type === "agent_start") {
+      callsThisPrompt = 0; toolCtx.sqlFailures = 0;
+      Object.assign(run, { started: new Date().toISOString(), succeeded: new Map(), blocked: 0, errors: 0, sqlHashes: [] });
+    }
+    if (event.type === "agent_end") {
+      recordTrajectory({ session_id: sessionId, channel: opts.channel ?? "system", model: cfg.model, question: toolCtx.getQuestion(),
+                         started_at: run.started, finished_at: new Date().toISOString(), tool_calls: callsThisPrompt,
+                         tool_errors: run.errors, repeated_calls_blocked: run.blocked, sql_failures: toolCtx.sqlFailures,
+                         sql_hashes: run.sqlHashes }, event.messages);
+    }
   });
 
   return { agent, models, sessionId };
