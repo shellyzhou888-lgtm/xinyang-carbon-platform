@@ -25,6 +25,7 @@
 
 ### 2. 预警的新结构（0026 起）
 
+- **只默认显示 `status = 'open'` 的预警。** 每次重新运行诊断时，旧预警会被置为 `resolved`（2025 年目前有 9 条 open、62 条 resolved）；`management()` 的 `alerts` 查询没有按状态筛选，页面会把已解决的一起列出。请改为只取 open，已解决的折叠到“历史记录”。
 - 同比预警改为**每年每项一条**（不再每月一条）。`root_cause` 结构：`{ months: [{month, deviation_pct, observed, baseline}], top_contributors: [{node, name, delta, share_pct}], annual_change_pct }`。请把 `months` 画成小柱图或表格、`top_contributors` 画成贡献条，不要直接显示 JSON。
 - 预算预警 `root_cause`：`{ budget_annual, months, basis, target_id }`；`basis` 为“1–12 月实际”或“全年预测”。
 - 强度预警（`INTENSITY_HIGH`）的观测值和基线是 tce/万元，量级 0.1–0.3，当前页面按整数格式显示成“0.3 / 0.1”，请保留 4 位小数。
