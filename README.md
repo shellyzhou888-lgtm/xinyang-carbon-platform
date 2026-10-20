@@ -22,4 +22,6 @@
 
 PostgreSQL 的开发连接、账户分工和权限检查步骤见 [`docs/数据库连接与权限.md`](docs/数据库连接与权限.md)。本地连接串使用 `.env`，仓库只保存 [`.env.example`](.env.example)；网站服务端使用应用账户，管理操作单独使用管理员账户。
 
+表结构设计与迁移见 [`docs/数据库表结构设计.md`](docs/数据库表结构设计.md)，迁移文件在 `database/migrations/`，用 `scripts/apply-migrations.ps1` 执行（先加 `-DryRun` 试跑）。
+
 多个项目的分库与数据库 Agent 设计见 [`docs/多项目数据库与数据库Agent方案.md`](docs/多项目数据库与数据库Agent方案.md)。
