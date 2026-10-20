@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import ChatPanel from "./ChatPanel";
 import VoiceAssistant from "./VoiceAssistant";
+import styles from "./PlatformBrand.module.css";
 import { selectedYear, YEARS } from "@/lib/workspace";
 
 const NAV = [
@@ -33,7 +35,9 @@ export default function PlatformShell({ children }: { children: React.ReactNode 
   return <div className="platform-shell" data-chat-open={chatOpen} data-hydrated={hydrated}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
     <aside className="platform-rail">
-      <Link className="platform-brand" href={`/?year=${year}`}><span className="brand-symbol">叶</span><span>信阳经开区<small>绿色园区能碳平台</small></span></Link>
+      <Link className={styles.brand} href={`/?year=${year}`} aria-label="信阳经开区能碳管理平台，返回园区总览">
+        <Image className={styles.logo} src="/brand/logo-horizontal-on-dark.svg" alt="" width={900} height={196} priority unoptimized />
+      </Link>
       <div className="rail-caption">园区运营工作台</div>
       <nav aria-label="主导航">{NAV.map(item => {
         const on = item.href === active?.href;

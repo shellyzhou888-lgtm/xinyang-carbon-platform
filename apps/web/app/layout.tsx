@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import PlatformShell from "@/components/PlatformShell";
 
 export const metadata: Metadata = {
-  title: "信阳经开区绿色园区能碳管理平台",
+  title: "信阳经开区能碳管理平台",
   description: "园区能耗、碳排放与绿色工业园区指标；数据库 Agent 与小云语音助手",
 };
 

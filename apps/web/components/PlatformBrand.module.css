@@ -1,0 +1,23 @@
+.brand {
+  display: block;
+  flex: none;
+  padding: 2px 0 30px;
+}
+
+.logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+  .brand {
+    width: min(250px, 100%);
+    padding: 0 0 12px;
+  }
+}
