@@ -11,7 +11,7 @@
 | `docs/park-enterprises-public-info.md` | 经开区片区构成、企业公开信息与大屏荣誉标识（带来源） |
 | `docs/database-connection-and-permissions.md` | 数据库连接、SSH 隧道、账户与权限记录 |
 | `docs/multi-project-db-and-db-agent.md` | 多项目分库与数据库 Agent 方案 |
-| `reference/park-energy-carbon-model.docx` | 园区能碳管理模型：数据清单、能耗与碳核算公式、折标系数与排放因子（核心参考）。**文件正在 Word 中打开，暂未改名，当前仍为根目录 `园区能碳管理模型.docx`** |
+| `reference/park-energy-carbon-model.docx` | 园区能碳管理模型：数据清单、能耗与碳核算公式、折标系数与排放因子（核心参考） |
 | `reference/requirements-notes.doc` | 需求整理（会议纪要与前后端分工） |
 | `reference/park-system-ui-fields.doc` | 园区系统界面字段清单 |
 | `reference/competitor-dashboard-screenshots.pptx` | 竞品大屏截图 |
