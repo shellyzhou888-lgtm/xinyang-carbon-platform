@@ -15,9 +15,14 @@
     "voice": "xiaoyun start --env .env.xiaoyun"
   },
   "dependencies": {
+    "@antv/l7": "^2.29.1",
+    "@antv/l7-layers": "^2.29.1",
+    "@antv/l7-maps": "^2.29.1",
+    "@antv/l7-scene": "^2.29.1",
     "@xiaoyun/voice": "git+https://github.com/shellyzhou888-lgtm/xiaoyun-voice.git#v1.0.0-beta.1-power-earth.4",
     "@xinyang/db-agent": "file:../../packages/db-agent",
     "echarts": "^6.1.0",
+    "echarts-gl": "^2.1.0",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1"
@@ -27,5 +32,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "^5.9"
+  },
+  "overrides": {
+    "maplibre-gl": "^6.15.0"
   }
 }

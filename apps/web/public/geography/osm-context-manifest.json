@@ -1,0 +1,31 @@
+{
+  "preparedAt": "2026-10-20T17:38:08.968801+00:00",
+  "sourceUrl": "https://api.openstreetmap.org/api/0.6/map?bbox=114.04,32.15,114.16,32.25",
+  "downloadedAt": "2026-10-20T17:34:51.948180+00:00",
+  "coordinateSystem": "EPSG:4326",
+  "queryBbox": [
+    114.04,
+    32.15,
+    114.16,
+    32.25
+  ],
+  "scope": "Context bounding box around ten sample enterprise POIs. Complete OSM way geometries retained, not geometrically clipped to this bbox or the official development zone boundary.",
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "licenseUrl": "https://www.openstreetmap.org/copyright",
+  "counts": {
+    "building": 225,
+    "landuse": 40,
+    "road": 494
+  },
+  "buildingsWithHeightOrLevels": 0,
+  "industrialLandusePolygons": 4,
+  "skipped": [],
+  "notLegalBoundary": true,
+  "limitations": [
+    "Road counts are OSM way segments, not distinct streets.",
+    "Landuse describes mapped use, not ownership or enterprise cadastral parcels.",
+    "Absent building heights are not replaced by measured-looking values.",
+    "No enterprise ownership association has been inferred."
+  ]
+}

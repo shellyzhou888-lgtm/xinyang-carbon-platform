@@ -66,7 +66,7 @@ export default function ChatPanel() {
       <div className="chat-log" ref={logRef}>
         {messages.length === 0 && (
           <div className="hint">
-            可以直接问园区能耗、碳排放、指标达标情况，Agent 会查询数据库后回答。也可以点击左下角的小云用语音提问。
+            可以直接问园区能耗、碳排放、指标达标情况，Agent 会查询数据库后回答。也可以点击吸碳云朵，用语音提问。
             {EXAMPLES.map((q) => <button key={q} onClick={() => send(q)}>{q}</button>)}
           </div>
         )}

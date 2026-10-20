@@ -1,0 +1,48 @@
+{
+  "reviewedAt": "2026-10-20",
+  "history": {
+    "documentNumber": "豫政〔2020〕40号",
+    "document": "河南省人民政府关于设立河南省二七经济技术开发区等16个省级经济技术开发区的通知",
+    "issuedAt": "2020-12-29",
+    "plannedAreaKm2": 11.7,
+    "userReferenceUrl": "https://ysxq.xinyang.gov.cn/qjys/",
+    "scannedDocumentMirrorUrl": "https://img9.qianzhan.com/policy/202511/05/20251105-120ff7ab658134d3.pdf",
+    "scanReviewed": true,
+    "role": "historical_establishment_reference",
+    "note": "用户摘录指出来源片区为羊山片区和金牛物流产业集聚区。已下载并核对2020年设立通知扫描件第2页的11.7平方公里；用户提供的全景羊山页面当前抓取正文未复现该段。11.7记录为2020年设立规划口径，不替换2023年26号文的四至成果。"
+  },
+  "primary": {
+    "document": "河南省人民政府办公厅关于公布河南省开发区四至边界范围的通知",
+    "documentNumber": "豫政办〔2023〕26号",
+    "issuedAt": "2023-06-13",
+    "publishedAt": "2023-07-06",
+    "url": "https://www.henan.gov.cn/2023/07-06/2773998.html",
+    "attachmentUrl": "https://img.henan.gov.cn/b6e6beb87e83bc70f5e7dcc9b91c1249?p=0",
+    "row": 149,
+    "developmentZone": "信阳经济技术开发区",
+    "enclosedAreaHa": 2634.29,
+    "plannedConstructionLandHa": 1556.30,
+    "geometry": null,
+    "geometryStatus": "authoritative_text_only_no_vertex_coordinates",
+    "sections": [
+      { "id": 1, "east": "二十四大街", "west": "京广铁路", "south": "信茶大道", "north": "新G312" },
+      { "id": 2, "east": "京广线", "west": "G107", "south": "北环路", "north": "横一路" },
+      { "id": 3, "east": "北湖", "west": "京广铁路", "south": "北湖", "north": "京广铁路" }
+    ],
+    "note": "四至文字可约束建模范围，但未给出逐点界址坐标、道路边线选择、分段拓扑或企业红线。不能据此把矩形或OSM道路自动认定为法定边界。"
+  },
+  "auxiliary": {
+    "file": "含边界信息.pdf",
+    "pageCount": 197,
+    "reportProject": "信阳匹克体育用品有限公司服装基地项目",
+    "scopePdfPage": 13,
+    "landUseMapPdfPage": 152,
+    "plan": "信阳经济技术开发区总体发展规划（2022—2035年）",
+    "planningMapDate": "2023-09",
+    "plannedConstructionLandHa": 1556.3,
+    "functionalAreasKm2": { "绿色家居产业园区": 7.97, "电子信息产业园区": 4.83, "科创部落": 0.37, "科创研发片区": 2.39 },
+    "geometry": null,
+    "role": "auxiliary_planning_reference_only",
+    "note": "PDF第13页称规划尚未审批、规划环评已审批，属该报告编制时的记载，不能推断当前审批状态。附图无可直接读取的地理配准信息，未直接叠加到地图，也未覆盖26号文依据。报告项目坐标不属于现有10家样本企业。"
+  }
+}

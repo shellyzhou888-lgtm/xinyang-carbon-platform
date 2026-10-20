@@ -10,6 +10,8 @@
 | `docs/db-agent.md` | 数据库 Agent（Pi + DeepSeek）：原理、三层安全、工具与角色、使用方法、测试记录 |
 | `docs/semantic-catalog-and-governance.md` | 语义目录、数据治理工单与语义增强查询：针对 Text-to-SQL 三类问题的做法、检测规则、审批流程 |
 | `docs/visualization-and-forecast.md` | 图表库选型（ECharts 为主）、Chronos-2 预测模型与回测、TimescaleDB 时机、对照竞品还缺的功能 |
+| `docs/park-map-and-sources.md` | 高德与L7地图、10家企业GCJ-02点位来源、分布示意范围与红线缺口、ECharts-GL、吸碳云朵形象 |
+| `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
 | `docs/web-and-voice.md` | 网站（Next.js）与小云语音接入：结构、为什么这样拆、本机启动、测试记录 |
 | `docs/deploy-xiaoyun.md` | 小云服务器部署：私有 GitHub 依赖、环境变量、HTTPS/WebSocket 代理与验证 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |

@@ -71,7 +71,6 @@ function StructureChart({ data }: { data: ChartData }) {
     backgroundColor: "transparent", color: PIE,
     tooltip: { trigger: "item", formatter: "{b}：{c} tce（{d}%）" },
     legend: { orient: "vertical", right: 0, top: "middle", textStyle: { color: C.muted } },
-    title: undefined,
     series: [{ type: "pie", radius: ["48%", "72%"], center: ["35%", "52%"], itemStyle: { borderColor: "#12302b", borderWidth: 2 },
                label: { show: true, position: "center", formatter: () => `${Math.round(total).toLocaleString("zh-CN")}\ntce`, color: C.text, fontSize: 16 },
                data: data.structure.map((s) => ({ name: s.name, value: s.tce })) }],

@@ -1,0 +1,434 @@
+{
+  "type": "FeatureCollection",
+  "coordinateSystem": "GCJ-02",
+  "updatedAt": "2026-10-20",
+  "legalBoundaryAvailable": false,
+  "sourceNote": "10家企业点位来自高德公开POI；2个面为企业分布示意范围。已核对豫政办〔2023〕26号四至文字，尚未取得界址坐标及逐企业测绘红线。GCJ-02不是RFC 7946默认的WGS84，导出后须按坐标系处理。",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.120979,
+          32.230438
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_WANHUA",
+        "name": "万华生态（信阳）",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0IRRDEV5J",
+        "poiName": "万华禾香集团股份有限公司信阳项目",
+        "address": "工业大道8号",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0IRRDEV5J",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "万华禾香集团股份有限公司信阳项目；采用家居片区新项目点位，未采用工十四路旧厂。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.112181,
+          32.227813
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_ZHUMEI",
+        "name": "现代筑美",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0FFK7OSG4",
+        "poiName": "河南省现代筑美家居有限公司",
+        "address": "工业大道8号",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFK7OSG4",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "高德名称为河南省现代筑美家居有限公司。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.13288,
+          32.209995
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_YADAN",
+        "name": "亚丹生态",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0JDAA6RW8",
+        "poiName": "亚丹生态科技(信阳)有限公司",
+        "address": "羊山新区家具小镇纬北五路西段",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0JDAA6RW8",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "纬北五路西段生产基地。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.138782,
+          32.22029
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_YONGHAOXUAN",
+        "name": "永豪轩家居",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0FFH9O305",
+        "poiName": "河南永豪轩智能家居股份有限公司",
+        "address": "工业大道",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFH9O305",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "高德名称为河南永豪轩智能家居股份有限公司；与档案历史名称不同，厂区关联待企业复核。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.137183,
+          32.209298
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_TIANYI",
+        "name": "天一美家",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0FFG4050S",
+        "poiName": "天一美家",
+        "address": "羊山新区家居小镇新十八大街与纬北五路交叉口西北角",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFG4050S",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "品牌生产园区点位，非单一法人用地红线。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.132155,
+          32.208401
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_BAIDE",
+        "name": "百德实业",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0H33ZT833",
+        "poiName": "信阳百德实业有限公司",
+        "address": "新十八街与纬北五路交叉口西260米",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0H33ZT833",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "采用信阳百德实业有限公司点位，排除同名超市。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.06685,
+          32.175422
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_GUMAI",
+        "name": "谷麦光电",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "poiId": "B0FFI03U3F",
+        "poiName": "谷麦科技集团股份有限公司",
+        "address": "金工大道东100米",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0FFI03U3F",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "高德为谷麦科技集团股份有限公司园区；信阳子公司与母公司共址，未取得独立厂房红线。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.068481,
+          32.183924
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_JINSHANG",
+        "name": "今上半导体",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "poiId": "B0H02ZCRG5",
+        "poiName": "今上半导体(信阳)有限公司",
+        "address": "金牛物流产业集聚区富民路6号",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0H02ZCRG5",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "金牛物流产业集聚区富民路6号。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.068544,
+          32.189136
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_XINGYUAN",
+        "name": "星原智能",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "poiId": "B0I6YHW0PP",
+        "poiName": "信阳星原智能科技有限公司",
+        "address": "消防救援大队二中队东南侧190米",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0I6YHW0PP",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "企业POI与园区内楼栋位置，需结合租赁厂房资料复核。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.068975,
+          32.188725
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "E_QINJIE",
+        "name": "螓杰智能",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "poiId": "B0IUJZL7XC",
+        "poiName": "河南螓杰智能科技有限公司",
+        "address": "金牛物流集聚区金工大道电子信息智能产业园7号楼",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0IUJZL7XC",
+        "locatedAt": "2026-10-20T16:49:14.948778+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "电子信息智能产业园7号楼；与其他租户可能共用厂区。",
+        "boundaryStatus": "unavailable",
+        "boundary": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.1102,
+              32.228868
+            ],
+            [
+              114.132839,
+              32.206498
+            ],
+            [
+              114.138602,
+              32.207717
+            ],
+            [
+              114.141102,
+              32.22052
+            ],
+            [
+              114.119847,
+              32.232179
+            ],
+            [
+              114.1102,
+              32.228868
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "distribution",
+        "code": "Z_HOME",
+        "name": "绿色家居企业分布范围",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "geometryPurpose": "distribution_envelope",
+        "notLegalBoundary": true,
+        "method": "已定位企业POI凸包向外扩展约220米；仅用于地图取景与分布展示，不是片区规划红线或企业厂界。"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              114.066547,
+              32.173449
+            ],
+            [
+              114.069691,
+              32.182222
+            ],
+            [
+              114.069314,
+              32.190694
+            ],
+            [
+              114.06868,
+              32.191123
+            ],
+            [
+              114.066547,
+              32.173449
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "kind": "distribution",
+        "code": "Z_ELEC",
+        "name": "电子信息企业分布范围",
+        "sector": "电子信息",
+        "color": "#69baff",
+        "geometryPurpose": "distribution_envelope",
+        "notLegalBoundary": true,
+        "method": "已定位企业POI凸包向外扩展约220米；仅用于地图取景与分布展示，不是片区规划红线或企业厂界。"
+      }
+    }
+  ],
+  "boundaryReference": {
+    "reviewedAt": "2026-10-20",
+    "history": {
+      "documentNumber": "豫政〔2020〕40号",
+      "document": "河南省人民政府关于设立河南省二七经济技术开发区等16个省级经济技术开发区的通知",
+      "issuedAt": "2020-12-29",
+      "plannedAreaKm2": 11.7,
+      "userReferenceUrl": "https://ysxq.xinyang.gov.cn/qjys/",
+      "scannedDocumentMirrorUrl": "https://img9.qianzhan.com/policy/202511/05/20251105-120ff7ab658134d3.pdf",
+      "scanReviewed": true,
+      "role": "historical_establishment_reference",
+      "note": "用户摘录指出来源片区为羊山片区和金牛物流产业集聚区。已下载并核对2020年设立通知扫描件第2页的11.7平方公里；用户提供的全景羊山页面当前抓取正文未复现该段。11.7记录为2020年设立规划口径，不替换2023年26号文的四至成果。"
+    },
+    "primary": {
+      "document": "河南省人民政府办公厅关于公布河南省开发区四至边界范围的通知",
+      "documentNumber": "豫政办〔2023〕26号",
+      "issuedAt": "2023-06-13",
+      "publishedAt": "2023-07-06",
+      "url": "https://www.henan.gov.cn/2023/07-06/2773998.html",
+      "attachmentUrl": "https://img.henan.gov.cn/b6e6beb87e83bc70f5e7dcc9b91c1249?p=0",
+      "row": 149,
+      "developmentZone": "信阳经济技术开发区",
+      "enclosedAreaHa": 2634.29,
+      "plannedConstructionLandHa": 1556.3,
+      "geometry": null,
+      "geometryStatus": "authoritative_text_only_no_vertex_coordinates",
+      "sections": [
+        {
+          "id": 1,
+          "east": "二十四大街",
+          "west": "京广铁路",
+          "south": "信茶大道",
+          "north": "新G312"
+        },
+        {
+          "id": 2,
+          "east": "京广线",
+          "west": "G107",
+          "south": "北环路",
+          "north": "横一路"
+        },
+        {
+          "id": 3,
+          "east": "北湖",
+          "west": "京广铁路",
+          "south": "北湖",
+          "north": "京广铁路"
+        }
+      ],
+      "note": "四至文字可约束建模范围，但未给出逐点界址坐标、道路边线选择、分段拓扑或企业红线。不能据此把矩形或OSM道路自动认定为法定边界。"
+    },
+    "auxiliary": {
+      "file": "含边界信息.pdf",
+      "pageCount": 197,
+      "reportProject": "信阳匹克体育用品有限公司服装基地项目",
+      "scopePdfPage": 13,
+      "landUseMapPdfPage": 152,
+      "plan": "信阳经济技术开发区总体发展规划（2022—2035年）",
+      "planningMapDate": "2023-09",
+      "plannedConstructionLandHa": 1556.3,
+      "functionalAreasKm2": {
+        "绿色家居产业园区": 7.97,
+        "电子信息产业园区": 4.83,
+        "科创部落": 0.37,
+        "科创研发片区": 2.39
+      },
+      "geometry": null,
+      "role": "auxiliary_planning_reference_only",
+      "note": "PDF第13页称规划尚未审批、规划环评已审批，属该报告编制时的记载，不能推断当前审批状态。附图无可直接读取的地理配准信息，未直接叠加到地图，也未覆盖26号文依据。报告项目坐标不属于现有10家样本企业。"
+    }
+  }
+}

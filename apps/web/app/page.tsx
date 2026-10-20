@@ -2,6 +2,7 @@ import { charts, overview } from "@/lib/server";
 import EnergyCharts from "@/components/EnergyCharts";
 import ChatPanel from "@/components/ChatPanel";
 import VoiceAssistant from "@/components/VoiceAssistant";
+import ParkSpatialOverview from "@/components/ParkSpatialOverview";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +55,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
               <div className="kpi"><div className="label">已达标指标</div><div className="value">{data.indicators.achieved}<span className="unit">/ {data.indicators.total} 项</span></div></div>
             </div>
 
+          </>
+        )}
+
+        <ParkSpatialOverview year={year} ranking={chartData?.ranking} />
+
+        {data && (
+          <>
             {chartData && <EnergyCharts data={chartData} />}
 
             <section className="section">

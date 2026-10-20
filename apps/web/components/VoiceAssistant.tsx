@@ -17,6 +17,7 @@ const YEARS = [2023, 2024, 2025];
  */
 export default function VoiceAssistant({ year, overview }: { year: number; overview: Overview }) {
   const router = useRouter();
+  const mount = useRef<HTMLDivElement>(null);
   const voiceRef = useRef<any>(null);
   const pendingYear = useRef<{ year: number; resolve: (v: unknown) => void } | null>(null);
   const [status, setStatus] = useState("小云加载中…");
@@ -31,6 +32,7 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
         const { createVoiceAssistant } = await import("@xiaoyun/voice");
         if (disposed) return;
         voiceRef.current = createVoiceAssistant({
+          container: mount.current || undefined,
           projectId: PROJECT_ID,
           backendUrl: BACKEND_URL,
           assetBaseUrl: "/xiaoyun/",
@@ -59,6 +61,34 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
             if (event.type === "error") console.warn("[xiaoyun]", event.message);
           },
         });
+        // The SDK has no public avatar option. Its open shadow root lets the host
+        // replace only the artwork, retaining the SDK's buttons, dragging and voice lifecycle.
+        const shadow = mount.current?.querySelector("xiaoyun-voice")?.shadowRoot;
+        if (shadow) {
+          const style = document.createElement("style");
+          style.dataset.parkAvatar = "carbon-cloud";
+          style.textContent = `
+            .xy-widget { --xy-size:132px; }
+            .xy-character-button, .xy-character-button:hover, .xy-character-button:active,
+            .xy-widget[data-dragging=true] .xy-character-button {
+              border:0; border-radius:0; background:transparent; box-shadow:none; backdrop-filter:none;
+            }
+            .xy-character-button::before {
+              inset:0; border:0; border-radius:0;
+              background:center / contain no-repeat url('/mascots/carbon-cloud/animation.gif');
+              z-index:2;
+            }
+            .xy-character-button::after { display:none; }
+            .xy-character-svg { opacity:0; }
+            .xy-character-halo { inset:18px; border-radius:50%; box-shadow:0 0 22px #3ddc9725; }
+            .xy-character-button:focus-visible { outline:2px solid #3ddc97; outline-offset:3px; }
+            @media (max-width:900px) { .xy-widget { right:18px!important; --xy-size:108px; } }
+            @media (prefers-reduced-motion:reduce) {
+              .xy-character-button::before { background-image:url('/mascots/carbon-cloud/poster.png'); }
+            }
+          `;
+          shadow.appendChild(style);
+        }
         setStatus("");
       } catch (err) {
         setStatus(`小云未连接：${err instanceof Error ? err.message : String(err)}`);
@@ -86,5 +116,5 @@ export default function VoiceAssistant({ year, overview }: { year: number; overv
     (window as any).xiaoyun = { submitText: (t: string) => voiceRef.current?.submitText(t) };
   }, []);
 
-  return status ? <div className="voice-status">{status}</div> : null;
+  return <><div ref={mount} className="voice-assistant-mount" />{status ? <div className="voice-status">{status}</div> : null}</>;
 }

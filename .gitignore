@@ -1,5 +1,6 @@
 # 本地工具日志与临时文件
 .statamcp/
+.playwright-mcp/
 ~$*
 *.tmp
 *.temp
