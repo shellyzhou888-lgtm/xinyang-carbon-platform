@@ -17,6 +17,8 @@ export interface IngestOptions {
   calc?: string;
   /** Allow draft formulas in the indicator step; results are returned but not written. */
   preview?: boolean;
+  /** Marks the batch as AI/model estimates (placeholder data); blank 数据来源 cells then load as data_source = estimated. */
+  estimated?: { method: string; inputs?: unknown; model?: string };
   /** The caller already opened a transaction (e.g. a multi-file test or an API route); do not begin/commit here. */
   externalTransaction?: boolean;
 }
@@ -68,11 +70,15 @@ export async function ingestFile(client: pg.Client, opts: IngestOptions): Promis
     );
     const documentId: number = doc.rows[0].document_id;
 
+    const notes = [opts.note, parsed.unknownHeaders.length ? `未识别的列（已原样入湖）：${parsed.unknownHeaders.join("、")}` : null]
+      .filter(Boolean).join("；") || null;
     const batch = await client.query(
-      `insert into raw.import_batch (source_type, source_name, document_id, template_id, note)
-       values ($1, $2, $3, $4, $5) returning batch_id::int as batch_id`,
-      [opts.sourceType ?? "file_upload", basename(opts.filePath), documentId, template.template_id,
-       parsed.unknownHeaders.length ? `未识别的列（已原样入湖）：${parsed.unknownHeaders.join("、")}` : null],
+      `insert into raw.import_batch (source_type, source_name, document_id, template_id, note,
+                                     estimation_method, estimation_inputs, model_name)
+       values ($1, $2, $3, $4, $5, $6, $7, $8) returning batch_id::int as batch_id`,
+      [opts.estimated ? "estimated" : opts.sourceType ?? "file_upload", basename(opts.filePath), documentId,
+       template.template_id, notes, opts.estimated?.method ?? null,
+       opts.estimated?.inputs === undefined ? null : JSON.stringify(opts.estimated.inputs), opts.estimated?.model ?? null],
     );
     const batchId: number = batch.rows[0].batch_id;
 

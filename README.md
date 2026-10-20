@@ -7,6 +7,7 @@
 | 路径 | 内容 |
 | --- | --- |
 | `docs/platform-architecture-and-indicators.md` | **当前开发依据**：平台功能、架构、指标体系（2024/2025/2026/零碳园区） |
+| `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |
 | `docs/import-and-calculation-engine.md` | 导入解析与计算引擎：流程、核算规则、用法、验证结果、已知简化 |
 | `docs/national-ghg-factor-database-assessment.md` | 国家温室气体排放因子数据库第二版：本项目可用资料、口径差异与接入顺序 |
 | `docs/database-schema-design.md` | 数据库表结构、角色权限、数据湖设计、已入库参考数据 |
@@ -20,6 +21,8 @@
 | `reference/early-plans/` | 早期方案：总稿、实施方案、系统架构、框架先行数据接入（已被 docs 中的梳理文档取代，仅供参考） |
 | `policies/` | 政策原文，文件名为“年份_文号_内容_区分点”；`policies/green-industrial-park/` 含 2024 版（31 项，省级获评依据）、2025 版（17 项，含分值）、2026 版（19 项，现行申报版）三版园区评价要求 |
 | `policies/factors/` | 官方排放因子原文：2021、2023 年电力二氧化碳排放因子公告附件，生态环境部钢铁行业核算指南（附表 A.1 燃料参数） |
+| `data/simulated/` | 模拟占位数据：假设文件 `assumptions.json` 与按模板生成的 Excel（以 estimated 导入） |
+| `data/public/` | 公开渠道获得的真实数值（按模板整理） |
 | `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
 | `packages/ingest/` | Excel 导入工具（TypeScript）：解析模板 → 入湖 → 调用数据库引擎；`npm run ingest` / `npm run calc` |
 | `database/migrations/` | 数据库迁移 SQL（结构与参考数据） |
