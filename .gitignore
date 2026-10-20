@@ -28,3 +28,7 @@ dist/
 # 小云：运行数据与从私有包复制的浏览器资源（npx xiaoyun init 重新生成）
 .xiaoyun/
 apps/web/public/xiaoyun/
+
+# Python 虚拟环境与缓存（预测服务 packages/forecast/.venv；模型权重在用户目录的 HuggingFace 缓存）
+.venv/
+__pycache__/

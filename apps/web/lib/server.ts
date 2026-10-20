@@ -1,5 +1,5 @@
 import "server-only";
-import { admin, createDbAgent, getParkOverview, initPool, loadConfig, logMessage, triggerGovernance } from "@xinyang/db-agent";
+import { admin, createDbAgent, getChartData, getParkOverview, initPool, loadConfig, logMessage, triggerGovernance } from "@xinyang/db-agent";
 
 /** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
 export function adminApi() {
@@ -12,6 +12,11 @@ export function adminApi() {
  * Server-side access to the database agent. Secrets (DATABASE_URL, DEEPSEEK_API_KEY) are read from the
  * repository .env on the server only; nothing here is sent to the browser.
  */
+export function charts(year: number) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getChartData(year);
+}
+
 export function overview(year: number) {
   const cfg = loadConfig({ requireModelKey: false });
   initPool(cfg.databaseUrl);

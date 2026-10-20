@@ -1,4 +1,5 @@
-import { overview } from "@/lib/server";
+import { charts, overview } from "@/lib/server";
+import EnergyCharts from "@/components/EnergyCharts";
 import ChatPanel from "@/components/ChatPanel";
 import VoiceAssistant from "@/components/VoiceAssistant";
 
@@ -12,9 +13,10 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
   const year = YEARS.includes(Number(y)) ? Number(y) : 2025;
 
   let data: Awaited<ReturnType<typeof overview>> | null = null;
+  let chartData: Awaited<ReturnType<typeof charts>> | null = null;
   let error = "";
   try {
-    data = await overview(year);
+    [data, chartData] = await Promise.all([overview(year), charts(year)]);
   } catch (err) {
     error = err instanceof Error ? err.message : String(err);
   }
@@ -51,6 +53,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
               <div className="kpi"><div className="label">工业增加值（可比价）</div><div className="value">{fmt(data.value_added_wan, 0)}<span className="unit">万元</span></div></div>
               <div className="kpi"><div className="label">已达标指标</div><div className="value">{data.indicators.achieved}<span className="unit">/ {data.indicators.total} 项</span></div></div>
             </div>
+
+            {chartData && <EnergyCharts data={chartData} />}
 
             <section className="section">
               <h2>已达标指标</h2>

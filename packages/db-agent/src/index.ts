@@ -6,3 +6,4 @@ export { getParkOverview, type ParkOverview } from "./overview.js";
 export { logMessage } from "./audit.js";
 export { governanceIdle, runGovernance, triggerGovernance, type GovernanceTrigger } from "./governance.js";
 export * as admin from "./admin.js";
+export { getChartData, type ChartData } from "./charts.js";
