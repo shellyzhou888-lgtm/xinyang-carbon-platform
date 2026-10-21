@@ -10,7 +10,8 @@ import { fmt, isLight, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, usePar
 import { HonorIcon } from "./HonorIcons";
 import Link from "next/link";
 
-import { IconClose, IconExpand, IconLayers, IconSearch, IconTrophy } from "./icons";
+import { IconClose, IconExpand, IconLayers, IconRotateLeft, IconRotateRight, IconSearch, IconTiltDown, IconTiltUp, IconTrophy } from "./icons";
+import directory from "@/data/enterprise-directory.json";
 
 export interface MapHonor { code: string; node: string; title: string; kind: HonorKind }
 export interface MapEnterprise { code: string; name: string; tce: number | null; co2_t: number | null }
@@ -27,8 +28,8 @@ const ZONE_MAX_ZOOM = 17.6;
  * marker in the panorama; logos and honour plates appear once a zone is opened at building scale.
  * `left` / `right` are floating panels laid over the map edges (they stack below the map on narrow screens).
  */
-export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right }: {
-  year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode;
+export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right, assessment }: {
+  year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode; assessment?: React.ReactNode;
 }) {
   const shell = useRef<HTMLElement>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -200,6 +201,10 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     return () => document.removeEventListener("fullscreenchange", changed);
   }, [handle]);
 
+  // Camera buttons; the same moves are available with right-drag or Ctrl-drag on the map.
+  function turn(degrees: number) { const map = handle.current?.map; if (map) map.setRotation((map.getRotation() + degrees + 360) % 360, false, 300); }
+  function tilt(degrees: number) { const map = handle.current?.map; if (map) map.setPitch(Math.max(0, Math.min(75, map.getPitch() + degrees)), false, 300); }
+
   async function toggleFullscreen() {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
@@ -218,7 +223,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
   const brand = active ? enterpriseBrands.get(active.properties.code) : undefined;
   const activeMetric = active?.properties.metricBindingApproved ? metrics.find((row) => row.code === active.properties.code) : undefined;
   const activeRank = active ? ranking.find((row) => row.code === active.properties.code) : undefined;
-  return <section className="map-stage" ref={shell} data-labels={labels} aria-label="园区空间总览">
+  return <section className="map-stage" ref={shell} data-labels={labels} data-zone-mode={zone !== "all"} aria-label="园区空间总览">
     <div ref={container} className="map-canvas" role="img" aria-label="高德地图：信阳经开区产业片区与企业点位" />
     <div className="map-vignette" aria-hidden="true" />
     {!ready && !error && <div className="map-loading" role="status"><span className="spinner" />正在载入园区卫星地图…</div>}
@@ -237,6 +242,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       </div>
     </div>
 
+    {zone === "all" && assessment && <div className="map-assessment">{assessment}</div>}
     {zone === "all" && left && <div className="map-float left">{left}</div>}
     {zone === "all" && right && <div className="map-float right">{right}</div>}
     <AnimatePresence>{zone !== "all" && <ZoneCard key={zone} zone={zone} metrics={metrics} honors={honors} onBack={() => openZone("all")} onPick={(code) => pick.current(code)} />}</AnimatePresence>
@@ -248,6 +254,12 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
         <button type="button" aria-pressed={pitched} onClick={() => setPitched((current) => !current)}>3D</button>
         <button type="button" aria-pressed={labels} onClick={() => setLabels((current) => !current)}>标识</button>
         <button type="button" aria-pressed={areaNames} onClick={() => setAreaNames((current) => !current)}>片区</button>
+        <span className="camera-buttons" role="group" aria-label="视角">
+          <button type="button" onClick={() => turn(-20)} title="向左旋转"><IconRotateLeft size={16} /></button>
+          <button type="button" onClick={() => turn(20)} title="向右旋转"><IconRotateRight size={16} /></button>
+          <button type="button" onClick={() => tilt(10)} title="抬高视角（更倾斜）"><IconTiltUp size={16} /></button>
+          <button type="button" onClick={() => tilt(-10)} title="压低视角（更俯视）"><IconTiltDown size={16} /></button>
+        </span>
         <button type="button" onClick={toggleFullscreen} aria-label={fullscreen ? "退出全屏" : "全屏查看"}><IconExpand />{fullscreen ? "退出" : "全屏"}</button>
       </div>
     </div>
@@ -281,7 +293,7 @@ function EnterpriseDetail({ feature, year, logo, metric, intensity, honors, onCl
       <div><span className="num">{fmt(metric?.co2_t, 0)}</span><small>碳排放 · tCO₂</small></div>
       <div><span className="num">{fmt(intensity, 3)}</span><small>tce / 万元产值</small></div>
     </div>
-    {honors.length > 0 && <ul className="trophy-list compact">{honors.map((honor, index) => <li key={index}><IconTrophy size={18} className="trophy" /><span>{honor.title}</span>{honorLevel(honor.title) && !honor.title.includes(honorLevel(honor.title)) && <em>{honorLevel(honor.title)}</em>}</li>)}</ul>}
+    {honors.length > 0 && <ul className="trophy-list compact">{honors.map((honor, index) => <li key={index}><HonorIcon kind={honor.kind} size={18} /><span>{honor.title}</span>{honorLevel(honor.title) && !honor.title.includes(honorLevel(honor.title)) && <em>{honorLevel(honor.title)}</em>}</li>)}</ul>}
     <p className="detail-address">{feature.properties.address}</p>
     <footer><Link className="more-link" href={`/enterprises?year=${year}`}>企业名录</Link><Link className="more-link" href={`/energy?year=${year}`}>能源管理</Link></footer>
   </motion.aside>;
@@ -294,33 +306,54 @@ const ZONE_FOCUS: Record<Exclude<ZoneKey, "all">, string> = {
   research: "以智慧岛建设为核心，重点发展科创研发、检验检测、创意设计、总部经济、电子商务、中介服务等业态。",
   "innovation-community": "主要承载大型企业总部办公、研发设计等生产性科创服务功能。",
 };
+/** Location of each zone centre (AMap reverse geocoding, 2026-10-21). */
+const ZONE_PLACE: Record<Exclude<ZoneKey, "all">, { street: string; roads: string; landmarks: string }> = {
+  "green-home": { street: "平桥区 · 信阳国际家居产业小镇", roads: "工业大道、纬北二路、纬北三路", landmarks: "信阳艺术职业学院、国际家居小镇" },
+  electronics: { street: "浉河区 · 金牛山街道", roads: "107 国道、金工大道、北京大道", landmarks: "金牛物流产业集聚区" },
+  research: { street: "平桥区 · 龙飞山街道", roads: "纬南四路、经南四路、新十八街", landmarks: "欧凯龙家居小镇、电商小镇" },
+  "innovation-community": { street: "平桥区 · 北湖风景管理区", roads: "民乐路、新六大街", landmarks: "北湖风景区、北湖郊野公园" },
+};
+const PLANNED_TOTAL_KM2 = 15.56;
+/** Directory entries by zone (area names in the directory use the old 片区 names). */
+const DIRECTORY_ZONE: [RegExp, ZoneKey][] = [[/羊山/, "green-home"], [/金牛/, "electronics"], [/科创研发/, "research"], [/科创部落|北湖/, "innovation-community"]];
+const directoryOf = (zone: ZoneKey) => directory.items.filter((item) => item.type !== "历史企业" && item.type !== "待核条目"
+  && DIRECTORY_ZONE.some(([re, key]) => key === zone && re.test(item.area)));
 
-/** Zone mode card: zone facts, energy / carbon totals of its enterprises and their honours. */
+/** Zone mode card: location, plan focus, energy / carbon of its enterprises with their honours, and directory entries. */
 function ZoneCard({ zone, metrics, honors, onBack, onPick }: { zone: ZoneKey; metrics: MapEnterprise[]; honors: MapHonor[]; onBack: () => void; onPick: (code: string) => void }) {
   const key = zone as Exclude<ZoneKey, "all">;
   const feature = zoneFeature(zone);
+  const place = ZONE_PLACE[key];
+  const area = feature?.properties.areaKm2 ?? 0;
   const members = enterprises.filter((item) => SECTOR_ZONE[item.properties.sector] === zone);
-  const rows = members.map((item) => ({ code: item.properties.code, name: item.properties.name, metric: metrics.find((m) => m.code === item.properties.code) }));
-  const sum = (pick: (m: MapEnterprise) => number | null) => rows.reduce((a, r) => a + (r.metric ? pick(r.metric) ?? 0 : 0), 0);
-  const park = (pick: (m: MapEnterprise) => number | null) => metrics.reduce((a, m) => a + (pick(m) ?? 0), 0);
-  const tce = sum((m) => m.tce), co2 = sum((m) => m.co2_t);
+  const business = new Map(directory.items.filter((item) => item.mapCode).map((item) => [item.mapCode as string, item.business]));
+  const rows = members.map((item) => ({ code: item.properties.code, name: item.properties.name, metric: metrics.find((m) => m.code === item.properties.code), business: business.get(item.properties.code) ?? item.properties.sector }));
+  const tce = rows.reduce((a, r) => a + (r.metric?.tce ?? 0), 0), co2 = rows.reduce((a, r) => a + (r.metric?.co2_t ?? 0), 0);
+  const parkTce = metrics.reduce((a, m) => a + (m.tce ?? 0), 0), parkCo2 = metrics.reduce((a, m) => a + (m.co2_t ?? 0), 0);
+  const listed = directoryOf(zone).filter((item) => !members.some((m) => m.properties.code === item.mapCode));
   return <motion.aside className="zone-card glass" style={{ ["--zone" as string]: ZONE_COLOR[key] }} aria-label="片区概况"
     initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-    <header><span className="zone-dot" /><div><h3>{feature?.properties.name}</h3><small>规划面积 {feature?.properties.areaKm2.toFixed(2)} km²</small></div></header>
-    <p className="zone-focus">{ZONE_FOCUS[key]}<small>《信阳经济技术开发区总体发展规划（2022—2035年）》产业布局</small></p>
+    <header><span className="zone-dot" /><div><h3>{feature?.properties.name}</h3><small>规划面积 {area.toFixed(2)} km² · 占四片区 {fmt(area / PLANNED_TOTAL_KM2 * 100, 1)}%</small></div></header>
+    <dl className="zone-facts">
+      <div><dt>区位</dt><dd>{place.street}</dd></div>
+      <div><dt>主要道路</dt><dd>{place.roads}</dd></div>
+      <div><dt>周边地标</dt><dd>{place.landmarks}</dd></div>
+      <div><dt>产业定位</dt><dd>{ZONE_FOCUS[key]}<small>《信阳经济技术开发区总体发展规划（2022—2035年）》</small></dd></div>
+    </dl>
     {rows.length > 0 && <div className="zone-figures">
       <div><span>重点企业</span><strong className="num">{rows.length}<small>家</small></strong></div>
-      <div><span>综合能耗</span><strong className="num">{fmt(tce, 0)}<small>tce</small></strong><em>占园区 {fmt(tce / (park((m) => m.tce) || 1) * 100, 1)}%</em></div>
-      <div><span>碳排放</span><strong className="num">{fmt(co2, 0)}<small>tCO₂</small></strong><em>占园区 {fmt(co2 / (park((m) => m.co2_t) || 1) * 100, 1)}%</em></div>
+      <div><span>综合能耗</span><strong className="num">{fmt(tce, 0)}<small>tce</small></strong><em>占园区 {fmt(tce / (parkTce || 1) * 100, 1)}%</em></div>
+      <div><span>碳排放</span><strong className="num">{fmt(co2, 0)}<small>tCO₂</small></strong><em>占园区 {fmt(co2 / (parkCo2 || 1) * 100, 1)}%</em></div>
     </div>}
     {rows.length > 0 && <ul className="zone-members">{rows.sort((a, b) => (b.metric?.co2_t ?? 0) - (a.metric?.co2_t ?? 0)).map((row) => {
       const kinds = [...new Set(honors.filter((h) => h.code === row.code).map((h) => h.kind))];
       return <li key={row.code}><button type="button" onClick={() => onPick(row.code)}>
-        <span>{shortName(row.name)}</span>
-        <span className="zone-member-honors">{kinds.map((kind) => <HonorIcon key={kind} kind={kind} size={18} />)}</span>
-        <b className="num">{row.metric?.tce != null ? `${fmt(row.metric.tce, 0)} tce` : ""}</b>
+        <span className="zone-member-head"><b>{shortName(row.name)}</b><em>{row.business}</em></span>
+        <span className="zone-member-figures num">{row.metric?.tce != null ? <>{fmt(row.metric.tce, 0)}<small>tce</small> · {fmt(row.metric.co2_t, 0)}<small>tCO₂</small> · 占片区 {fmt((row.metric.co2_t ?? 0) / (co2 || 1) * 100, 1)}%</> : <small>{row.business}</small>}</span>
+        {kinds.length > 0 && <span className="zone-member-honors">{kinds.map((kind) => <span key={kind} className="zone-honor"><HonorIcon kind={kind} size={14} />{HONOR_KINDS.find((h) => h.kind === kind)?.short}</span>)}</span>}
       </button></li>;
     })}</ul>}
+    {listed.length > 0 && <div className="zone-listed"><span>目录中的其他企业与项目</span><ul>{listed.map((item) => <li key={item.id}><b>{item.name}</b><small>{item.type} · {item.business}</small></li>)}</ul></div>}
     <button type="button" className="btn-ghost small zone-back" onClick={onBack}>返回园区全景</button>
   </motion.aside>;
 }

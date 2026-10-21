@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import type { EnterpriseMonthly } from "@xinyang/db-agent";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { canvas, fmt, frameParkTilted, infoCard, shortName, useParkMap, zonePolygons, pointInPolygon } from "@/lib/park-map";
+import { canvas, fmt, frameParkTilted, HENAN_BOUNDS, infoCard, shortName, useParkMap, zonePolygons, pointInPolygon } from "@/lib/park-map";
 
 /** Heat ramp from low (blue) to high (red), as in a floor-plan energy heat map. */
 const RAMP = ["#2f6bff", "#22c3ee", "#2ee8a5", "#d4f75c", "#ffb02e", "#ff4d5e"];
@@ -47,13 +47,19 @@ function stemCard(title: string, rows: [string, string][], accent: string) {
  * Gaussian-weighted energy of nearby plants for the selected month; a timeline plays the year month by month.
  * The spread around each plant is a visual model of its consumption, not metered sub-area data.
  */
-export default function EnergyHeatTwin({ year, rows }: { year: number; rows: EnterpriseMonthly[] }) {
+export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year: number; rowsByYear: Record<number, EnterpriseMonthly[]> }) {
+  const years = Object.keys(rowsByYear).map(Number).filter((y) => rowsByYear[y]?.length).sort();
+  const [year, setYear] = useState(initialYear);
+  const rows = useMemo(() => rowsByYear[year] ?? [], [rowsByYear, year]);
   const container = useRef<HTMLDivElement>(null);
-  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { pitch: 55, rotation: -12, zoom: 14.3 });
+  // Free zoom and drag within Henan province (the view cannot be dragged off to unrelated regions).
+  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { pitch: 55, rotation: -12, zoom: 14.3, limit: HENAN_BOUNDS, zooms: [7, 19] });
   const dots = useRef<any>(null);
   const callouts = useRef<any>(null);
   const months = useMemo(() => [...new Set(rows.map((row) => row.month))].sort(), [rows]);
   const [index, setIndex] = useState(() => Math.max(0, months.length - 1));
+  // A different year starts at its last month.
+  useEffect(() => { setIndex(Math.max(0, months.length - 1)); }, [months.length, year]);
   const [playing, setPlaying] = useState(false);
   const month = months[index];
 
@@ -171,7 +177,7 @@ export default function EnergyHeatTwin({ year, rows }: { year: number; rows: Ent
           <span>{Number(m.slice(5))}月</span>
         </button>)}
       </div>
-      <span className="twin-year num">{year}</span>
+      <span className="twin-years" role="group" aria-label="年份">{years.map((y) => <button key={y} type="button" className={y === year ? "on" : ""} aria-pressed={y === year} onClick={() => { setPlaying(false); setYear(y); }}>{y}</button>)}</span>
     </div>
   </div>;
 }

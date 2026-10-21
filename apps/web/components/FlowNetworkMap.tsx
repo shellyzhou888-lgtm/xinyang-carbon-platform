@@ -1,17 +1,23 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "motion/react";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { conePin, fmt, frameParkTilted, infoCard, SECTOR_ZONE, shortName, useParkMap, zoneFeature, zoneHub, type ZoneKey } from "@/lib/park-map";
+import { conePin, fmt, frameParkTilted, HENAN_BOUNDS, infoCard, SECTOR_ZONE, shortName, useParkMap, zoneFeature, zoneHub, type ZoneKey } from "@/lib/park-map";
 
 export interface FlowNode { code: string; name: string; value: number; intensity?: number | null }
-type Mode = "energy" | "carbon";
+export interface FlowMix { code: string; carrier: string; tce: number; co2_t: number }
 
-const STYLE: Record<Mode, { label: string; unit: string; line: string; glow: string; pin: string; card: string; intensityUnit: string }> = {
-  energy: { label: "能流", unit: "tce", line: "#d4f75c", glow: "#2ee8a5", pin: "#ffb02e", card: "#2ee8a5", intensityUnit: "tce/万元" },
-  carbon: { label: "碳流", unit: "tCO₂", line: "#ffc15a", glow: "#ff8a3d", pin: "#ffb02e", card: "#ffab3d", intensityUnit: "tCO₂/万元" },
-};
+/** One colour per energy carrier; carbon flows reuse them for the emission source of each carrier. */
+const CARRIERS: { name: string; color: string }[] = [
+  { name: "电网电力", color: "#4cb4ff" }, { name: "天然气", color: "#ffab3d" }, { name: "热力", color: "#ff6b81" },
+  { name: "油品", color: "#b79cff" }, { name: "绿电", color: "#2ee8a5" }, { name: "煤炭", color: "#9aa3ad" }, { name: "生物质", color: "#d4f75c" },
+];
 const ALERT = "#ff4d5e";
+const STYLE = {
+  energy: { label: "能流", unit: "tce", pin: "#ffb02e", card: "#2ee8a5", intensityUnit: "tce/万元", direction: "园区 → 产业片区 → 企业（按能源品种供能）" },
+  carbon: { label: "碳流", unit: "tCO₂", pin: "#ffb02e", card: "#ffab3d", intensityUnit: "tCO₂/万元", direction: "企业 → 产业片区 → 园区（按排放来源汇聚）" },
+} as const;
 
 /** White chevron used as a moving line texture (tinted by the layer colour via textureBlend "replace"). */
 function arrowIcon() {
@@ -23,45 +29,56 @@ function arrowIcon() {
 }
 
 /**
- * Interactive flow network on a 3D dark map: dotted links follow the accounting hierarchy park ↔ zone ↔ enterprise,
- * with cone pins, equipment-style info cards and a red dome over enterprises that have open alerts.
- * Energy is drawn from the park to the plants; carbon from the plants up to the park total.
- * The park node is the aggregation point at the centre of the planning zones, not a physical facility.
+ * Flow network on a 3D dark map, split by energy carrier: for each carrier a curved link runs park → zone → enterprise
+ * (energy) or enterprise → zone → park (carbon), with a faint base arc, streaming particles and moving arrows in the
+ * carrier colour; width follows the quantity. Arcs of different carriers are fanned out so they do not overlap.
+ * Enterprises with open alerts get a red dome and card. The park node is the aggregation point at the centre of the
+ * planning zones, not a physical facility.
  */
-export default function FlowNetworkMap({ mode, year, nodes, parkTotal, alerts = [] }: { mode: Mode; year: number; nodes: FlowNode[]; parkTotal: number | null | undefined; alerts?: string[] }) {
+export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, alerts = [] }: { mode: "energy" | "carbon"; year: number; nodes: FlowNode[]; mix: FlowMix[]; parkTotal: number | null | undefined; alerts?: string[] }) {
   const container = useRef<HTMLDivElement>(null);
-  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { pitch: 55, rotation: 18, zoom: 14 });
+  // Free zoom and drag within Henan province.
+  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { pitch: 55, rotation: 18, zoom: 14, limit: HENAN_BOUNDS, zooms: [7, 19] });
   const style = STYLE[mode];
   const labels = useRef<any>(null);
   const flowLayers = useRef<any[]>([]);
+  const [only, setOnly] = useState<string | null>(null);
 
   const network = useMemo(() => {
+    const amount = (row: FlowMix) => mode === "energy" ? row.tce : row.co2_t;
     const park = zoneHub("all");
     const sites = enterprises.flatMap((feature) => {
       const node = nodes.find((row) => row.code === feature.properties.code);
       if (!feature.properties.metricBindingApproved || !node?.value) return [];
-      return [{ ...node, zone: SECTOR_ZONE[feature.properties.sector], at: feature.geometry.coordinates as Position, alert: alerts.includes(node.name) }];
+      const carriers = mix.filter((row) => row.code === node.code && amount(row) > 0).map((row) => ({ carrier: row.carrier, value: amount(row) }));
+      return [{ ...node, zone: SECTOR_ZONE[feature.properties.sector], at: feature.geometry.coordinates as Position, alert: alerts.includes(node.name), carriers }];
     });
-    const zones = (["green-home", "electronics"] as ZoneKey[]).map((key) => ({ key, at: zoneHub(key), value: sites.filter((s) => s.zone === key).reduce((a, s) => a + s.value, 0), count: sites.filter((s) => s.zone === key).length }))
-      .filter((zone) => zone.value > 0);
-    const link = (from: Position, to: Position, extra: { value: number; alert: number }) => mode === "energy"
+    const zones = (["green-home", "electronics"] as ZoneKey[]).map((key) => {
+      const members = sites.filter((s) => s.zone === key);
+      const carriers = CARRIERS.map((c) => ({ carrier: c.name, value: members.reduce((a, s) => a + (s.carriers.find((x) => x.carrier === c.name)?.value ?? 0), 0) })).filter((c) => c.value > 0);
+      return { key, at: zoneHub(key), value: members.reduce((a, s) => a + s.value, 0), count: members.length, carriers };
+    }).filter((zone) => zone.value > 0);
+    const link = (from: Position, to: Position, extra: { carrier: string; value: number; alert: number }) => mode === "energy"
       ? { fromLng: from[0], fromLat: from[1], toLng: to[0], toLat: to[1], ...extra }
       : { fromLng: to[0], fromLat: to[1], toLng: from[0], toLat: from[1], ...extra };
     const links = [
-      ...zones.map((zone) => link(park, zone.at, { value: zone.value, alert: 0 })),
-      ...sites.map((site) => link(zoneHub(site.zone), site.at, { value: site.value, alert: site.alert ? 1 : 0 })),
+      ...zones.flatMap((zone) => zone.carriers.map((c) => link(park, zone.at, { carrier: c.carrier, value: c.value, alert: 0 }))),
+      ...sites.flatMap((site) => site.carriers.map((c) => link(zoneHub(site.zone), site.at, { carrier: c.carrier, value: c.value, alert: site.alert ? 1 : 0 }))),
     ];
-    return { park, sites, zones, links };
-  }, [nodes, alerts, mode]);
+    const totals = CARRIERS.map((c) => ({ ...c, value: sites.reduce((a, s) => a + (s.carriers.find((x) => x.carrier === c.name)?.value ?? 0), 0) })).filter((c) => c.value > 0)
+      .sort((a, b) => b.value - a.value);
+    return { park, sites, zones, links, totals };
+  }, [nodes, mix, alerts, mode]);
+  const total = parkTotal ?? network.sites.reduce((a, s) => a + s.value, 0);
 
   useEffect(() => {
     const current = handle.current;
     if (!ready || !current) return;
-    frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 220], boost: 0.7 });
+    // Leave room on the right for the flow panel (avoid order: top, bottom, left, right).
+    frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 300], boost: 0.7 });
   }, [ready, handle]);
 
-  // Curved flow links: a faint base arc, comet particles streaming from source to target and moving direction
-  // arrows on the same curve; hub glows and alert domes on top.
+  // One set of layers per carrier (base arc, streaming particles, arrows), each with its own curve offset.
   useEffect(() => {
     const scene = handle.current?.scene;
     if (!l7Ready || !scene) return;
@@ -72,77 +89,91 @@ export default function FlowNetworkMap({ mode, year, nodes, parkTotal, alerts = 
       if (disposed || handle.current?.scene !== scene) return;
       const parser = { type: "json", x: "fromLng", y: "fromLat", x1: "toLng", y1: "toLat" };
       const max = Math.max(...network.links.map((l) => l.value));
-      const width = (v: number) => 1.6 + 3 * Math.sqrt(v / max);
-      const colour = (a: number) => a ? ALERT : style.glow;
-      const curve = { thetaOffset: 0.32 };
-      const base = new LineLayer({ name: "flow-base", zIndex: 4 }).source(network.links, { parser })
-        .shape("arc").size("value", width).color("alert", (a: number) => a ? ALERT : style.line)
-        .style({ ...curve, opacity: 0.28, segmentNumber: 48 });
-      // Several short comets per link (interval) give a continuous stream rather than a single blink.
-      const stream = new LineLayer({ name: "flow-stream", zIndex: 5, blend: "additive" }).source(network.links, { parser })
-        .shape("arc").size("value", (v: number) => width(v) + 1.2).color("alert", colour)
-        .style({ ...curve, opacity: 1, segmentNumber: 48, sourceColor: style.line, targetColor: style.glow })
-        .animate({ duration: 2.2, interval: 0.28, trailLength: 0.22 });
-      const arrows = new LineLayer({ name: "flow-arrows", zIndex: 6 }).source(network.links, { parser })
-        .shape("arc").size(12).texture("flow-arrow").color("alert", colour)
-        .animate({ duration: 1.4, interval: 1, trailLength: 2 })
-        .style({ ...curve, opacity: 0.95, lineTexture: true, iconStep: 46, textureBlend: "replace", segmentNumber: 48 });
+      const width = (v: number) => 1.4 + 4.2 * Math.sqrt(v / max);
+      const layers: any[] = [];
+      network.totals.forEach((carrier, index) => {
+        if (only && only !== carrier.name) return;
+        const data = network.links.filter((l) => l.carrier === carrier.name);
+        if (!data.length) return;
+        // Fan the carriers out: alternating sides, growing curvature.
+        const theta = (index % 2 ? -1 : 1) * (0.18 + 0.12 * Math.floor(index / 2));
+        const colour = (a: number) => a ? ALERT : carrier.color;
+        layers.push(
+          new LineLayer({ name: `flow-base-${index}`, zIndex: 4 }).source(data, { parser })
+            .shape("arc").size("value", width).color("alert", colour).style({ thetaOffset: theta, opacity: 0.22, segmentNumber: 40 }),
+          new LineLayer({ name: `flow-stream-${index}`, zIndex: 5, blend: "additive" }).source(data, { parser })
+            .shape("arc").size("value", (v: number) => width(v) + 1).color("alert", colour)
+            .style({ thetaOffset: theta, opacity: 1, segmentNumber: 40 })
+            .animate({ duration: 2.4, interval: 0.3, trailLength: 0.2 }),
+          new LineLayer({ name: `flow-arrows-${index}`, zIndex: 6 }).source(data, { parser })
+            .shape("arc").size(10).texture("flow-arrow").color("alert", colour)
+            .animate({ duration: 1.6, interval: 1, trailLength: 2 })
+            .style({ thetaOffset: theta, opacity: 0.95, lineTexture: true, iconStep: 50, textureBlend: "replace", segmentNumber: 40 }),
+        );
+      });
       const hubs = [{ lng: network.park[0], lat: network.park[1], size: 70 }, ...network.zones.map((z) => ({ lng: z.at[0], lat: z.at[1], size: 46 }))];
-      const glow = new PointLayer({ name: "flow-hub-glow", zIndex: 7, blend: "additive" }).source(hubs, { parser: { type: "json", x: "lng", y: "lat" } })
-        .shape("circle").size("size", (s: number) => s).color(style.glow).animate(true).style({ opacity: 0.9 });
-      const sites = new PointLayer({ name: "flow-sites", zIndex: 7, blend: "additive" }).source(network.sites.map((s) => ({ lng: s.at[0], lat: s.at[1], alert: s.alert ? 1 : 0 })), { parser: { type: "json", x: "lng", y: "lat" } })
-        .shape("circle").size(22).color("alert", colour).animate({ enable: true, speed: 0.7, rings: 2 }).style({ opacity: 0.85 });
+      layers.push(new PointLayer({ name: "flow-hub-glow", zIndex: 7, blend: "additive" }).source(hubs, { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size("size", (s: number) => s).color(style.card).animate(true).style({ opacity: 0.85 }));
       const alertSites = network.sites.filter((s) => s.alert).map((s) => ({ lng: s.at[0], lat: s.at[1] }));
-      flowLayers.current = [base, stream, arrows, glow, sites];
-      if (alertSites.length) {
-        flowLayers.current.push(new PointLayer({ name: "flow-alert-dome", zIndex: 8, blend: "additive" }).source(alertSites, { parser: { type: "json", x: "lng", y: "lat" } })
-          .shape("circle").size(90).color(ALERT).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 }));
-      }
-      for (const layer of flowLayers.current) scene.addLayer(layer);
+      if (alertSites.length) layers.push(new PointLayer({ name: "flow-alert-dome", zIndex: 8, blend: "additive" }).source(alertSites, { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(90).color(ALERT).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 }));
+      flowLayers.current = layers;
+      for (const layer of layers) scene.addLayer(layer);
     }).catch((reason) => console.warn("[flow-map] flow layers unavailable", reason));
     return () => { disposed = true; };
-  }, [l7Ready, handle, network, style]);
+  }, [l7Ready, handle, network, style, only]);
 
-  // Cone pins and info cards (park, zones, the three largest enterprises and every enterprise with an alert).
+  // Cone pins and info cards: park, zones, the three largest enterprises and every enterprise with an alert.
   useEffect(() => {
     const current = handle.current;
     if (!ready || !current) return;
     const { AMap, map } = current;
-    // Pins never collide; cards avoid each other (larger flows win).
     if (!labels.current) {
       labels.current = { pins: new AMap.LabelsLayer({ zIndex: 165, collision: false }), cards: new AMap.LabelsLayer({ zIndex: 170, collision: true, allowCollision: false }) };
       map.add([labels.current.pins, labels.current.cards]);
     }
     const { pins, cards } = labels.current;
     pins.clear(); cards.clear();
-    const total = parkTotal ?? network.sites.reduce((a, s) => a + s.value, 0);
+    const mixText = (list: { carrier: string; value: number }[], sum: number) => list.slice().sort((a, b) => b.value - a.value).slice(0, 2)
+      .map((c) => `${c.carrier} ${fmt(c.value / (sum || 1) * 100, 0)}%`).join(" · ");
+    // Alerts rank highest, then the park and zone cards, then by flow size.
     const add = (at: Position, card: { image: string; size: [number, number] }, rank: number, pinColor: string) => {
       const pin = conePin(pinColor, 22);
       pins.add(new AMap.LabelMarker({ position: at, zIndex: 3, icon: { image: pin.image, size: pin.size, anchor: "bottom-center" } }));
-      // One collision layer for every card: alerts rank highest, then the park and zone cards, then by flow size.
       cards.add(new AMap.LabelMarker({ position: at, zIndex: rank >= 1e5 ? 6 : 4, rank, icon: { image: card.image, size: card.size, anchor: "bottom-left", offset: [14, -30] } }));
     };
-    add(network.park, infoCard(`信阳经开区 · 园区${mode === "energy" ? "综合能耗" : "碳排放"}`, [[`${year} 年`, `${fmt(total, 0)} ${style.unit}`], ["重点企业", `${network.sites.length} 家`]], style.card), 1e6, style.pin);
+    add(network.park, infoCard(`信阳经开区 · 园区${mode === "energy" ? "综合能耗" : "碳排放"}`, [[`${year} 年`, `${fmt(total, 0)} ${style.unit}`], ["主要品种", mixText(network.totals.map((t) => ({ carrier: t.name, value: t.value })), network.totals.reduce((a, t) => a + t.value, 0))]], style.card), 1e6, style.pin);
     for (const zone of network.zones) {
-      add(zone.at, infoCard(zoneFeature(zone.key)?.properties.name ?? zone.key, [[`${style.label}汇聚`, `${fmt(zone.value, 0)} ${style.unit}`], ["占园区", `${fmt(zone.value / (total || 1) * 100, 1)}%`]], style.card), 1e5, style.pin);
+      add(zone.at, infoCard(zoneFeature(zone.key)?.properties.name ?? zone.key, [[`${style.label}汇聚`, `${fmt(zone.value, 0)} ${style.unit}`], ["占园区", `${fmt(zone.value / (total || 1) * 100, 1)}%`], ["主要品种", mixText(zone.carriers, zone.value)]], style.card), 1e5, style.pin);
     }
-    const shown = [...network.sites].sort((a, b) => b.value - a.value).filter((s, i) => i < 3 || s.alert);
-    for (const site of shown) {
-      const rows: [string, string][] = [[mode === "energy" ? "综合能耗" : "碳排放", `${fmt(site.value, 0)} ${style.unit}`], ["占园区", `${fmt(site.value / (total || 1) * 100, 1)}%`]];
+    for (const site of [...network.sites].sort((a, b) => b.value - a.value).filter((s, i) => i < 3 || s.alert)) {
+      const rows: [string, string][] = [[mode === "energy" ? "综合能耗" : "碳排放", `${fmt(site.value, 0)} ${style.unit}`], ["主要品种", mixText(site.carriers, site.value)]];
       if (site.intensity != null) rows.push(["强度", `${fmt(site.intensity, 3)} ${style.intensityUnit}`]);
       if (site.alert) rows.unshift(["状态", "存在未处理预警"]);
       add(site.at, infoCard(shortName(site.name), rows, site.alert ? ALERT : style.card, site.alert), site.alert ? 5e6 : site.value, site.alert ? ALERT : style.pin);
     }
-  }, [ready, handle, network, mode, style, parkTotal, year]);
+  }, [ready, handle, network, mode, style, total, year]);
   useEffect(() => () => { labels.current = null; flowLayers.current = []; }, []);
 
+  const carrierSum = network.totals.reduce((a, t) => a + t.value, 0);
   return <div className="flowmap">
     <div ref={container} className="twin-map" role="img" aria-label={`${style.label}网络互动地图`} />
     {!ready && !error && <div className="map-loading" role="status"><span className="spinner" />正在载入园区三维底图…</div>}
     {error && <div className="map-error" role="status">{error}<button type="button" className="btn-ghost small" onClick={retry}>重试</button></div>}
+    <aside className="flowmap-panel glass" aria-label="流向说明">
+      <span className="eyebrow">{style.label}说明 · {year}</span>
+      <p className="flowmap-direction">{style.direction}</p>
+      <ol className="flowmap-carriers">
+        <li><button type="button" className={only === null ? "on" : ""} onClick={() => setOnly(null)}><i style={{ background: "linear-gradient(90deg,#4cb4ff,#ffab3d,#ff6b81)" }} /><span>全部品种</span><b className="num">{fmt(carrierSum, 0)}<small>{style.unit}</small></b></button></li>
+        {network.totals.map((c) => <li key={c.name}><motion.button type="button" whileHover={{ x: 2 }} className={only === c.name ? "on" : ""} onClick={() => setOnly(only === c.name ? null : c.name)}>
+          <i style={{ background: c.color }} /><span>{c.name}</span><b className="num">{fmt(c.value, 0)}<small>{fmt(c.value / (carrierSum || 1) * 100, 1)}%</small></b>
+          <em><u style={{ width: `${c.value / (network.totals[0]?.value || 1) * 100}%`, background: c.color }} /></em>
+        </motion.button></li>)}
+      </ol>
+      <small className="flowmap-note">线宽表示量，光点与箭头表示方向；点选品种只看该品种的流向。</small>
+    </aside>
     <div className="flowmap-legend glass">
-      <span><i className="dash" style={{ ["--c" as string]: style.line }} />{mode === "energy" ? "园区 → 片区 → 企业 供能" : "企业 → 片区 → 园区 排放汇聚"}</span>
-      <span><i className="dot" style={{ ["--c" as string]: style.glow }} />汇聚节点</span>
+      <span><i className="dot" style={{ ["--c" as string]: style.card }} />汇聚节点</span>
       {network.sites.some((s) => s.alert) && <span><i className="dot" style={{ ["--c" as string]: ALERT }} />存在未处理预警</span>}
     </div>
   </div>;

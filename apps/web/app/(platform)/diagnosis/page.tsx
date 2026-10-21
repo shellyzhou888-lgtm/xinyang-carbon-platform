@@ -6,7 +6,8 @@ import { LinkTabs, Reveal } from "@/components/MotionParts";
 import DiagnosisSteps from "@/components/DiagnosisSteps";
 import { TrendChart } from "@/components/EnergyCharts";
 import MetricChart from "@/components/MetricChart";
-import AlertEvidence from "@/components/AlertEvidence";
+import DiagnosisAlerts from "@/components/DiagnosisAlerts";
+import StrategyReportButton from "@/components/StrategyReportButton";
 import { Roadmap } from "@/components/CarbonDataSections";
 import { cleanSource } from "@/lib/source-text";
 import { C } from "@/lib/chart-theme";
@@ -35,12 +36,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
         <LinkTabs id="alert-status" label="预警状态" active={sp.status === "all" ? "all" : "open"} items={[{ key: "open", label: "待处理预警", href: `/diagnosis?year=${year}`, badge: openAlerts.length }, { key: "all", label: "全部与历史", href: `/diagnosis?year=${year}&status=all` }]} />
         <MoreLink href={`/admin?year=${year}`}>数据质量工单</MoreLink>
       </div>
-      {visibleAlerts.length ? visibleAlerts.map((row, index) => <Reveal key={row.id} delay={Math.min(index, 6) * 0.04}><article className={`alert-card risk-${["critical", "high"].includes(row.severity) ? "high" : "medium"}`}>
-        <header><b>{row.node}</b><span className={`tag ${row.status === "open" ? "risk-medium" : ""}`}>{row.status === "open" ? "处理中" : row.status === "resolved" ? "已解决" : "已确认"}</span></header>
-        <p>{row.message}</p>
-        <div className="figures"><span>观测值<b>{fmt(row.observed, 4)}</b></span><span>基线<b>{fmt(row.baseline, 4)}</b></span></div>
-        <AlertEvidence value={row.root_cause} />
-      </article></Reveal>) : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}
+      {visibleAlerts.length ? <DiagnosisAlerts alerts={visibleAlerts} openCount={openAlerts.length} /> : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}
     </div>}
 
     {tab === "causes" && <div className="grid-main-side" style={{ marginTop: 0 }}>
@@ -58,7 +54,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
     </div>}
 
     {tab === "strategies" && <div className="stack">
-      <Reveal><Panel title="预警关联策略推荐" subtitle="节能量与减碳量按策略参数测算；不同策略可能重叠，不直接求和。">
+      <Reveal><Panel title="预警关联策略推荐" subtitle="节能量与减碳量按策略参数测算；不同策略可能重叠，不直接求和。" action={<StrategyReportButton year={year} />}>
         {extended?.plans.length ? <div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th className="num">预计节能 / tce</th><th className="num">预计减碳 / tCO₂</th></tr></thead>
           <tbody>{extended.plans.map((row, index) => <tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td className="num">{fmt(row.tce_saving)}</td><td className="num">{fmt(row.co2_reduction_t)}</td></tr>)}</tbody></table></div>
           : <Empty title="本年度暂无预警关联策略" />}

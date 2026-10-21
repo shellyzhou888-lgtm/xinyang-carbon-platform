@@ -1,5 +1,5 @@
 import "server-only";
-import { admin, createManagerAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, getEnterpriseMonthly, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
+import { admin, createManagerAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, getEnterpriseEnergyMix, getEnterpriseMonthly, importWorkbook, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
 
 /** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
 export function adminApi() {
@@ -31,6 +31,17 @@ export function carbonManagement(year: number) {
 export function enterpriseMonthly(year: number) {
   initPool(loadConfig({ requireModelKey: false }).databaseUrl);
   return getEnterpriseMonthly(year);
+}
+
+/** Energy and CO2 per enterprise and energy carrier (flow network map). */
+export function enterpriseEnergyMix(year: number) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getEnterpriseEnergyMix(year);
+}
+
+/** Workbook import from the admin page; governance runs in the background after a real import. */
+export function importData(request: Parameters<typeof importWorkbook>[1]) {
+  return importWorkbook(loadConfig({ requireModelKey: false }), request);
 }
 
 export function inventory() {

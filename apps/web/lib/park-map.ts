@@ -139,7 +139,11 @@ export interface ParkMap { map: AmapApi; AMap: AmapApi; scene: any; satellite: a
  * Creates an AMap 3D map (dark or light vector style by theme, 3D buildings) with an AntV L7 scene on top.
  * `satellite` adds imagery layers (hidden until shown by the caller). Returns refs plus ready flags.
  */
-export function useParkMap(container: RefObject<HTMLDivElement | null>, options: { center?: Position; zoom?: number; pitch?: number; rotation?: number; satellite?: boolean; limit?: boolean; zooms?: [number, number] } = {}) {
+/** Henan province extent (GCJ-02, slightly padded): wider maps may be dragged anywhere inside it but not beyond. */
+export const HENAN_BOUNDS: [Position, Position] = [[110.3, 31.3], [116.7, 36.4]];
+const PARK_BOUNDS: [Position, Position] = [[114.0, 32.125], [114.2, 32.275]];
+
+export function useParkMap(container: RefObject<HTMLDivElement | null>, options: { center?: Position; zoom?: number; pitch?: number; rotation?: number; satellite?: boolean; limit?: boolean | [Position, Position]; zooms?: [number, number] } = {}) {
   const handle = useRef<ParkMap | null>(null);
   const [ready, setReady] = useState(false);
   const [l7Ready, setL7Ready] = useState(false);
@@ -158,6 +162,8 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
       element.className = "amap-inner"; element.style.cssText = "width:100%;height:100%;";
       container.current.appendChild(element);
       map = new AMap.Map(element, { viewMode: "3D", zoom, center, pitch, rotation, zooms,
+        // pitchEnable is off by default in AMap; with it on, right-drag / Ctrl-drag tilts and rotates the 3D view.
+        pitchEnable: true, rotateEnable: true, dragEnable: true, zoomEnable: true,
         mapStyle: isLight() ? "amap://styles/whitesmoke" : "amap://styles/dark", showBuildingBlock: true, features: ["bg", "road", "building", "point"],
         // Sky behind a tilted camera matches the page background instead of AMap's default blue.
         skyColor: isLight() ? "#e9ece5" : "#121318" });
@@ -169,7 +175,7 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
         map.on("complete", () => { window.clearTimeout(timer); resolve(); });
       });
       if (disposed) return;
-      if (limit) map.setLimitBounds(new AMap.Bounds([114.0, 32.125], [114.2, 32.275]));
+      if (limit) { const [sw, ne] = limit === true ? PARK_BOUNDS : limit; map.setLimitBounds(new AMap.Bounds(sw, ne)); }
       const imagery = satellite ? [new AMap.TileLayer.Satellite({ zIndex: 10 }), new AMap.TileLayer.RoadNet({ zIndex: 11 })] : [];
       if (imagery.length) { map.add(imagery); imagery.forEach((layer) => layer.hide()); }
       handle.current = { map, AMap, scene: null, satellite: imagery };

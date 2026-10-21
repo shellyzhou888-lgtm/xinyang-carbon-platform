@@ -75,10 +75,8 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     <div className="app-main">
       <header className="topbar">
         <div className="topbar-title">
-          <Image className="topbar-logo only-dark" src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized />
-          <Image className="topbar-logo only-light" src="/brand/logo-horizontal-on-light.svg" alt="" width={900} height={196} priority unoptimized />
-          <span className="topbar-sep" aria-hidden="true" />
-          <span className="topbar-page">{active?.title || "园区工作台"}</span>
+          {/* The rail already shows the logo mark; the bar carries only the platform name. */}
+          <span className="topbar-name">信阳经开区能碳管理平台</span>
         </div>
         <div className="topbar-right">
           <StatusPill />

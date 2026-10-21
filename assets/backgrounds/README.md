@@ -1,6 +1,6 @@
 # Frontend background references
 
-The five English-named WebP files in [`reference/`](reference/) are visual references for future front-end backgrounds, each approximately 1672 × 941 px. They are not active page backgrounds.
+The five English-named WebP files in [`reference/`](reference/) are visual references for front-end backgrounds, each approximately 1672 × 941 px. A copy of `user-supplied-green-campus.webp` is active on the login page at `apps/web/public/backgrounds/login-green-campus.webp`; its depicted location remains unverified.
 
 | File | Origin | Intended reference |
 | --- | --- | --- |

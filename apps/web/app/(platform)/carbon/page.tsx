@@ -1,4 +1,4 @@
-import { charts, management, overview, carbonManagement } from "@/lib/server";
+import { charts, management, overview, carbonManagement, enterpriseEnergyMix } from "@/lib/server";
 import { selectedYear } from "@/lib/workspace";
 import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
@@ -13,7 +13,8 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const sp = await searchParams, year = selectedYear(sp.year), tab = sp.tab === "flow" ? "flow" : "analysis";
   let data: Awaited<ReturnType<typeof overview>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, extended: Awaited<ReturnType<typeof carbonManagement>> | null = null, error = "";
   let chart: Awaited<ReturnType<typeof charts>> | null = null;
-  try { [data, detail, extended, chart] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year)]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
+  let mix: Awaited<ReturnType<typeof enterpriseEnergyMix>> = [];
+  try { [data, detail, extended, chart, mix] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year), tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([])]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const annual = detail?.annual || [];
   const row = (y: number) => annual.find((item) => item.year === y);
   const intensityOf = (y: number) => { const r = row(y); return r?.co2_t != null && r.value_added ? r.co2_t / r.value_added : null; };
@@ -66,7 +67,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
     </div> : <div className="stack">
       <Reveal><Panel className="panel-flush" title="碳流网络互动地图" subtitle="企业 → 产业片区 → 园区的排放汇聚；卡片显示排放量、占比与单位产值 CO₂，红色光罩为存在未处理预警的企业"
         action={<MoreLink href={`/energy?year=${year}&tab=flow`}>能流网络</MoreLink>}>
-        <FlowNetworkMap mode="carbon" year={year} parkTotal={data?.co2_t} nodes={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))}
+        <FlowNetworkMap mode="carbon" year={year} parkTotal={data?.co2_t} mix={mix} nodes={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))}
           alerts={(detail?.alerts || []).filter((item) => item.status === "open").map((item) => item.node)} />
       </Panel></Reveal>
     </div>}

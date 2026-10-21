@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Image from "next/image";
-import ParkLineArt from "@/components/ParkLineArt";
 import LoginForm from "@/components/LoginForm";
 import { enterprises } from "@/lib/park-geography";
 import { authConfigured, readSession, safeNext, SESSION_COOKIE } from "@/lib/auth";
@@ -16,10 +15,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main className="login-page">
       <section className="login-visual" aria-hidden="false">
         <div className="login-visual-head">
-          <Image src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized className="login-logo only-dark" />
-          <Image src="/brand/logo-horizontal-on-light.svg" alt="" width={900} height={196} priority unoptimized className="login-logo only-light" />
+          <Image src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized className="login-logo" />
         </div>
-        <ParkLineArt />
         <div className="login-visual-copy">
           <span className="eyebrow">XINYANG ECONOMIC-TECHNOLOGICAL DEVELOPMENT ZONE</span>
           <h1>能源与碳排放，<br />在一张图上协同管理。</h1>

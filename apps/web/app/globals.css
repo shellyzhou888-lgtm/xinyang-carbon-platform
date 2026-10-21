@@ -577,21 +577,22 @@ table.cols { background: var(--surface); border-radius: 16px; padding: 8px; }
 
 /* ---------- Login ---------- */
 .login-page { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(400px, 1fr); }
-.login-visual { position: relative; overflow: hidden; padding: 32px 48px; display: flex; flex-direction: column; background: radial-gradient(900px 700px at 40% 50%, rgb(var(--energy-rgb) / 0.08), transparent 70%), var(--bg); }
+.login-visual { position: relative; overflow: hidden; padding: 32px 48px; display: flex; flex-direction: column; color: #f4f6f2; background-color: #10201e; background-image: linear-gradient(180deg, rgb(7 19 18 / 0.66), rgb(7 19 18 / 0.12) 42%, rgb(7 19 18 / 0.88)), linear-gradient(90deg, rgb(7 19 18 / 0.42), transparent 75%), url("/backgrounds/login-green-campus.webp"); background-size: cover; background-position: center; }
 .login-visual-head { position: relative; z-index: 2; }
-.login-logo { height: 64px; width: auto; }
+.login-logo { display: block; width: min(100%, 760px); height: auto; filter: drop-shadow(0 8px 24px rgb(0 0 0 / 0.48)); }
 .park-line-art { position: absolute; inset: 6% 4% 18% 4%; width: 92%; height: 76%; }
 .park-line-art .art-zone { stroke-dasharray: 1; stroke-dashoffset: 1; fill-opacity: 0; animation: zone-draw 2.2s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 @keyframes zone-draw { 70% { fill-opacity: 0; } to { stroke-dashoffset: 0; fill-opacity: 0.1; } }
 .park-line-art .art-label { font-size: 16px; font-weight: 600; letter-spacing: 0.04em; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
 .park-line-art .art-sub { font-size: 12px; fill: rgb(var(--text-rgb) / 0.55); font-family: var(--font-num); paint-order: stroke; stroke: var(--bg); stroke-width: 3px; }
 .login-visual-copy { position: relative; z-index: 2; margin-top: auto; max-width: 560px; }
-.login-visual-copy h1 { margin: 16px 0 16px; font-size: 32px; line-height: 1.25; font-weight: 650; letter-spacing: 0.01em; }
-.login-visual-copy p { margin: 0; color: var(--text-2); font-size: 14px; }
+.login-visual-copy h1 { margin: 16px 0 16px; font-size: 32px; line-height: 1.25; font-weight: 650; letter-spacing: 0.01em; text-shadow: 0 2px 16px rgb(0 0 0 / 0.48); }
+.login-visual-copy p { margin: 0; color: #e0e9e2; font-size: 14px; text-shadow: 0 1px 8px rgb(0 0 0 / 0.5); }
+.login-visual-copy .eyebrow, .login-facts dt { color: #dbe8dd; }
 .login-facts { display: flex; gap: 32px; margin: 32px 0 0; }
 .login-facts div { display: grid; gap: 4px; }
-.login-facts dt { color: var(--text-3); font-size: 14px; }
-.login-facts dd { margin: 0; font-family: var(--font-num); font-size: 32px; color: var(--accent); }
+.login-facts dt { font-size: 14px; }
+.login-facts dd { margin: 0; font-family: var(--font-num); font-size: 32px; color: #c4ef8a; text-shadow: 0 1px 10px rgb(0 0 0 / 0.45); }
 .login-panel { display: grid; place-items: center; padding: 40px; background: linear-gradient(180deg, rgb(var(--base) / 0.6), rgb(var(--base) / 0.9)); }
 .login-card { width: min(400px, 100%); display: grid; gap: 8px; }
 .login-card h2 { margin: 8px 0 0; font-size: 32px; font-weight: 650; }
@@ -679,21 +680,20 @@ table.cols { background: var(--surface); border-radius: 16px; padding: 8px; }
   linear-gradient(180deg, rgb(var(--base) / 0.5) 0%, transparent 16%, transparent 84%, rgb(var(--base) / 0.6) 100%); }
 
 
-.indicator-headline { display: flex; align-items: center; gap: 16px; margin: 4px 0 8px; }
-.indicator-headline strong { font-size: 32px; font-weight: 500; line-height: 1; background: linear-gradient(135deg, var(--accent), var(--energy)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.indicator-headline span { font-size: 14px; color: var(--text-2); line-height: 1.45; }
-.indicator-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.indicator-list li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; padding: 8px 8px; border-radius: 10px; background: rgb(var(--ink) / 0.035); }
-.indicator-check { width: 20px; height: 20px; border-radius: 8px; display: grid; place-items: center; background: rgb(var(--energy-rgb) / 0.16); color: var(--energy); margin-top: 4px; }
-.indicator-check svg { width: 13px; height: 13px; }
-.indicator-row { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
-.indicator-name { font-size: 14px; color: var(--text-2); line-height: 1.4; }
-.indicator-row strong { font-size: 16px; font-weight: 500; white-space: nowrap; }
-.indicator-row strong small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin-left: 4px; }
-.indicator-bar { position: relative; height: 4px; border-radius: 2px; background: rgb(var(--ink) / 0.08); margin: 8px 0 4px; }
-.indicator-bar i { position: absolute; inset: 0; transform-origin: left; border-radius: 2px; background: linear-gradient(90deg, var(--energy), var(--accent)); box-shadow: 0 0 8px rgb(var(--energy-rgb) / 0.45); }
-.indicator-bar b { position: absolute; top: -3px; width: 2px; height: 10px; margin-left: -4px; border-radius: 1px; background: #fff; opacity: 0.85; }
-.indicator-bench { font-size: 12px; color: var(--text-3); }
+.overview-screen .map-assessment { position: absolute; z-index: 5; top: calc(var(--topbar) + 104px); left: 50%; transform: translateX(-50%); width: min(620px, calc(100% - 770px)); }
+.indicator-board { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 20px; padding: 18px 20px; border: 1px solid rgb(var(--accent-rgb) / 0.3); border-radius: 18px; background: linear-gradient(125deg, rgb(var(--accent-rgb) / 0.15), transparent 62%), var(--glass); }
+.indicator-hero { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-width: 0; }
+.indicator-eyebrow { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); white-space: nowrap; }
+.indicator-eyebrow svg { color: var(--energy); }
+.indicator-count { display: flex; align-items: baseline; gap: 8px; margin-top: 7px; color: var(--accent); font-family: var(--font-num); font-size: clamp(56px, 5vw, 76px); font-weight: 650; line-height: 1; letter-spacing: -0.05em; }
+.indicator-count small { color: var(--text); font-family: var(--font); font-size: 16px; font-weight: 600; letter-spacing: 0; }
+.indicator-caption { margin-top: 8px; color: var(--text-3); font-size: 11px; }
+.indicator-summary-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-content: center; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
+.indicator-summary-list li { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 12px; color: var(--text-2); }
+.indicator-summary-list li > svg { flex: none; color: var(--energy); }
+.indicator-summary-list li > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.indicator-summary-list strong { margin-left: auto; flex: none; color: var(--text); font-size: 14px; font-weight: 600; }
+.indicator-summary-list small { margin-left: 2px; color: var(--text-3); font-family: var(--font); font-size: 10px; font-weight: 400; }
 
 
 
@@ -703,13 +703,23 @@ table.cols { background: var(--surface); border-radius: 16px; padding: 8px; }
   .overview-screen .map-float { width: 300px; }
   .overview-screen .map-drawer { right: 332px; }
   .overview-screen .map-bottom { max-width: calc(100% - 660px); }
+  .overview-screen .map-assessment { width: min(620px, calc(100% - 660px)); }
 }
 @media (max-width: 1180px) {
   .app[data-screen="overview"] .page { padding: 8px 16px 40px; }
   .overview-screen { height: auto; margin-top: 0; }
   .overview-screen .map-top { top: 12px; }
+  .overview-screen .map-assessment { position: relative; top: auto; left: auto; transform: none; width: min(100%, 760px); align-self: center; }
   .overview-screen .map-float { width: auto; }
   .overview-screen .map-bottom { max-width: calc(100% - 24px); }
+}
+@media (max-width: 600px) {
+  .indicator-board { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  .indicator-hero { display: grid; grid-template-columns: auto 1fr; column-gap: 12px; }
+  .indicator-eyebrow { grid-column: 1 / -1; }
+  .indicator-count { font-size: 58px; }
+  .indicator-caption { align-self: end; margin-bottom: 6px; }
+  .indicator-summary-list { gap: 8px; }
 }
 
 /* ---------- Energy & carbon workspaces: KPI cards, composition, contribution ---------- */
@@ -838,11 +848,6 @@ table.cols { background: var(--surface); border-radius: 16px; padding: 8px; }
 .leader-list i { grid-column: 2 / -1; height: 3px; border-radius: 2px; background: var(--surface-3); overflow: hidden; }
 .leader-list em { display: block; height: 100%; border-radius: 2px; background: var(--bar); }
 
-/* Indicator board as a page panel (energy page). */
-.indicator-board .indicator-headline { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.indicator-board .indicator-headline strong { font-size: 32px; }
-.indicator-board .indicator-list { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; }
-.indicator-board .indicator-list li { padding: 16px 16px; border-radius: 12px; background: var(--surface-2); }
 /* Compact honour rows: trophy, category and count on one line, holders right below without extra padding. */
 .trophy-list li { padding: 8px 8px; gap: 8px; }
 .trophy-body { gap: 4px; }
@@ -959,3 +964,60 @@ p, li, td, th { line-height: 1.55; }
 .emitter-meta small { color: var(--text-2); }
 /* Honour badges: solid glyphs with a soft glow, no tile or outline. */
 .honor-icon { flex: none; filter: drop-shadow(0 4px 10px color-mix(in srgb, currentColor 35%, transparent)); }
+
+/* ---------- Data import panel ---------- */
+.import-panel { display: grid; gap: 16px; }
+.import-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.import-field { display: grid; gap: 8px; align-content: start; padding: 16px; border-radius: 12px; background: var(--surface-2); }
+.import-field > span:first-child { font-weight: 600; }
+.import-field small { color: var(--text-3); font-size: 12px; }
+.import-field select { padding: 8px; border-radius: 10px; border: 0; background: var(--surface-3); color: var(--text); }
+.import-drop { position: relative; cursor: pointer; }
+.import-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.import-file { display: flex; align-items: center; gap: 8px; padding: 16px; border-radius: 10px; border: 1px dashed var(--surface-4); color: var(--text-2); font-size: 14px; }
+.import-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.import-actions .btn-primary { display: inline-flex; align-items: center; gap: 8px; }
+.import-result { display: grid; gap: 4px; padding: 16px; border-radius: 12px; font-size: 14px; }
+.import-result.ok { background: rgb(var(--energy-rgb) / 0.1); }
+.import-result.ok b { color: var(--energy); }
+.import-result.bad { background: rgb(var(--danger-rgb) / 0.1); }
+.import-result.bad b { color: var(--danger); }
+@media (max-width: 900px) { .import-steps { grid-template-columns: minmax(0, 1fr); } }
+.topbar-name { font-size: 24px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; background: linear-gradient(90deg, var(--text), color-mix(in srgb, var(--accent) 60%, var(--text))); -webkit-background-clip: text; background-clip: text; color: transparent; }
+@media (max-width: 900px) { .topbar-name { font-size: 18px; } }
+/* Overview: panel tags as rounded pills (like the zone switch), honour tiles with aligned circled counts. */
+.brief-tag { display: inline-flex; align-items: center; padding: 4px 16px; border-radius: 10px; font-size: 16px; font-weight: 600; letter-spacing: 0.04em; }
+.brief-tag.energy { background: rgb(var(--energy-rgb) / 0.16); color: var(--energy); }
+.brief-tag.carbon { background: rgb(var(--carbon-rgb) / 0.16); color: var(--carbon); }
+.overview-screen .trophy-list li { padding: 8px; gap: 8px; }
+.overview-screen .trophy-name { display: grid; grid-template-columns: 24px minmax(0, 1fr) 24px; align-items: center; gap: 8px; width: 100%; font-size: 14px; }
+.overview-screen .trophy-name > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.overview-screen .trophy-name strong { justify-self: end; font-size: 18px; line-height: 1; font-weight: 500; }
+.overview-screen .trophy-holders { padding-left: 32px; }
+.trophy-hero { cursor: default; }
+/* Zone card details, camera buttons, detail popup at the top right. */
+.zone-facts { margin: 0; display: grid; gap: 8px; }
+.zone-facts div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+.zone-facts dt { color: var(--text-3); }
+.zone-facts dd { margin: 0; color: var(--text); }
+.zone-facts dd small { display: block; color: var(--text-3); font-size: 12px; margin-top: 4px; }
+.zone-members button { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 8px; }
+.zone-member-head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.zone-member-head b { font-size: 14px; font-weight: 600; white-space: nowrap; }
+.zone-member-head em { font-style: normal; font-size: 12px; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zone-member-figures { font-size: 14px; color: var(--text-2); }
+.zone-member-figures small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin: 0 4px 0 2px; }
+.zone-member-honors { display: flex; flex-wrap: wrap; gap: 4px; }
+.zone-honor { display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; border-radius: 8px; background: var(--surface-3); font-size: 12px; color: var(--text-2); }
+.zone-listed > span { font-size: 12px; color: var(--text-3); }
+.zone-listed ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.zone-listed li { display: grid; gap: 0; padding: 8px; border-radius: 10px; background: var(--surface-2); }
+.zone-listed b { font-size: 14px; font-weight: 500; }
+.zone-listed small { font-size: 12px; color: var(--text-3); }
+.camera-buttons { display: inline-flex; gap: 4px; padding: 0 4px; border-left: 1px solid var(--surface-4); border-right: 1px solid var(--surface-4); }
+.camera-buttons button { padding: 8px !important; }
+.overview-screen .map-drawer.detail { top: calc(var(--topbar) + 8px); bottom: auto; right: 372px; }
+.overview-screen .map-stage[data-zone-mode="true"] .map-drawer.detail { right: 16px; }
+.twin-years { display: inline-flex; gap: 4px; padding-left: 8px; border-left: 1px solid var(--surface-4); }
+.twin-years button { border: 0; background: transparent; color: var(--text-3); font-family: var(--font-num); font-size: 14px; padding: 4px 8px; border-radius: 8px; }
+.twin-years button.on { background: var(--surface-4); color: var(--text); font-weight: 600; }

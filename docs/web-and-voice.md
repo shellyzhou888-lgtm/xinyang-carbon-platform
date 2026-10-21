@@ -59,6 +59,7 @@
    - 小云后台用 dotenv 读取 `.env.xiaoyun`，**已存在的进程环境变量优先**。若启动脚本向进程注入了旧 Key，会覆盖文件里的新 Key；换 Key 后请直接用 `npm run voice` 启动，并用 `http://127.0.0.1:8766/api/health` 确认 `voiceReady`、`agentReady` 均为 `true`。
    - 语音接不通时依次检查：8766 端口是否在监听（后台进程停止后网页不会报错，只是不出现小云）；`.env.xiaoyun` 中两个 Key 是否为空；千问 Key 与 `QWEN_REALTIME_URL` 是否属于同一工作空间。
 5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先自动构建 `packages/db-agent`），打开 http://localhost:3001 。未登录访问任何页面都会跳转到 `/login`。
+   - 开发服务器运行期间若修改了 `packages/db-agent/src` 的导出，先在 `packages/db-agent` 运行 `npm run build`，再重启网站开发服务器；`predev` 只在启动时构建一次，旧的 `dist/index.mjs` 会导致“Export ... doesn't exist in target module”。
 6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
 
 ### 3.2 连接状态与常见“数据连接异常”（2026-10-21）

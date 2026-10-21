@@ -1,7 +1,7 @@
 import { charts, enterpriseMonthly, management, overview } from "@/lib/server";
 import ParkSpatialOverview, { type MapEnterprise, type MapHonor } from "@/components/ParkSpatialOverview";
 import { DataError } from "@/components/WorkspaceParts";
-import { CarbonBrief, EmitterRanking, EnergyBrief, HonorShowcase, type EmitterRow } from "@/components/OverviewBoards";
+import { CarbonBrief, EmitterRanking, EnergyBrief, HonorShowcase, IndicatorBoard, type EmitterRow } from "@/components/OverviewBoards";
 import { enterprises } from "@/lib/park-geography";
 import { honorKind } from "@/lib/honors";
 import { selectedYear } from "@/lib/workspace";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Full-screen park dashboard: the map fills the viewport; energy floats on the left (under the honour showcase)
- * and carbon on the right. Indicator achievements live on the energy page.
+ * and carbon on the right. Achieved indicators form a compact status marker over the map.
  */
 export default async function Home({ searchParams }: { searchParams: Promise<{ year?: string; enterprise?: string }> }) {
   const sp = await searchParams;
@@ -57,6 +57,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
 
   return <div className="overview-screen">
     <DataError error={error} />
-    <ParkSpatialOverview year={year} ranking={chartData?.ranking} metrics={metrics} honors={honors} initialEnterprise={sp.enterprise} left={left} right={right} />
+    <ParkSpatialOverview year={year} ranking={chartData?.ranking} metrics={metrics} honors={honors} initialEnterprise={sp.enterprise} left={left} right={right}
+      assessment={data?.achieved.length ? <IndicatorBoard rows={data.achieved} year={year} /> : undefined} />
   </div>;
 }

@@ -19,3 +19,32 @@ export function getEnterpriseMonthly(year: number, profile = "GIP_2026"): Promis
       from en full join co on co.code = en.code and co.m = en.m
      order by 1, 3`, [year, profile])).rows);
 }
+
+/** Energy (tce) and CO2 (t) per enterprise and energy carrier for one year; drives the flow network map. Read-only. */
+export interface EnterpriseEnergyMix { code: string; carrier: string; tce: number; co2_t: number }
+
+export function getEnterpriseEnergyMix(year: number, profile = "GIP_2026"): Promise<EnterpriseEnergyMix[]> {
+  return readOnly(async (c) => (await c.query(`
+    with ent as (select node_id, code from core.org_node where node_type = 'enterprise' and is_active),
+    nodes as (select e.code, engine.accounting_nodes(e.node_id) as node_id from ent e),
+    carrier as (select code, case
+        when category = 'electricity' and is_renewable then '绿电'
+        when category = 'electricity' then '电网电力'
+        when category = 'gas' then '天然气'
+        when category = 'heat' then '热力'
+        when category = 'oil' then '油品'
+        when category = 'coal' then '煤炭'
+        else '生物质' end as carrier from core.energy_type),
+    en as (select n.code, k.carrier,
+                  sum(case a.flow when 'send_out' then -a.tce when 'consumption' then a.tce when 'receive' then a.tce else 0 end) tce
+             from fact.energy_activity a join nodes n on n.node_id = a.node_id join carrier k on k.code = a.energy_type_code
+            where a.is_current and extract(year from a.period_month) = $1 group by 1, 2),
+    co as (select n.code, k.carrier, sum(e.co2_t) co2
+             from fact.carbon_emission e join nodes n on n.node_id = e.node_id join carrier k on k.code = e.energy_type_code
+            where e.is_current and e.profile_code = $2 and extract(year from e.period_month) = $1 group by 1, 2)
+    select coalesce(en.code, co.code) code, coalesce(en.carrier, co.carrier) carrier,
+           round(coalesce(en.tce, 0)::numeric, 1)::float tce, round(coalesce(co.co2, 0)::numeric, 1)::float co2_t
+      from en full join co on co.code = en.code and co.carrier = en.carrier
+     where coalesce(en.tce, 0) > 0 or coalesce(co.co2, 0) > 0
+     order by 1, 3 desc`, [year, profile])).rows);
+}

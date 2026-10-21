@@ -16,3 +16,9 @@
 - 检查 `git diff` 与 `git status`，避免提交密钥、临时文件和与任务无关的改动。
 - 用包含版本号和修改摘要的提交信息，例如 `v0.1.1: 补充数据接入流程`。提交后将当前分支及对应的 `vX.Y.Z` 标签推送到本项目 GitHub 仓库。
 - 任务结束时报告版本号、主要修改内容、提交哈希和 GitHub 链接。若推送失败，要明确说明原因与尚未同步的内容，不得声称上传成功。
+
+## 数据导入与语义目录
+
+- 导入数据优先用现成通道：网站“后台 → 数据管理 → 导入数据”、`packages/ingest` 的 `npm run ingest` / `npm run sync:*`；这些通道导入后会自动刷新语义目录、起草字段说明并跑数据检测。
+- 若直接用 SQL 写库、建表或改表结构，完成后在 `packages/db-agent` 运行 `npm run govern -- --if-changed --trigger import`，并在后台“数据治理”页审核新起草的说明。新表放 `lab` 或对应业务 schema，并为表和字段写 `COMMENT`。
+- 不要绕过 `raw.import_batch` 批次记录导入业务数据；修正数据新增一行并把旧行 `is_current` 置为 false，不删除。

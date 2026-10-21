@@ -28,3 +28,9 @@ export const IconTrophy = ({ size = 18, className }: IconProps) => <svg width={s
   <path d="M9.5 5.2v2.6" stroke="#fff" strokeOpacity={0.55} strokeWidth={1.4} strokeLinecap="round" />
 </svg>;
 export const IconAward = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><circle cx="12" cy="9" r="6" /><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7" /></svg>;
+export const IconRotateLeft = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="M3 11a9 9 0 1 0 2.5-5.7L3 8" /><path d="M3 3v5h5" /></svg>;
+export const IconRotateRight = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="M21 11a9 9 0 1 1-2.5-5.7L21 8" /><path d="M21 3v5h-5" /></svg>;
+export const IconTiltUp = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="m6 14 6-6 6 6M6 20l6-6 6 6" /></svg>;
+export const IconTiltDown = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="m6 4 6 6 6-6m-12 6 6 6 6-6" /></svg>;
+export const IconSpreadsheet = ({ size = 18, className }: IconProps) => <svg {...base(size, className)}><rect x="3" y="2" width="18" height="20" rx="2" /><path d="M8 2v20M3 8h18M3 15h18M14 8v14" /></svg>;
+export const IconUpload = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4" /></svg>;
