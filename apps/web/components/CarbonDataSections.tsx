@@ -8,10 +8,10 @@ export function BudgetComparison({ data, kind }: { data: CarbonManagementData | 
   const budget = data?.budget.find((row) => row.kind === kind), unit = kind === "energy" ? "tce" : "tCO₂";
   const color = kind === "energy" ? C.energy : C.carbon;
   const over = budget?.months.filter((row) => row.cumulative != null && row.budget_cumulative != null && row.cumulative > row.budget_cumulative).length ?? 0;
-  return <Panel title={`累计${kind === "energy" ? "能耗" : "排放"}与预算`} subtitle="预算为模拟目标，按月等额分配；模拟数据，仅供演示。"
+  return <Panel title={`累计${kind === "energy" ? "能耗" : "排放"}与预算`} subtitle="年度预算按月等额分配，与累计实际对比。"
     action={budget?.annual_budget != null ? <span className="panel-figure">年度预算 <b>{fmt(budget.annual_budget)}</b> {unit}</span> : undefined}>
     {budget?.annual_budget != null ? <>
-      <ComparisonChart labels={budget.months.map((row) => `${Number(row.month.slice(5))}月`)} unit={unit} label="累计实际与模拟预算比较"
+      <ComparisonChart labels={budget.months.map((row) => `${Number(row.month.slice(5))}月`)} unit={unit} label="累计实际与预算比较"
         series={[{ name: "累计实际", values: budget.months.map((row) => row.cumulative), color }, { name: "累计预算", values: budget.months.map((row) => row.budget_cumulative), color: "rgba(238,244,241,0.55)", dashed: true }]} />
       <div className="month-strip">{budget.months.map((row) => {
         const isOver = row.cumulative != null && row.budget_cumulative != null && row.cumulative > row.budget_cumulative;
@@ -24,12 +24,12 @@ export function BudgetComparison({ data, kind }: { data: CarbonManagementData | 
 
 export function Roadmap({ data }: { data: CarbonManagementData | null }) {
   const roadmap = data?.roadmap, years = [...new Set([...(roadmap?.actual.map((row) => row.year) || []), ...(roadmap?.scenarios.flatMap((row) => row.points.map((point) => point.year)) || [])])].sort();
-  return <Panel title="碳达峰情景路线图" subtitle={`历史值与策略参数含模拟估值；情景用于演示，不代表正式达峰承诺。批次 ${roadmap?.run_id || "—"}`}>
+  return <Panel title="碳达峰情景路线图" subtitle="历史实际与基准、低碳两种情景">
     {roadmap?.scenarios.length ? <>
       <ComparisonChart labels={years.map(String)} unit="tCO₂" label="历史排放与基准、低碳情景路线图" series={[
-        { name: "历史排放（含估值）", values: years.map((year) => roadmap.actual.find((row) => row.year === year)?.co2_t ?? null), color: "#e2e8e5" },
+        { name: "历史排放", values: years.map((year) => roadmap.actual.find((row) => row.year === year)?.co2_t ?? null), color: "#e2e8e5" },
         ...roadmap.scenarios.map((scenario, index) => ({ name: scenario.label || scenario.code, values: years.map((year) => scenario.points.find((row) => row.year === year)?.co2_t ?? null), color: index ? C.energy : C.carbon, dashed: true })),
-        { name: "模拟达峰上限", values: years.map((year) => data?.targets.find((row) => row.kind === "carbon_peak_t" && row.year === year)?.value ?? null), color: C.danger, dashed: true },
+        { name: "达峰上限", values: years.map((year) => data?.targets.find((row) => row.kind === "carbon_peak_t" && row.year === year)?.value ?? null), color: C.danger, dashed: true },
       ]} />
       <div className="meta-row">{roadmap.scenarios.map((row) => <span key={row.code}><b>{row.label || row.code}</b>{row.peak_year ? `${row.peak_year} 年峰值 ${fmt(row.peak_co2_t)} tCO₂` : "预测期内未达峰"}</span>)}</div>
     </> : <Empty title="暂无已发布的情景路线图" />}

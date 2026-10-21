@@ -35,7 +35,6 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h2>欢迎登录</h2>
           <p className="login-lead">使用平台账号访问能碳数据、诊断与后台管理。</p>
           <LoginForm next={next} configured={authConfigured()} />
-          <p className="login-foot">规划分区与企业点位为公开资料示意，非法定边界。</p>
         </div>
       </section>
     </main>

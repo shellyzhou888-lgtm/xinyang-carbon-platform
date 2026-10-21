@@ -23,12 +23,6 @@ export function MoreLink({ href, children }: { href: string; children: React.Rea
   return <Link className="more-link" href={href}>{children}<IconArrow size={14} /></Link>;
 }
 
-export function DataNotice({ data, year }: { data: ParkOverview | null; year: number }) {
-  return (data?.energy_estimated_share ?? 0) > 0
-    ? <div className="notice"><i aria-hidden="true" />{year} 年能耗含模拟估算数据，当前用于功能演示。<Link href={`/admin/data?year=${year}`}>查看数据来源</Link></div>
-    : null;
-}
-
 export function DataError({ error }: { error: string }) {
   if (!error) return null;
   const tunnel = /ECONNREFUSED|timeout|超时|connect/i.test(error);

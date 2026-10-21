@@ -32,6 +32,7 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
   const [chatOpen, setChatOpen] = useState(false);
   const chatButton = useRef<HTMLButtonElement>(null);
   const active = NAV.find((item) => item.match(path));
+  const screen = path === "/";
   useEffect(() => {
     const close = (event: KeyboardEvent) => { if (event.key === "Escape" && chatOpen) { setChatOpen(false); chatButton.current?.focus(); } };
     window.addEventListener("keydown", close);
@@ -39,7 +40,7 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
   }, [chatOpen]);
   const yearHref = (value: number) => { const query = new URLSearchParams(params.toString()); query.set("year", String(value)); return `${path}?${query}`; };
 
-  return <div className="app" data-chat-open={chatOpen}>
+  return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
     <aside className="rail" aria-label="主导航">
       <Link className="rail-logo" href={`/?year=${year}`} aria-label="返回园区总览">
@@ -70,12 +71,13 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
         </div>
         <div className="topbar-right">
           <StatusPill />
-          <nav className="segmented" aria-label="统计年份">
+          {/* The overview screen always shows the latest year, so it has no year switch. */}
+          {!screen && <nav className="segmented" aria-label="统计年份">
             {YEARS.map((value) => <Link key={value} href={yearHref(value)} className={value === year ? "on" : ""} aria-current={value === year ? "true" : undefined}>
               {value === year && <motion.span layoutId="year-pill" className="segmented-pill" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
               <span>{value}</span>
             </Link>)}
-          </nav>
+          </nav>}
           <Clock />
           <UserMenu user={user} />
         </div>

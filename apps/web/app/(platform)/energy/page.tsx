@@ -1,6 +1,6 @@
 import { charts, management, overview, carbonManagement } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { AchievedIndicators, DataError, DataNotice, Empty, Metric, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { AchievedIndicators, DataError, Empty, Metric, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
 import { StructureChart, RankingChart } from "@/components/EnergyCharts";
 import MetricChart from "@/components/MetricChart";
@@ -25,7 +25,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const indicator = (code: string) => data?.achieved.find((row) => row.code === code);
 
   return <>
-    <PageHeading eyebrow="ENERGY MANAGEMENT" title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。"><DataNotice data={data} year={year} /></PageHeading>
+    <PageHeading eyebrow="ENERGY MANAGEMENT" title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
     <DataError error={error} />
     <div className="stats-row">
       <Metric label={`${year} 年综合能耗`} value={data?.tce} unit="tce" tone="energy" />
@@ -59,7 +59,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
           </div>)}</div>
         </Panel></Reveal>
       </div>
-      {extended?.storage.length ? <Reveal><Panel title="储能与充电月度电量" subtitle="模拟数据，仅供演示">
+      {extended?.storage.length ? <Reveal><Panel title="储能与充电月度电量">
         <div className="table-scroll"><table><thead><tr><th>月份</th><th className="num">储能充电 / kWh</th><th className="num">储能放电 / kWh</th><th className="num">充电桩电量 / kWh</th></tr></thead>
           <tbody>{extended.storage.map((row) => <tr key={row.month}><td>{row.month}</td><td className="num">{fmt(row.storage_charge_kwh)}</td><td className="num">{fmt(row.storage_discharge_kwh)}</td><td className="num">{fmt(row.ev_charge_kwh)}</td></tr>)}</tbody></table></div>
       </Panel></Reveal> : null}

@@ -1,6 +1,6 @@
 import { management, overview, carbonManagement } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { AchievedIndicators, DataError, DataNotice, Empty, Metric, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { AchievedIndicators, DataError, Empty, Metric, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
 import MetricChart from "@/components/MetricChart";
 import { BudgetComparison, CarbonReferences } from "@/components/CarbonDataSections";
@@ -18,7 +18,6 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
 
   return <>
     <PageHeading eyebrow="CARBON MANAGEMENT" title="碳管理" description="以统一核算口径查看排放结构、企业贡献和碳强度。">
-      <DataNotice data={data} year={year} />
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>
         <p>采用 GIP_2026 口径，按发改环资〔2025〕910号附件4计算；电力、热力按净受入处理，燃料以活动量及对应因子核算，原料用途与燃料用途分别处理。</p>

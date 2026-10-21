@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { charts, management, overview, carbonManagement } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { DataError, DataNotice, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
 import DiagnosisSteps from "@/components/DiagnosisSteps";
 import { TrendChart } from "@/components/EnergyCharts";
@@ -25,7 +25,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
   const top = detail?.carbonRanking[0]?.co2_t || 1;
 
   return <>
-    <PageHeading eyebrow="ENERGY & CARBON DIAGNOSIS" title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。"><DataNotice data={data} year={year} /></PageHeading>
+    <PageHeading eyebrow="ENERGY & CARBON DIAGNOSIS" title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。" />
     <DataError error={error} />
     <DiagnosisSteps year={year} active={tab} counts={{ alerts: openAlerts.length, causes: detail?.carbonRanking.length ?? 0, strategies: extended?.plans.length ?? 0, forecast: chart?.forecast.length ?? 0 }} />
 
@@ -39,7 +39,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
         <p>{row.message}</p>
         <div className="figures"><span>观测值<b>{fmt(row.observed, 4)}</b></span><span>基线<b>{fmt(row.baseline, 4)}</b></span></div>
         <AlertEvidence value={row.root_cause} />
-      </article></Reveal>) : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示已运行诊断规则产生的记录；暂无记录不代表已经完成全部风险检查。</Empty>}
+      </article></Reveal>) : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}
     </div>}
 
     {tab === "causes" && <div className="grid-main-side" style={{ marginTop: 0 }}>
@@ -57,7 +57,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
     </div>}
 
     {tab === "strategies" && <div className="stack">
-      <Reveal><Panel title="预警关联策略推荐" subtitle="模拟数据，仅供演示。节能量与减碳量为参数试算，不代表已实现效果；不同策略可能重叠，不直接求和。">
+      <Reveal><Panel title="预警关联策略推荐" subtitle="节能量与减碳量按策略参数测算；不同策略可能重叠，不直接求和。">
         {extended?.plans.length ? <div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th className="num">预计节能 / tce</th><th className="num">预计减碳 / tCO₂</th><th>参数</th></tr></thead>
           <tbody>{extended.plans.map((row, index) => <tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td className="num">{fmt(row.tce_saving)}</td><td className="num">{fmt(row.co2_reduction_t)}</td><td>{row.simulated ? <span className="tag est">模拟值</span> : "按已录参数"}</td></tr>)}</tbody></table></div>
           : <Empty title="本年度暂无预警关联策略" />}
