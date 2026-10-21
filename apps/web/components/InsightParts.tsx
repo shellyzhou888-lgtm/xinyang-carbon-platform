@@ -8,38 +8,42 @@ import { useChart } from "./EnergyCharts";
 import { CountUp } from "./MotionParts";
 
 type Tone = "energy" | "carbon" | "accent" | "info";
-const TONE: Record<Tone, string> = { energy: C.energy, carbon: C.carbon, accent: C.accent, info: C.info };
+// Style attributes use CSS variables (same markup on server and client); charts resolve real colours at draw time.
+const TONE: Record<Tone, string> = { energy: "var(--energy)", carbon: "var(--carbon)", accent: "var(--accent)", info: "var(--info)" };
+const toneColor = (tone: Tone) => C[tone];
 
 /**
  * KPI card with a year-on-year change and an optional monthly sparkline.
  * `lowerIsBetter` colours a decrease green (energy, emissions, intensity) and an increase amber.
  */
-export function KpiCard({ label, value, unit, digits = 1, tone = "energy", previous, lowerIsBetter = true, spark, foot, delay = 0 }: {
+export function KpiCard({ label, value, unit, digits = 1, tone = "energy", previous, lowerIsBetter = true, spark, foot, delay = 0, featured = false }: {
   label: string; value: number | null | undefined; unit: string; digits?: number; tone?: Tone; previous?: number | null;
-  lowerIsBetter?: boolean; spark?: (number | null)[]; foot?: React.ReactNode; delay?: number;
+  lowerIsBetter?: boolean; spark?: (number | null)[]; foot?: React.ReactNode; delay?: number; featured?: boolean;
 }) {
   const reduce = useReducedMotion();
   const change = value != null && previous ? (value - previous) / Math.abs(previous) * 100 : null;
   const good = change == null ? null : lowerIsBetter ? change <= 0 : change >= 0;
-  return <motion.div className={`kpi tone-${tone}`} style={{ ["--tone" as string]: TONE[tone] }}
+  return <motion.div className={`kpi tone-${tone}${featured ? " featured" : ""}`} style={{ ["--tone" as string]: TONE[tone] }}
     initial={reduce ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
     <div className="kpi-head"><i aria-hidden="true" /><span>{label}</span>
       {change != null && <em className={`kpi-delta ${good ? "good" : "bad"}`} title="与上年相比">{change > 0 ? "▲" : change < 0 ? "▼" : "■"} {fmt(Math.abs(change), 1)}%</em>}
     </div>
     <strong className="kpi-value"><CountUp value={value} digits={digits} /><small>{unit}</small></strong>
-    {spark && spark.some((v) => v != null) && <KpiSpark values={spark} color={TONE[tone]} />}
+    {spark && spark.some((v) => v != null) && <KpiSpark values={spark} tone={tone} dark={featured} />}
     {foot && <span className="kpi-foot">{foot}</span>}
   </motion.div>;
 }
 
-function KpiSpark({ values, color }: { values: (number | null)[]; color: string }) {
-  const option = useMemo(() => ({
+function KpiSpark({ values, tone, dark }: { values: (number | null)[]; tone: Tone; dark: boolean }) {
+  const option = useMemo(() => {
+    const color = dark ? "#11160a" : toneColor(tone);
+    return {
     backgroundColor: "transparent", animationDuration: 900,
     grid: { left: 0, right: 0, top: 2, bottom: 0 },
     xAxis: { type: "category", show: false, data: values.map((_, i) => i), boundaryGap: false },
     yAxis: { type: "value", show: false, scale: true },
     series: [{ type: "line", data: values, smooth: 0.4, symbol: "none", lineStyle: { color, width: 1.6 }, areaStyle: { color: fade(color, 0.28) } }],
-  }), [values, color]);
+  }; }, [values, tone, dark]);
   const ref = useChart(option);
   return <div ref={ref} className="kpi-spark" aria-hidden="true" />;
 }
@@ -62,7 +66,7 @@ export function YearCompareChart({ months, current, previous, year, unit, color 
     series: [
       { name: `${year} 年`, type: "bar", data: current, barMaxWidth: 22, itemStyle: { color: barFade(color), borderRadius: [6, 6, 0, 0] },
         emphasis: { itemStyle: { color } } },
-      { name: `${year - 1} 年`, type: "line", data: previous, smooth: 0.35, symbol: "circle", symbolSize: 5, lineStyle: { color: "rgba(238,244,241,.55)", width: 1.6, type: "dashed" }, itemStyle: { color: "rgba(238,244,241,.7)" } },
+      { name: `${year - 1} 年`, type: "line", data: previous, smooth: 0.35, symbol: "circle", symbolSize: 5, lineStyle: { color: C.muted, width: 1.8, type: "dashed" }, itemStyle: { color: C.muted } },
     ],
   }), [months, current, previous, year, unit, color]);
   const ref = useChart(option);

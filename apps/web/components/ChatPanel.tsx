@@ -13,7 +13,7 @@ const friendly = (message: string) =>
   : /HTTP 401/.test(message) ? "登录已过期，请刷新页面重新登录。"
   : /ECONNREFUSED|database|数据库/.test(message) ? `数据库暂不可用：${message}` : message;
 
-const EXAMPLES = ["2025 年园区综合能耗和碳排放是多少？", "能源与碳管理两板块相比，主要问题是什么？", "单位工业增加值能耗为什么没达标？", "哪些数据还是模拟的？"];
+const EXAMPLES = ["2025 年园区综合能耗和碳排放是多少？", "能源与碳排两板块相比，主要问题是什么？", "单位工业增加值能耗为什么没达标？", "哪些数据还是模拟的？"];
 
 /** Text chat with the database agent. Reads the SSE stream from /api/agent and renders it incrementally. */
 export default function ChatPanel() {
@@ -80,7 +80,7 @@ export default function ChatPanel() {
           </div>
         ) : (
           <div className="chat-empty">
-            <p>可以问总览、能源、碳管理、诊断、企业名录和数据治理。总管会交给相应板块查询，也能合并多个板块的结果。</p>
+            <p>可以问总览、能源、碳排、诊断、企业名录和数据治理。总管会交给相应板块查询，也能合并多个板块的结果。</p>
             <div className="chat-examples">{EXAMPLES.map((q) => <button type="button" key={q} onClick={() => send(q)}>{q}</button>)}</div>
           </div>
         ))}

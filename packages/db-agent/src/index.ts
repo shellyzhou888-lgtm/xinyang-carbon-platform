@@ -11,3 +11,4 @@ export { getChartData, type ChartData } from "./charts.js";
 export { getManagementData, getDataInventory, getIndicatorConfiguration, type ManagementData } from "./management.js";
 export { getCarbonManagementData, type CarbonManagementData } from "./carbon-management.js";
 export { getCarbonAsset, getFootprintComparison, type CarbonAsset, type CarbonAssetRow, type FootprintComparison } from "./carbon-asset.js";
+export { getEnterpriseMonthly, type EnterpriseMonthly } from "./spatial.js";

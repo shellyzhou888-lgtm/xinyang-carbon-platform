@@ -35,7 +35,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
     <PageHeading eyebrow="ENERGY MANAGEMENT" title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
     <DataError error={error} />
     <div className="kpi-grid">
-      <KpiCard label={`${year} 年综合能耗`} value={data?.tce} unit="tce" digits={0} tone="energy" previous={annual(year - 1)?.tce} spark={monthly.map((row) => row.tce)} foot="同比上年 · 月度走势" />
+      <KpiCard featured label={`${year} 年综合能耗`} value={data?.tce} unit="tce" digits={0} tone="energy" previous={annual(year - 1)?.tce} spark={monthly.map((row) => row.tce)} foot="同比上年 · 月度走势" />
       <KpiCard label="单位工业增加值能耗" value={intensity(year)} unit="tce/万元" digits={3} tone="info" previous={intensity(year - 1)} foot={indicator("I04") ? `能源产出率 ${fmt(indicator("I04")?.value, 2)} ${indicator("I04")?.unit || ""}` : "按可比价工业增加值计算"} delay={0.05} />
       <KpiCard label="可再生能源折标量" value={renewable} unit="tce" tone="accent" lowerIsBetter={false} foot={renewableShare != null ? `占综合能耗 ${fmt(renewableShare, 1)}%` : undefined} delay={0.1} />
       <KpiCard label="重点用能企业" value={chart?.ranking.length} unit="家" digits={0} tone="energy" foot={leader && data?.tce ? `${leader.name.replace(/（[^）]*）/g, "")} 占园区 ${fmt(leader.tce / data.tce * 100, 1)}%` : undefined} delay={0.15} />

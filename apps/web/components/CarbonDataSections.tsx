@@ -12,7 +12,7 @@ export function BudgetComparison({ data, kind }: { data: CarbonManagementData | 
     action={budget?.annual_budget != null ? <span className="panel-figure">年度预算 <b>{fmt(budget.annual_budget)}</b> {unit}</span> : undefined}>
     {budget?.annual_budget != null ? <>
       <ComparisonChart labels={budget.months.map((row) => `${Number(row.month.slice(5))}月`)} unit={unit} label="累计实际与预算比较"
-        series={[{ name: "累计实际", values: budget.months.map((row) => row.cumulative), color }, { name: "累计预算", values: budget.months.map((row) => row.budget_cumulative), color: "rgba(238,244,241,0.55)", dashed: true }]} />
+        series={[{ name: "累计实际", values: budget.months.map((row) => row.cumulative), color }, { name: "累计预算", values: budget.months.map((row) => row.budget_cumulative), color: "var(--text-3)", dashed: true }]} />
       <div className="month-strip">{budget.months.map((row) => {
         const isOver = row.cumulative != null && row.budget_cumulative != null && row.cumulative > row.budget_cumulative;
         return <span key={row.month} className={isOver ? "over" : ""}><small>{Number(row.month.slice(5))}月</small><b>{fmt(row.cumulative, 0)}</b></span>;
@@ -27,7 +27,7 @@ export function Roadmap({ data }: { data: CarbonManagementData | null }) {
   return <Panel title="碳达峰情景路线图" subtitle="历史实际与基准、低碳两种情景">
     {roadmap?.scenarios.length ? <>
       <ComparisonChart labels={years.map(String)} unit="tCO₂" label="历史排放与基准、低碳情景路线图" series={[
-        { name: "历史排放", values: years.map((year) => roadmap.actual.find((row) => row.year === year)?.co2_t ?? null), color: "#e2e8e5" },
+        { name: "历史排放", values: years.map((year) => roadmap.actual.find((row) => row.year === year)?.co2_t ?? null), color: "var(--text-2)" },
         ...roadmap.scenarios.map((scenario, index) => ({ name: scenario.label || scenario.code, values: years.map((year) => scenario.points.find((row) => row.year === year)?.co2_t ?? null), color: index ? C.energy : C.carbon, dashed: true })),
         { name: "达峰上限", values: years.map((year) => data?.targets.find((row) => row.kind === "carbon_peak_t" && row.year === year)?.value ?? null), color: C.danger, dashed: true },
       ]} />

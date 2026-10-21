@@ -5,7 +5,7 @@ import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent, LegendComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import { LegacyGridContainLabel } from "echarts/features";
-import { axis, C, fade, legend, tooltip } from "@/lib/chart-theme";
+import { axis, C, fade, legend, resolveColor, tooltip } from "@/lib/chart-theme";
 echarts.use([LegacyGridContainLabel, LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 export default function ComparisonChart({ labels, series, unit, label }: { labels: string[]; series: { name: string; values: (number | null)[]; color: string; dashed?: boolean }[]; unit: string; label: string }) {
@@ -21,8 +21,8 @@ export default function ComparisonChart({ labels, series, unit, label }: { label
       yAxis: { type: "value", name: unit, nameTextStyle: { color: C.muted, align: "left" }, ...axis },
       series: series.map((row, index) => ({
         name: row.name, type: "line", data: row.values, connectNulls: false, smooth: 0.3, symbol: row.dashed ? "none" : "circle", symbolSize: 5,
-        itemStyle: { color: row.color }, lineStyle: { color: row.color, width: row.dashed ? 1.6 : 2.2, type: row.dashed ? "dashed" : "solid" },
-        areaStyle: !row.dashed && index === 0 ? { color: fade(row.color, 0.22) } : undefined,
+        itemStyle: { color: resolveColor(row.color) }, lineStyle: { color: resolveColor(row.color), width: row.dashed ? 1.6 : 2.2, type: row.dashed ? "dashed" : "solid" },
+        areaStyle: !row.dashed && index === 0 ? { color: fade(resolveColor(row.color), 0.22) } : undefined,
       })),
     });
     const observer = new ResizeObserver(() => chart.resize()); observer.observe(host.current);

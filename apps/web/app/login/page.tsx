@@ -15,7 +15,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <main className="login-page">
       <section className="login-visual" aria-hidden="false">
         <div className="login-visual-head">
-          <Image src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized className="login-logo" />
+          <Image src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized className="login-logo only-dark" />
+          <Image src="/brand/logo-horizontal-on-light.svg" alt="" width={900} height={196} priority unoptimized className="login-logo only-light" />
         </div>
         <ParkLineArt />
         <div className="login-visual-copy">

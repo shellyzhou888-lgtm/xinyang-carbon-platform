@@ -8,14 +8,14 @@ import { AnimatePresence, motion } from "motion/react";
 import ChatPanel from "./ChatPanel";
 import VoiceAssistant from "./VoiceAssistant";
 import { HealthProvider, useHealth } from "./HealthContext";
-import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconOverview } from "./icons";
+import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconMoon, IconOverview, IconSun } from "./icons";
 import { selectedYear, YEARS } from "@/lib/workspace";
 import { logout } from "@/app/login/actions";
 
 const NAV = [
   { href: "/", label: "总览", title: "园区运行总览", Icon: IconOverview, match: (p: string) => p === "/" },
   { href: "/energy", label: "能源", title: "能源管理", Icon: IconEnergy, match: (p: string) => p.startsWith("/energy") },
-  { href: "/carbon", label: "碳管理", title: "碳管理", Icon: IconCarbon, match: (p: string) => p.startsWith("/carbon") },
+  { href: "/carbon", label: "碳排", title: "碳排管理", Icon: IconCarbon, match: (p: string) => p.startsWith("/carbon") },
   { href: "/diagnosis", label: "诊断", title: "能碳综合诊断", Icon: IconDiagnosis, match: (p: string) => p.startsWith("/diagnosis") },
   { href: "/enterprises", label: "名录", title: "企业与项目名录", Icon: IconDirectory, match: (p: string) => p.startsWith("/enterprises") },
   { href: "/admin/data", label: "后台", title: "后台管理", Icon: IconAdmin, match: (p: string) => p.startsWith("/admin") },
@@ -30,6 +30,17 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
   const params = useSearchParams();
   const year = selectedYear(params.get("year") || undefined);
   const [chatOpen, setChatOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [themeRevision, setThemeRevision] = useState(0);
+  // The inline script in the root layout applied the saved theme before paint; mirror it into state.
+  useEffect(() => { if (document.documentElement.dataset.theme === "light") setTheme("light"); }, []);
+  const toggleTheme = () => {
+    const next = theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("xy-theme", next); } catch { /* private mode: theme only lasts for this page */ }
+    setTheme(next);
+    setThemeRevision((n) => n + 1);
+  };
   const chatButton = useRef<HTMLButtonElement>(null);
   const active = NAV.find((item) => item.match(path));
   const screen = path === "/";
@@ -65,7 +76,8 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     <div className="app-main">
       <header className="topbar">
         <div className="topbar-title">
-          <Image className="topbar-logo" src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized />
+          <Image className="topbar-logo only-dark" src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized />
+          <Image className="topbar-logo only-light" src="/brand/logo-horizontal-on-light.svg" alt="" width={900} height={196} priority unoptimized />
           <span className="topbar-sep" aria-hidden="true" />
           <span className="topbar-page">{active?.title || "园区工作台"}</span>
         </div>
@@ -79,10 +91,12 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
             </Link>)}
           </nav>}
           <Clock />
+          <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <UserMenu user={user} />
         </div>
       </header>
-      <main id="workspace-content" className="page">{children}</main>
+      {/* Remount on a theme switch so charts and maps rebuild with the new colour tokens. */}
+      <main id="workspace-content" className="page" key={themeRevision}>{children}</main>
     </div>
 
     <AnimatePresence>
@@ -147,4 +161,11 @@ function UserMenu({ user }: { user: string }) {
     <span className="user-name">{user || "访客"}</span>
     <button type="submit" className="icon-btn" title="退出登录" aria-label="退出登录"><IconLogout /></button>
   </form>;
+}
+
+function ThemeToggle({ theme, onToggle }: { theme: "dark" | "light"; onToggle: () => void }) {
+  const light = theme === "light";
+  return <button type="button" className="theme-toggle" onClick={onToggle} aria-label={light ? "切换到深色" : "切换到浅色"} title={light ? "切换到深色" : "切换到浅色"}>
+    <motion.span key={theme} initial={{ rotate: -60, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.3 }}>{light ? <IconMoon /> : <IconSun />}</motion.span>
+  </button>;
 }

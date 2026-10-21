@@ -24,7 +24,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const shortName = (name: string) => name.replace(/（[^）]*）/g, "");
 
   return <>
-    <PageHeading eyebrow="CARBON MANAGEMENT" title="碳管理" description="以统一核算口径查看排放结构、企业贡献和碳强度。">
+    <PageHeading eyebrow="CARBON MANAGEMENT" title="碳排管理" description="以统一核算口径查看排放结构、企业贡献和碳强度。">
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>
         <p>采用 GIP_2026 口径，按发改环资〔2025〕910号附件4计算；电力、热力按净受入处理，燃料以活动量及对应因子核算，原料用途与燃料用途分别处理。</p>
@@ -34,12 +34,12 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
     </PageHeading>
     <DataError error={error} />
     <div className="kpi-grid">
-      <KpiCard label={`${year} 年二氧化碳排放`} value={data?.co2_t} unit="tCO₂" digits={0} tone="carbon" previous={row(year - 1)?.co2_t} spark={monthly.map((item) => item.co2_t)} foot="同比上年 · 月度走势" />
+      <KpiCard featured label={`${year} 年二氧化碳排放`} value={data?.co2_t} unit="tCO₂" digits={0} tone="carbon" previous={row(year - 1)?.co2_t} spark={monthly.map((item) => item.co2_t)} foot="同比上年 · 月度走势" />
       <KpiCard label="单位工业增加值 CO₂" value={intensityOf(year)} unit="tCO₂/万元" digits={3} tone="carbon" previous={intensityOf(year - 1)} foot="碳强度持续下降为评价基本要求" delay={0.05} />
       <KpiCard label="单位综合能耗 CO₂" value={perEnergyOf(year)} unit="tCO₂/tce" digits={3} tone="info" previous={perEnergyOf(year - 1)} foot="反映用能结构的低碳程度" delay={0.1} />
       <KpiCard label="前三大排放企业占比" value={data?.co2_t ? top3 / data.co2_t * 100 : null} unit="%" digits={1} tone="accent" foot={ranking.slice(0, 3).map((item) => shortName(item.name)).join("、")} delay={0.15} />
     </div>
-    <LinkTabs id="carbon" label="碳管理模块" active={tab} items={[{ key: "analysis", label: "碳排放分析", href: `/carbon?year=${year}` }, { key: "flow", label: "碳流分析", href: `/carbon?year=${year}&tab=flow` }]} />
+    <LinkTabs id="carbon" label="碳排管理模块" active={tab} items={[{ key: "analysis", label: "碳排放分析", href: `/carbon?year=${year}` }, { key: "flow", label: "碳流分析", href: `/carbon?year=${year}&tab=flow` }]} />
 
     {tab === "analysis" ? <div className="stack">
       <div className="grid-main-side" style={{ marginTop: 0 }}>
