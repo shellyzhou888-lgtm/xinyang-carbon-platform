@@ -1,8 +1,9 @@
 import { charts, management, overview, carbonManagement } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { AchievedIndicators, DataError, Empty, Metric, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
-import { StructureChart, RankingChart } from "@/components/EnergyCharts";
+import { RankingChart } from "@/components/EnergyCharts";
+import { KpiCard, ShareBreakdown, YearCompareChart } from "@/components/InsightParts";
 import MetricChart from "@/components/MetricChart";
 import Energy3DPanel from "@/components/Energy3DPanel";
 import { BudgetComparison } from "@/components/CarbonDataSections";
@@ -23,24 +24,32 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const renewable = detail?.renewable.filter((row) => row.renewable).reduce((total, row) => total + row.tce, 0);
   const renewableShare = renewable != null && data?.tce ? renewable / data.tce * 100 : null;
   const indicator = (code: string) => data?.achieved.find((row) => row.code === code);
+  const monthOf = (y: number) => (chart?.monthly || []).filter((row) => row.month.startsWith(String(y)));
+  const lastYear = monthOf(year - 1);
+  const months = monthly.map((row) => `${Number(row.month.slice(5))}月`);
+  const annual = (y: number) => detail?.annual.find((row) => row.year === y);
+  const intensity = (y: number) => { const row = annual(y); return row?.tce != null && row.value_added ? row.tce / row.value_added : null; };
+  const leader = chart?.ranking[0];
 
   return <>
     <PageHeading eyebrow="ENERGY MANAGEMENT" title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
     <DataError error={error} />
-    <div className="stats-row">
-      <Metric label={`${year} 年综合能耗`} value={data?.tce} unit="tce" tone="energy" />
-      <Metric label="可再生能源折标量" value={renewable} unit="tce" tone="accent" hint={renewableShare != null ? `占综合能耗 ${fmt(renewableShare, 1)}%` : undefined} delay={0.05} />
-      {indicator("I04") && <Metric label="能源产出率" value={indicator("I04")?.value} unit={indicator("I04")?.unit || ""} digits={2} tone="info" achieved delay={0.1} />}
-      <Metric label="能耗样本企业" value={chart?.ranking.length} unit="家" digits={0} delay={0.15} hint="已关联月度能耗台账" />
+    <div className="kpi-grid">
+      <KpiCard label={`${year} 年综合能耗`} value={data?.tce} unit="tce" digits={0} tone="energy" previous={annual(year - 1)?.tce} spark={monthly.map((row) => row.tce)} foot="同比上年 · 月度走势" />
+      <KpiCard label="单位工业增加值能耗" value={intensity(year)} unit="tce/万元" digits={3} tone="info" previous={intensity(year - 1)} foot={indicator("I04") ? `能源产出率 ${fmt(indicator("I04")?.value, 2)} ${indicator("I04")?.unit || ""}` : "按可比价工业增加值计算"} delay={0.05} />
+      <KpiCard label="可再生能源折标量" value={renewable} unit="tce" tone="accent" lowerIsBetter={false} foot={renewableShare != null ? `占综合能耗 ${fmt(renewableShare, 1)}%` : undefined} delay={0.1} />
+      <KpiCard label="重点用能企业" value={chart?.ranking.length} unit="家" digits={0} tone="energy" foot={leader && data?.tce ? `${leader.name.replace(/（[^）]*）/g, "")} 占园区 ${fmt(leader.tce / data.tce * 100, 1)}%` : undefined} delay={0.15} />
     </div>
     <LinkTabs id="energy" label="能源模块" active={tab} items={TABS.map(([key, label]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` }))} />
 
     {tab === "consumption" && <div className="stack">
       <div className="grid-main-side" style={{ marginTop: 0 }}>
-        <Reveal><Panel title={`${year} 年月度综合能耗`} subtitle="按月汇总园区核算边界内的净消费量">
-          <MetricChart rows={monthly.map((row) => ({ name: `${Number(row.month.slice(5))}月`, value: row.tce }))} kind="line" unit="tce" label="月度综合能耗" />
+        <Reveal><Panel title={`${year} 年月度综合能耗`} subtitle={`柱为 ${year} 年，虚线为 ${year - 1} 年同期；悬停查看同比`}>
+          {monthly.length ? <YearCompareChart months={months} current={monthly.map((row) => row.tce)} previous={monthly.map((row) => lastYear.find((prev) => prev.month.slice(5) === row.month.slice(5))?.tce ?? null)} year={year} unit="tce" color={C.energy} label="月度综合能耗同比" /> : <Empty title="暂无月度数据" />}
         </Panel></Reveal>
-        <Reveal delay={0.06}><Panel title="能源消费结构" subtitle="各品种折标准煤后的占比">{chart ? <StructureChart data={chart} /> : <Empty title="暂无数据" />}</Panel></Reveal>
+        <Reveal delay={0.06}><Panel title="能源消费结构" subtitle="各品种折标准煤后的量与占比">
+          <ShareBreakdown rows={(chart?.structure || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" label="能源消费结构" centerLabel="tce 合计" />
+        </Panel></Reveal>
       </div>
       <Reveal><BudgetComparison data={extended} kind="energy" /></Reveal>
       <Reveal><Panel title="企业能耗空间对比" subtitle="ECharts-GL 三维柱图，点击柱体查看企业"><Energy3DPanel year={year} ranking={chart?.ranking || []} /></Panel></Reveal>

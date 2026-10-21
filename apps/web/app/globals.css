@@ -677,8 +677,8 @@ table.cols { background: var(--surface); border-radius: 18px; padding: 8px; }
 .rank-value { font-size: 13.5px; white-space: nowrap; }
 .rank-value small { font-family: var(--font); font-size: 10px; color: var(--text-3); margin-left: 3px; }
 .rank-share { font-size: 11px; color: var(--text-3); text-align: right; }
-.rank-bar { grid-column: 2 / 5; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
-.rank-bar i { display: block; height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 20%, transparent)); transition: width 0.6s var(--ease); }
+.rank-list .rank-bar { grid-column: 2 / 5; height: 3px; margin: 0; border-radius: 2px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+.rank-list .rank-bar i { display: block; height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--tone), color-mix(in srgb, var(--tone) 20%, transparent)); transition: width 0.6s var(--ease); }
 
 .flow-switch { display: inline-flex; gap: 2px; padding-right: 6px; margin-right: 4px; border-right: 1px solid var(--surface-4); }
 .map-tools .flow-switch button.tone-energy[aria-pressed="true"] { color: var(--energy); background: rgba(62, 224, 161, 0.12); }
@@ -703,4 +703,60 @@ table.cols { background: var(--surface); border-radius: 18px; padding: 8px; }
   .overview-screen .map-top { top: 12px; }
   .overview-screen .map-float { width: auto; }
   .overview-screen .map-bottom { max-width: calc(100% - 24px); }
+}
+
+/* ---------- Energy & carbon workspaces: KPI cards, composition, contribution ---------- */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.kpi { position: relative; overflow: hidden; display: grid; grid-template-rows: auto auto 1fr auto; gap: 6px; min-height: 148px; padding: 18px 20px 14px; border-radius: 20px;
+  background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--tone) 14%, transparent), transparent 60%), var(--surface); box-shadow: var(--shadow); backdrop-filter: blur(18px); }
+.kpi::after { content: ""; position: absolute; left: 20px; right: 20px; top: 0; height: 1px; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tone) 60%, transparent), transparent); }
+.kpi-head { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-2); }
+.kpi-head i { width: 7px; height: 7px; border-radius: 50%; background: var(--tone); box-shadow: 0 0 10px var(--tone); flex: none; }
+.kpi-delta { margin-left: auto; font-style: normal; font-family: var(--font-num); font-size: 11.5px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.kpi-delta.good { color: var(--energy); background: rgba(62, 224, 161, 0.12); }
+.kpi-delta.bad { color: var(--carbon); background: rgba(246, 181, 74, 0.13); }
+.kpi-value { display: flex; align-items: baseline; gap: 6px; font-size: 30px; font-weight: 500; line-height: 1.1; }
+.kpi-value small { font-family: var(--font); font-size: 12px; color: var(--text-3); font-weight: 400; }
+.kpi-spark { height: 34px; margin: 0 -4px; }
+.kpi-foot { font-size: 11.5px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; align-self: end; }
+
+.share { display: grid; gap: 14px; }
+.share-donut { position: relative; height: 190px; }
+.share-chart { position: absolute; inset: 0; }
+.share-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; }
+.share-center strong { font-size: 24px; font-weight: 500; }
+.share-center small { font-size: 11px; color: var(--text-3); }
+.share-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.share-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto 50px; column-gap: 10px; row-gap: 5px; align-items: center; }
+.share-name { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-2); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.share-name i { width: 8px; height: 8px; border-radius: 3px; background: var(--c); flex: none; }
+.share-value { font-size: 13px; white-space: nowrap; }
+.share-value small { font-family: var(--font); font-size: 10.5px; color: var(--text-3); margin-left: 3px; }
+.share-pct { font-size: 12px; color: var(--text-2); text-align: right; }
+.share-bar { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
+.share-bar b { display: block; height: 100%; border-radius: 2px; background: var(--c); opacity: 0.85; }
+
+.contrib { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.contrib li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto 52px 56px; column-gap: 10px; row-gap: 6px; align-items: center; padding: 8px 10px; border-radius: 12px; transition: background 0.15s; }
+.contrib li:hover { background: var(--surface-2); }
+.contrib-rank { font-size: 11.5px; color: var(--text-3); }
+.contrib li:nth-child(-n+3) .contrib-rank { color: var(--tone); }
+.contrib-name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.contrib-value { font-size: 14px; white-space: nowrap; }
+.contrib-value small { font-family: var(--font); font-size: 10.5px; color: var(--text-3); margin-left: 3px; }
+.contrib-share { font-size: 12px; color: var(--text-2); text-align: right; }
+.contrib-int { font-size: 12px; color: var(--text-3); text-align: right; }
+.contrib-bar { grid-column: 2 / -1; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
+.contrib-bar b { display: block; height: 100%; border-radius: 2px; background: linear-gradient(90deg, color-mix(in srgb, var(--tone) 35%, transparent), var(--tone)); }
+
+/* Panels side by side share the row height; .panel-fill lets its chart take the spare height. */
+.grid-2 > .rise > .panel, .grid-main-side > .rise > .panel { height: 100%; }
+.panel-fill { display: flex; flex-direction: column; }
+.panel-fill .chart.fill { flex: 1; min-height: 300px; height: auto; }
+
+@media (max-width: 1280px) { .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) {
+  .kpi-grid { grid-template-columns: minmax(0, 1fr); }
+  .contrib li { grid-template-columns: 22px minmax(0, 1fr) auto 46px; }
+  .contrib-int { display: none; }
 }
