@@ -23,14 +23,21 @@
 | 优先级 | 数据源 | 已核实接口性质 | 本项目用途 | 接入前提 |
 | --- | --- | --- | --- | --- |
 | P0 | 企业能管系统、电网计量、光伏逆变器、充电桩等业务系统 | 厂商或业主授权的私有接口；目前未取得统一公开 API 文档 | 用真实逐时/逐月读数替代估算值，是园区核算准确性的关键 | 明确系统厂商、授权、测点与企业编码、单位、时区、补传与修订规则 |
-| P1 | [NASA POWER Daily/Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | 官方开放的太阳辐照与气象时间序列 API，支持 JSON/CSV | 光伏潜力、发电预测和气象影响分析 | 园区坐标、参数与分辨率匹配；不能当作电表实测值 |
-| P1 | [高德天气 Web Service](https://lbs.amap.com/api/webservice/guide/api/weatherinfo) | 有正式文档的天气查询 API | 当地天气、短期能耗或发电预测解释 | Web Service Key、行政区编码、配额；现有地图 Key 不一定适用 |
+| P1 | [NASA POWER Daily/Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | 官方开放的历史至近实时太阳辐照与气象时间序列 API，支持 JSON/CSV | 光伏资源评估、历史辐照训练数据、能耗模型历史气象协变量 | 园区坐标、参数与分辨率匹配；不能当作未来天气预报或电表实测值 |
+| P1 | [高德天气 Web Service](https://lbs.amap.com/api/webservice/guide/api/weatherinfo) | 有正式文档的实况和短期天气预报 API | 当前温湿度、天气现象与未来数日昼夜温度，用于短期能耗分析 | Web Service Key、行政区编码、配额；普通天气接口不含太阳辐照度 |
 | P1 | [全国碳市场 CEA 每日行情](https://overview.cneeex.com/c/2026-08-11/498128.shtml) | 官方公开网页；未核实开放 API | 碳价与交易量参考 | 交易所页面有发布/转载声明；先确认自动采集和平台展示许可，再建立带出处的定时同步 |
 | P1 | [全国自愿减排 CCER 每日行情](https://www.ccer.com.cn/wcm/ccer/html/2502lshq/index.html) | 官方公开网页；未核实开放 API | CCER 市场价格、成交量参考 | 核对网站使用条款与自动采集权限；避免称作已接通 API |
 | P2 | [国家温室气体排放因子数据库（第二版）](https://www.mee.gov.cn/ywgz/ydqhbh/wsqtkz/202603/t20260301_1145117.shtml) | 官方因子查询网站；未核实开放 API | 建立因子版本、来源、适用年份和行业口径 | 先核对权威原文和授权，人工审核后再启用新因子；不得静默覆盖现有计算因子 |
 | P2 | [中国天气 SmartWeatherAPI](https://www.weather.com.cn/wzfw/smart/weatherapi.shtml) | 官方 Web API，须提交申请获批 | 更丰富的预报、预警数据 | 申请接口使用资格，评估是否比高德/NASA 更有价值 |
 
 注意：电力**碳足迹因子**和电力消费**二氧化碳排放因子**用途、口径可能不同，不应自动互换。市场行情也不是园区自身排放活动数据。
+
+## 高德天气与 NASA POWER 的实测取舍（2026-10-21）
+
+- 使用新提供的高德 Web Service Key 对平桥区 `411503` 分别请求 `extensions=base`、`extensions=all`，两者均返回 `status=1`、`infocode=10000`。实况有天气、气温、湿度、风向/风力与发布时间；预报实际返回当天加未来三天共 4 天，字段为昼夜天气、温度、风向/风力。调用期间未在文件、日志或 Git 中保存 Key。
+- [高德天气接口文档](https://lbs.amap.com/api/webservice/guide/api/weatherinfo)中没有辐照度（GHI/DNI/DHI）、日照时数、云量或逐时太阳辐照预报；仅凭“晴/多云”无法做可靠的定量光伏发电预测。短期空调与供暖负荷分析可先用高德温度，但需要持续收集才能积累历史训练样本。
+- [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) 在园区附近坐标的一次公开 API 请求验证了 `ALLSKY_SFC_SW_DWN`（单位 kWh/m²/日）、`T2M`（°C）和 `WS10M`（m/s）历史日值。其[太阳与气象数据发布延迟](https://power.larc.nasa.gov/docs/faqs/data/)约为 5–7 天和 2–3 天，适合历史资源评估与训练/校验，不提供未来四天的辐照预报；网格数据也不能代替现场辐照计和逆变器读数。
+- 当前 `packages/forecast/forecast.py` 的 Chronos-2 月度能耗/碳排放预测只读取历史能耗与碳排放，不使用气象协变量；项目也没有独立的光伏逐日/逐时发电预测模型。因此两类气象 API 目前都**未接入预测流水线**。如果只做当前天气展示或几天内温度影响说明，高德足够；若要做可信的光伏预测，NASA POWER 仍适合补历史辐照数据，但还需未来辐照预报源与实际光伏发电量，并开发/回测对应模型。对 12 个月能耗预测，未来天气未知，应使用气候常年值或情景假设，不能把高德 4 天预报外推一年。
 
 ## 建议的自动更新链路
 
