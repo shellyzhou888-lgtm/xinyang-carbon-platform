@@ -317,7 +317,7 @@ function ZoneCard({ zone, metrics, honors, onBack, onPick }: { zone: ZoneKey; me
       const kinds = [...new Set(honors.filter((h) => h.code === row.code).map((h) => h.kind))];
       return <li key={row.code}><button type="button" onClick={() => onPick(row.code)}>
         <span>{shortName(row.name)}</span>
-        <span className="zone-member-honors">{kinds.map((kind) => <HonorIcon key={kind} kind={kind} size={22} />)}</span>
+        <span className="zone-member-honors">{kinds.map((kind) => <HonorIcon key={kind} kind={kind} size={18} />)}</span>
         <b className="num">{row.metric?.tce != null ? `${fmt(row.metric.tce, 0)} tce` : ""}</b>
       </button></li>;
     })}</ul>}

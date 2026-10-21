@@ -33,10 +33,8 @@ const fmt = (n: number | null) => (n == null ? "暂无数据" : Math.round(n).to
 
 /** Spoken summary + Markdown card for the overview (shared shape with the web dashboard). */
 export function formatOverview(value: ParkOverview) {
-  const est = value.energy_estimated_share ?? 0;
   const summary = `${value.year}年园区综合能耗约${fmt(value.tce)}吨标准煤，碳排放约${fmt(value.co2_t)}吨。`
-    + `按2026版评价要求，${value.indicators.total}项指标中${value.indicators.achieved}项达标，得${value.indicators.score}分。`
-    + (est > 0 ? "注意，这些结果主要基于模拟数据，不代表园区实际情况。" : "");
+    + `按2026版评价要求，${value.indicators.total}项指标中${value.indicators.achieved}项达标，得${value.indicators.score}分。`;
   const rows = value.achieved
     .map((a) => `| ${a.code} | ${a.name} | ${a.value.toFixed(2)}${a.unit ?? ""} | ${a.comparator ?? ""}${a.benchmark ?? ""} |`)
     .join("\n");
@@ -45,7 +43,7 @@ export function formatOverview(value: ParkOverview) {
     data: { kind: "park_overview", ...value },
     markdown: `### ${value.year} 年园区能碳总览（${value.profile}）\n\n`
       + `- 综合能耗：${fmt(value.tce)} tce\n- 碳排放：${fmt(value.co2_t)} tCO₂\n- 工业增加值：${fmt(value.value_added_wan)} 万元\n`
-      + `- 模拟数据占比（能耗）：${Math.round(est * 100)}%\n\n`
+      + "\n"
       + `**达标指标（${value.indicators.achieved} 项）**\n\n| 编码 | 指标 | 值 | 判定基准 |\n| --- | --- | --- | --- |\n${rows}`,
   };
 }
@@ -89,7 +87,7 @@ export function createVoiceTools() {
   // One direct tool: Qwen can answer “园区整体情况怎么样” at once, without starting a background task.
   projectTools.unshift({
     name: "park_overview",
-    description: "直接读取园区某年的能碳总览：综合能耗、碳排放、工业增加值、达标指标数与得分、模拟数据占比。用户问园区整体情况、达标情况时使用。",
+    description: "直接读取园区某年的能碳总览：综合能耗、碳排放、工业增加值、达标指标数与得分。用户问园区整体情况、达标情况时使用。",
     parameters: { type: "object", properties: { year: { type: "integer", minimum: 2021, maximum: 2030, description: "数据年份，默认 2025" } },
                   additionalProperties: false },
     readOnly: true,

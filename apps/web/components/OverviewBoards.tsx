@@ -29,10 +29,10 @@ export function HonorShowcase({ honors }: { honors: MapHonor[] }) {
     .filter((group) => group.rows.length);
   return <section className="brief" aria-label="园区荣誉">
     <div className="float-head"><span className="eyebrow">荣誉认定</span><span className="count-pill">{honors.length} 项</span></div>
-    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={48} /><div><b>{park.title.replace(/^\d{4}\s*年度\s*/, "")}</b><small>{park.title.match(/^\d{4}/)?.[0] ?? ""} 年度 · 河南省工业和信息化厅</small></div></div>}
+    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={40} /><div><b>{park.title.replace(/^\d{4}\s*年度\s*/, "")}</b><small>{park.title.match(/^\d{4}/)?.[0] ?? ""} 年度 · 河南省工业和信息化厅</small></div></div>}
     <ul className="trophy-list">
       {groups.map((group, index) => <motion.li key={group.kind} initial={reduce ? false : { opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + index * 0.05, duration: 0.45, ease }}>
-        <HonorIcon kind={group.kind} size={34} />
+        <HonorIcon kind={group.kind} size={22} />
         <div className="trophy-body">
           <span className="trophy-name">{group.label}<strong className="num" style={{ color: group.color }}>{group.rows.length}</strong></span>
           <span className="trophy-holders">{group.rows.map((honor, i) => <button key={i} type="button" disabled={!honor.code} onClick={() => focusEnterprise(honor.code)} title={honor.title}>

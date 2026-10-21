@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type pg from "pg";
+import { governAfterLoad } from "./governance-hook.js";
 import { connect, REPO_ROOT } from "./db.js";
 
 const NASA_PARAMETERS = [
@@ -437,6 +438,8 @@ async function main() {
   } finally {
     await client.end();
   }
+  // New batches leave import events; govern --if-changed registers / documents them and does nothing otherwise.
+  governAfterLoad("schedule");
 }
 
 main().catch((error) => {

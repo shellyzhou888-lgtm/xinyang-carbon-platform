@@ -60,6 +60,10 @@ export async function runGovernance(cfg: AgentConfig, opts: GovernanceOptions) {
     });
     log(`目录已刷新，剖析 ${summary.profiled} 个表/视图`);
 
+    // 1b. draft missing field descriptions before the rules run, so newly registered tables do not open
+    //     "undocumented" tickets that this same run would fill in a moment later.
+    if (opts.useModel !== false && cfg.deepseekApiKey) summary.docs_drafted = await draftDocs(cfg, opts.maxDocTables ?? 8, log);
+
     // 2. detection rules (each read-only, isolated so one failing rule does not stop the others)
     const checks = await readOnly(async (c) => (await c.query(`select * from semantic.check_def where enabled order by code`)).rows);
     const results: { check: any; findings: Finding[] }[] = [];
@@ -120,7 +124,6 @@ export async function runGovernance(cfg: AgentConfig, opts: GovernanceOptions) {
          order by (issue_id = any ($1)) desc, case risk when 'high' then 0 when 'medium' then 1 else 2 end, issue_id
          limit $2`, [newIssueIds, opts.maxIssueTexts ?? 60])).rows.map((r) => Number(r.issue_id)));
       summary.ai_written = await writeIssueTexts(cfg, pending, log);
-      summary.docs_drafted = await draftDocs(cfg, opts.maxDocTables ?? 8, log);
     }
 
     await write("green_app", (c) => c.query(`update semantic.governance_run set status = 'succeeded', finished_at = now(), summary = $2 where run_id = $1`,

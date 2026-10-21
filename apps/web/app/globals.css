@@ -897,7 +897,6 @@ p, li, td, th { line-height: 1.55; }
 .topbar { padding-left: 20px; padding-right: 20px; }
 
 /* ---------- Honour icons, emitter ranking, zone card ---------- */
-.honor-icon-tile { --honor-tile: color-mix(in srgb, var(--honor) 16%, var(--surface-solid)); display: inline-grid; place-items: center; flex: none; border-radius: 10px; background: var(--honor-tile); color: var(--honor); box-shadow: 0 0 0 1px color-mix(in srgb, var(--honor) 22%, transparent) inset; }
 .trophy-list li { align-items: center; }
 .emitter-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .emitter-list button { width: 100%; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 8px; border: 0; border-radius: 12px; background: transparent; text-align: left; transition: background 0.15s; }
@@ -946,8 +945,7 @@ p, li, td, th { line-height: 1.55; }
 /* Overview honours as a two-column grid of compact tiles so every category fits. */
 .overview-screen .trophy-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .overview-screen .trophy-list li { flex-direction: column; align-items: flex-start; gap: 8px; padding: 8px; border-radius: 12px; background: var(--surface-2); }
-.overview-screen .trophy-list li > .honor-icon-tile { width: 28px !important; height: 28px !important; }
-.overview-screen .trophy-body { width: 100%; }
+.overview-screen .trophy-list li > .overview-screen .trophy-body { width: 100%; }
 .overview-screen .trophy-holders button { font-size: 12px; padding: 0 8px; }
 .overview-screen .trophy-holders small { display: none; }
 .emitter-meta small.muted { color: var(--text-3); }
@@ -959,3 +957,5 @@ p, li, td, th { line-height: 1.55; }
 .emitter-value small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin-left: 4px; font-weight: 400; }
 .emitter-list .emitter-meta { grid-column: 2 / -1; justify-content: space-between; gap: 8px; }
 .emitter-meta small { color: var(--text-2); }
+/* Honour badges: solid glyphs with a soft glow, no tile or outline. */
+.honor-icon { flex: none; filter: drop-shadow(0 4px 10px color-mix(in srgb, currentColor 35%, transparent)); }

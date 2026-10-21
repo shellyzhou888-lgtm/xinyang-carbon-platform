@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { connect } from "./db.js";
 import { ingestFile, runCalc } from "./ingest.js";
+import { governAfterLoad } from "./governance-hook.js";
 
 const USAGE = `用法：
   npm run ingest -- <文件.xlsx> --template <模板编码> [--dry-run] [--calc 标准:节点:年份] [--preview]
@@ -26,6 +27,7 @@ async function main() {
     return;
   }
   const client = await connect();
+  let afterLoad: "import" | "calc" | null = null;
   try {
     if (command === "ingest") {
       const file = args[0] && !args[0].startsWith("--") ? args[0] : undefined;
@@ -40,6 +42,7 @@ async function main() {
                               model: "scripts/simulate (rule-based placeholder)" } : undefined,
       });
       console.log(JSON.stringify(result, null, 2));
+      if (!args.includes("--dry-run")) afterLoad = "import";
     } else if (command === "calc") {
       const version = option(args, "--version");
       const node = option(args, "--node");
@@ -47,12 +50,15 @@ async function main() {
       if (!version || !node || !year) throw new Error(USAGE);
       const result = await runCalc(client, version, node, year, args.includes("--preview"), args.includes("--dry-run"));
       console.log(JSON.stringify(result, null, 2));
+      if (!args.includes("--dry-run") && !args.includes("--preview")) afterLoad = "calc";
     } else {
       throw new Error(USAGE);
     }
   } finally {
     await client.end();
   }
+  // Same catalog / governance step as the agent's import tools (registers new objects, drafts descriptions).
+  if (afterLoad) governAfterLoad(afterLoad);
 }
 
 main().catch((err) => {

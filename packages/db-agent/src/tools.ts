@@ -126,7 +126,9 @@ const listGovernanceIssues = tool({
         from semantic.governance_issue
        where status = coalesce($1, 'open') and ($2::text is null or category = $2)
        order by case risk when 'high' then 0 when 'medium' then 1 else 2 end, issue_id desc limit 30`, [status ?? null, category ?? null]);
-    return result(rows);
+    // Counts for every status, so an empty list for one status is not read as "no tickets at all".
+    const counts = (await c.query(`select status, count(*)::int as n from semantic.governance_issue group by status order by status`)).rows;
+    return result({ status_filter: status ?? "open", status_counts: counts, issues: rows });
   }),
 });
 

@@ -1,6 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { createDbAgent } from "./agent.js";
+import { createManagerAgent, managerPrompt } from "./manager.js";
 import { loadConfig, REPO_ROOT } from "./config.js";
 import { closePool, initPool, readOnly } from "./db.js";
 
@@ -19,6 +20,7 @@ interface Case { id: string; question: string; oracle_sql: string; expect_text?:
 
 const cases: Case[] = JSON.parse(readFileSync(resolve(REPO_ROOT, "packages/db-agent/eval/cases.json"), "utf8"));
 const only = process.argv.slice(2).filter((a) => /^E\d+$/i.test(a)).map((a) => a.toUpperCase());
+const useManager = process.argv.includes("--manager");
 const selected = only.length ? cases.filter((c) => only.includes(c.id)) : cases;
 
 const numbersIn = (text: string) =>
@@ -48,10 +50,11 @@ try {
   for (const k of selected) {
     const oracle = await readOnly(async (c) => (await c.query(k.oracle_sql)).rows[0] ?? {});
     const expected = Object.values(oracle).map(Number).filter((v) => Number.isFinite(v));
-    const { agent } = await createDbAgent(cfg, { channel: "system", userRef: "eval" });
+    // --manager evaluates the platform manager (the agent behind web chat and Xiaoyun) instead of the database agent.
+    const { agent } = useManager ? await createManagerAgent(cfg, { channel: "web", userRef: "eval" }) : await createDbAgent(cfg, { channel: "system", userRef: "eval" });
     const t0 = Date.now();
     let error: string | undefined;
-    try { await agent.prompt(k.question); } catch (err) { error = (err as Error).message; }
+    try { await agent.prompt(useManager ? managerPrompt(k.question) : k.question); } catch (err) { error = (err as Error).message; }
     const msgs: any[] = agent.state.messages;
     const lastAssistant: any = [...msgs].reverse().find((m) => m.role === "assistant");
     if (!error && lastAssistant?.errorMessage) error = String(lastAssistant.errorMessage);

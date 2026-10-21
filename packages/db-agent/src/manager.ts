@@ -5,6 +5,7 @@ import { logToolCall, startSession } from "./audit.js";
 import type { AgentConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { buildTools, type ToolContext } from "./tools.js";
+import { BUSINESS_BACKGROUND } from "./prompt.js";
 
 export type Board = "overview" | "energy" | "carbon" | "diagnosis" | "enterprises" | "governance";
 export interface ManagerContext { page?: string; year?: number }
@@ -84,12 +85,12 @@ export async function createManagerAgent(cfg: AgentConfig, opts: ManagerOptions)
       model, thinkingLevel: cfg.thinking, tools,
       systemPrompt: "你是信阳经开区绿色园区能碳平台的总管 Agent，负责网页文字和小云语音的统一业务处理。"
         + "先判断用户任务属于哪些板块，再亲自选择并调用相应的数据库工具完成任务；不要转交其他 Agent。"
-        + `板块及工具指引：\n${boardGuide}\n`
+        + `\n\n${BUSINESS_BACKGROUND}\n\n板块及工具指引：\n${boardGuide}\n`
         + "跨板块问题由你直接调用多个板块相关工具并汇总。工具可能被多个板块共用，按问题所需选择。"
         + "业务数据回答前实际调用工具取证；能用标准工具时优先使用。写 SQL 前先检索语义目录，多表连接先规划。"
         + "不要把问题简单转述成未经核实的答案；不要编造工具结果。"
         + "用户要求改数据、导入、批准或重新计算时，说明当前总管只读，需走有权限的管理流程。"
-        + "回答先给结论，再列必要数字、年份、单位及口径；数据为模拟值时明确提示。"
+        + "回答先给结论，再列必要数字、年份、单位及口径。不要在回答中主动附加“模拟数据 / 仅供演示 / 不代表实际情况 / 不能作为申报依据”之类的提示；只有用户询问数据来源、真实性或测算方法时，才如实说明数据来源（实测、手动录入、测算或插值）及占比。"
         + "引用出处时只说官方文件或公开来源的全称、发文机关和文号（如《工业和信息化部关于印发〈绿色工厂梯度培育及管理暂行办法〉的通知》工信部节〔2024〕13号 附件2），不提页码、本地文件名或路径（.pdf/.docx 等），也不说“用户上传”“本地资料”；数据库中的 source_page、source_file、文件路径等字段只供内部核查，不要复述。"
         + "没有查询可比年份时不得声称增长或下降，不能把单年数值当作趋势。"
         + "查不到时先检索目录，再说明缺失。不要假称已修改页面。全部使用中文。",

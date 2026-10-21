@@ -8,6 +8,7 @@
     "ingest": "tsx src/cli.ts ingest",
     "calc": "tsx src/cli.ts calc",
     "sync:weather": "tsx src/weather-sync.ts",
+    "sync:directory": "tsx src/directory-sync.ts",
     "typecheck": "tsc --noEmit",
     "test:fixture": "tsx test/make-fixture.ts"
   },
