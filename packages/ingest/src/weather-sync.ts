@@ -8,12 +8,17 @@ const NASA_PARAMETERS = [
   "ALLSKY_SFC_SW_DWN", "ALLSKY_SFC_SW_DNI", "ALLSKY_SFC_SW_DIFF", "CLRSKY_SFC_SW_DWN",
   "CLOUD_AMT", "T2M", "T2M_MAX", "T2M_MIN", "RH2M", "WS10M", "CDD18_3", "HDD18_3",
 ] as const;
+const NASA_HOURLY_PARAMETERS = [
+  "ALLSKY_SFC_SW_DWN", "ALLSKY_SFC_SW_DNI", "ALLSKY_SFC_SW_DIFF", "CLOUD_AMT",
+  "T2M", "RH2M", "WS10M", "PRECTOTCORR",
+] as const;
 const NASA_LOCATION = "WGS84:114.12,32.22";
 const AMAP_ADCODE = "411503";
 const LOCK_KEY = "xinyang-weather-sync";
-type SourceCode = "AMAP_WEATHER" | "NASA_POWER_DAILY";
+type SourceCode = "AMAP_WEATHER" | "NASA_POWER_DAILY" | "NASA_POWER_HOURLY";
 type JsonObject = Record<string, any>;
 type DailyRow = { day: string; code: string; value: number; unit: string; quality_flag: string; derivation: "api_daily" | "hourly_sum" };
+type HourlyRow = { at: string; code: string; value: number; unit: string; quality_flag: "ok" | "suspect" };
 
 function chinaDay(): string {
   const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Shanghai", year: "numeric", month: "2-digit", day: "2-digit" })
@@ -38,7 +43,7 @@ function amapKey(): string {
 async function fetchJson(url: URL): Promise<JsonObject> {
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(45_000), headers: { "User-Agent": "XinyangCarbonPlatform/0.29 weather-sync" } });
+      const response = await fetch(url, { signal: AbortSignal.timeout(45_000), headers: { "User-Agent": "XinyangCarbonPlatform/0.30 weather-sync" } });
       if (!response.ok) {
         if ((response.status === 429 || response.status >= 500) && attempt < 3) {
           await new Promise((done) => setTimeout(done, attempt * 2_000));
@@ -69,6 +74,12 @@ function nasaQuality(code: string, value: number): "ok" | "suspect" {
   return value >= 0 && value <= 500 ? "ok" : "suspect";
 }
 
+function nasaHourlyQuality(code: string, value: number): "ok" | "suspect" {
+  if (code.startsWith("ALLSKY_")) return value >= 0 && value <= 2000 ? "ok" : "suspect";
+  if (code === "PRECTOTCORR") return value >= 0 && value <= 100 ? "ok" : "suspect";
+  return nasaQuality(code, value);
+}
+
 function amapQuality(...numbers: Array<number | null>): "ok" | "suspect" {
   const [temperature, humidity, secondTemperature] = numbers;
   return (temperature !== null && (temperature < -90 || temperature > 65))
@@ -87,7 +98,7 @@ function chinaTimestamp(value: unknown): string {
 
 async function sourceId(client: pg.Client, code: SourceCode): Promise<number> {
   const { rows } = await client.query("select source_id::int as source_id from raw.api_source where code=$1", [code]);
-  if (!rows[0]) throw new Error(`缺少数据源 ${code}，请先应用 0028 迁移`);
+  if (!rows[0]) throw new Error(`缺少数据源 ${code}，请先应用天气数据迁移`);
   return rows[0].source_id;
 }
 
@@ -244,6 +255,56 @@ async function syncNasaPrecipMonth(client: pg.Client, month: string, today: stri
   }
 }
 
+async function syncNasaHourlyMonth(client: pg.Client, month: string, today: string) {
+  const segment = `hourly-${month}`;
+  try {
+    const start = `${month}-01`;
+    const end = month === today.slice(0, 7)
+      ? today : new Date(Date.UTC(Number(month.slice(0, 4)), Number(month.slice(5)), 0)).toISOString().slice(0, 10);
+    const url = new URL("https://power.larc.nasa.gov/api/temporal/hourly/point");
+    url.search = new URLSearchParams({ parameters: NASA_HOURLY_PARAMETERS.join(","), community: "RE",
+      longitude: "114.12", latitude: "32.22", start: compactDay(start), end: compactDay(end),
+      format: "JSON", "time-standard": "UTC" }).toString();
+    const raw = await fetchJson(url);
+    if (raw.header?.fill_value === undefined || !raw.properties?.parameter || !raw.parameters) {
+      throw new Error("NASA POWER 小时响应结构异常");
+    }
+    const fill = Number(raw.header.fill_value);
+    const rows: HourlyRow[] = [];
+    for (const code of NASA_HOURLY_PARAMETERS) {
+      const series = raw.properties.parameter[code];
+      const unit = raw.parameters[code]?.units;
+      if (!series || typeof unit !== "string") throw new Error(`NASA POWER 小时值缺少字段 ${code}`);
+      for (const [hour, rawValue] of Object.entries(series)) {
+        const value = numberOrNull(rawValue);
+        if (!/^\d{8}(?:[01]\d|2[0-3])$/.test(hour) || value === null || value === fill) continue;
+        const at = `${hour.slice(0, 4)}-${hour.slice(4, 6)}-${hour.slice(6, 8)}T${hour.slice(8)}:00:00Z`;
+        if (!Number.isFinite(Date.parse(at))) continue;
+        rows.push({ at, code, value, unit, quality_flag: nasaHourlyQuality(code, value) });
+      }
+    }
+    if (rows.length === 0) throw new Error("NASA POWER 当前月份没有有效小时值");
+    rows.sort((a, b) => a.code.localeCompare(b.code) || a.at.localeCompare(b.at));
+    await saveResponse(client, "NASA_POWER_HOURLY", segment, raw, rows, rows.length, async (id, batchId) => {
+      const result = await client.query(
+        `insert into fact.weather_hourly(source_id,location_code,period_at,parameter_code,value,unit,quality_flag,batch_id)
+         select $1,$2,x.at::timestamptz,x.code,x.value,x.unit,x.quality_flag,$3
+           from jsonb_to_recordset($4::jsonb) as x(at text,code text,value numeric,unit text,quality_flag text)
+         on conflict(source_id,location_code,period_at,parameter_code) do update
+           set value=excluded.value,unit=excluded.unit,quality_flag=excluded.quality_flag,
+               batch_id=excluded.batch_id,updated_at=now()
+         where (fact.weather_hourly.value,fact.weather_hourly.unit,fact.weather_hourly.quality_flag)
+               is distinct from (excluded.value,excluded.unit,excluded.quality_flag)`,
+        [id, NASA_LOCATION, batchId, JSON.stringify(rows)],
+      );
+      return result.rowCount ?? 0;
+    });
+  } catch (error) {
+    await markError(client, "NASA_POWER_HOURLY", segment, error);
+    throw error;
+  }
+}
+
 async function syncAmap(client: pg.Client, extension: "base" | "all") {
   const segment = extension === "base" ? "live" : "forecast";
   try {
@@ -312,9 +373,15 @@ async function main() {
   const source = args.find((arg) => arg.startsWith("--source="))?.split("=")[1] ?? "all";
   if (!["all", "amap", "nasa"].includes(source)) throw new Error("--source 只支持 all、amap、nasa");
   const backfill = args.includes("--backfill");
+  const hourlyOnly = args.includes("--hourly-only");
+  if (hourlyOnly && source === "amap") throw new Error("--hourly-only 仅适用于 NASA 来源");
   const precipitationFrom = args.find((arg) => arg.startsWith("--precip-from="))?.split("=")[1];
   if (precipitationFrom && !/^20\d{2}-(0[1-9]|1[0-2])$/.test(precipitationFrom)) {
     throw new Error("--precip-from 应为 YYYY-MM");
+  }
+  const hourlyFrom = args.find((arg) => arg.startsWith("--hourly-from="))?.split("=")[1];
+  if (hourlyFrom && !/^20\d{2}-(0[1-9]|1[0-2])$/.test(hourlyFrom)) {
+    throw new Error("--hourly-from 应为 YYYY-MM");
   }
   const client = await connect();
   try {
@@ -322,19 +389,21 @@ async function main() {
     if (!lock.rows[0]?.acquired) throw new Error("已有气象同步任务正在运行");
     try {
       if (source === "all" || source === "amap") {
-        await syncAmap(client, "base");
-        await syncAmap(client, "all");
+        if (!hourlyOnly) {
+          await syncAmap(client, "base");
+          await syncAmap(client, "all");
+        }
       }
       if (source === "all" || source === "nasa") {
         const today = chinaDay();
         const year = Number(today.slice(0, 4));
-        if (backfill) {
+        if (backfill && !hourlyOnly) {
           for (let y = 2021; y <= year; y++) {
             const start = `${y}-01-01`;
             const end = y === year ? today : `${y}-12-31`;
             await syncNasaRange(client, start, end, String(y));
           }
-        } else {
+        } else if (!hourlyOnly) {
           if (today.slice(5) < "05-01" && year > 2021) {
             await syncNasaRange(client, `${year - 1}-01-01`, `${year - 1}-12-31`, String(year - 1));
           }
@@ -342,9 +411,24 @@ async function main() {
         }
         // The Daily API can scale PRECTOTCORR by 24 for long/recent ranges. Sum complete
         // 24-hour sets from the Hourly API instead, preserving the exact hourly response.
-        const firstMonth = precipitationFrom ?? (backfill ? "2021-01" : shiftMonth(today.slice(0, 7), -5));
-        for (let month = firstMonth; month <= today.slice(0, 7); month = shiftMonth(month, 1)) {
-          await syncNasaPrecipMonth(client, month, today);
+        if (!hourlyOnly) {
+          const firstMonth = precipitationFrom ?? (backfill ? "2021-01" : shiftMonth(today.slice(0, 7), -5));
+          for (let month = firstMonth; month <= today.slice(0, 7); month = shiftMonth(month, 1)) {
+            await syncNasaPrecipMonth(client, month, today);
+          }
+        }
+        const solarLatest = await client.query(
+          `select min(to_char(latest_at at time zone 'UTC','YYYY-MM')) as oldest_solar_month
+             from mart.weather_hourly_parameter_latest
+            where parameter_code in ('ALLSKY_SFC_SW_DWN','ALLSKY_SFC_SW_DNI','ALLSKY_SFC_SW_DIFF','CLOUD_AMT')`,
+        );
+        const recentStart = shiftMonth(today.slice(0, 7), -5);
+        const delayedSolarStart = solarLatest.rows[0]?.oldest_solar_month
+          ? shiftMonth(solarLatest.rows[0].oldest_solar_month, -1) : recentStart;
+        const firstHourlyMonth = hourlyFrom ?? (backfill ? "2021-01" :
+          (delayedSolarStart < recentStart ? delayedSolarStart : recentStart));
+        for (let month = firstHourlyMonth; month <= today.slice(0, 7); month = shiftMonth(month, 1)) {
+          await syncNasaHourlyMonth(client, month, today);
         }
       }
     } finally {

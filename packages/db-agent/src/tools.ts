@@ -331,6 +331,7 @@ const getDataCoverage = tool({
                                           left(estimation_method, 80) as estimation_method
                                      from raw.import_batch order by batch_id desc limit 10`);
     const weather = await c.query(`select (select count(*)::int from fact.weather_daily) as nasa_daily_values,
+                                         (select count(*)::int from fact.weather_hourly) as nasa_hourly_values,
                                          (select count(*)::int from fact.weather_live) as amap_live_snapshots,
                                          (select count(*)::int from fact.weather_forecast) as amap_forecast_days,
                                          (select count(*)::int from fact.weather_daily where quality_flag='suspect') as weather_suspect_values`);
@@ -342,8 +343,8 @@ const getDataCoverage = tool({
 const getWeatherData = tool({
   name: "get_weather_data",
   label: "查询天气与辐照数据",
-  description: "读取高德平桥区最新实况、短期预报，以及 NASA POWER 园区附近网格日值和每个参数的最新有效日。"
-    + "两者均为外部气象参考，NASA 日值不是实时观测，高德天气不含辐照预报。",
+  description: "读取高德平桥区最新实况、短期预报，以及 NASA POWER 园区附近网格日值、小时值和各参数的最新有效时间。"
+    + "NASA 小时值以 UTC 入库且有发布延迟，不是分钟级或未来预报；高德天气不含辐照预报。",
   parameters: Type.Object({
     days: Type.Optional(Type.Integer({ minimum: 1, maximum: 31, description: "返回最近多少天的 NASA 日值，默认 7 天" })),
     parameter_codes: Type.Optional(Type.Array(Type.String(), { minItems: 1, maxItems: 6,
@@ -356,6 +357,7 @@ const getWeatherData = tool({
     if (codes.some((code) => !allowed.has(code))) throw new Error("不支持的 NASA 气象参数编码");
     const health = await c.query("select * from mart.weather_sync_health order by source_code");
     const latest = await c.query("select *,current_date-latest_date as lag_days from mart.weather_parameter_latest order by parameter_code");
+    const hourlyLatest = await c.query("select * from mart.weather_hourly_parameter_latest order by parameter_code");
     const live = await c.query("select adcode,report_at,round((extract(epoch from now()-report_at)/3600)::numeric,1) as age_hours,weather,temperature_c,humidity_pct,wind_direction,wind_power,quality_flag from fact.weather_live order by report_at desc limit 1");
     const forecast = await c.query(`select forecast_date,issued_at,day_weather,night_weather,day_temp_c,night_temp_c,
                       day_wind,night_wind,quality_flag from fact.weather_forecast
@@ -364,9 +366,15 @@ const getWeatherData = tool({
     const daily = await c.query(`select period_date,parameter_code,value,unit,quality_flag from fact.weather_daily
                 where parameter_code=any($1::text[]) and period_date>=current_date-$2::int
                 order by period_date desc,parameter_code`, [codes, days ?? 7]);
+    const hourly = await c.query(`select period_at,parameter_code,value,unit,quality_flag from (
+                   select period_at,parameter_code,value,unit,quality_flag,
+                          row_number() over(partition by parameter_code order by period_at desc) as rank
+                     from fact.weather_hourly where parameter_code=any($1::text[])
+                 ) x where rank<=24 order by period_at desc,parameter_code`, [codes]);
     return result({ sync_health: health.rows, nasa_latest_by_parameter: latest.rows,
+      nasa_latest_hourly_by_parameter: hourlyLatest.rows, nasa_recent_hourly: hourly.rows,
       amap_live: live.rows[0] ?? null, amap_forecast: forecast.rows, nasa_recent_daily: daily.rows,
-      note: "高德是平桥区行政区天气；NASA 是 WGS84 114.12E,32.22N 网格日值。quality_flag=suspect 需复核；没有未来太阳辐照预测。" });
+      note: "高德是平桥区行政区天气；NASA 是 WGS84 114.12E,32.22N 网格日值及 UTC 小时值。quality_flag=suspect 需复核；没有分钟值或未来太阳辐照预测。" });
   }),
 });
 

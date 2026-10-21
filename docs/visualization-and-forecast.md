@@ -56,7 +56,7 @@
 
 TimescaleDB 是 PostgreSQL 扩展，适合分钟级、小时级的高频计量数据（自动分区、压缩、连续聚合）。2026-10-21 在当前 `greensystem` 数据库实测：服务器可用扩展包含 `timescaledb` 2.22.0，但 `installed_version` 为空，`pg_extension` 没有对应记录，`timescaledb_information.hypertables` 视图也不存在。因此当前数据库**尚未启用 TimescaleDB，也没有超表**。此次仅检测，没有执行 `CREATE EXTENSION`。
 
-当前已接入月度业务数据和每日气象数据；在接入电表、燃气表、光伏逆变器等 15 分钟或小时级实时计量数据时，再评估启用。届时建议：
+当前已接入月度业务数据，以及 NASA POWER 每日、逐小时气象参考数据；现有小时表先使用普通 PostgreSQL 索引表。在接入电表、燃气表、光伏逆变器等 15 分钟或小时级现场计量数据时，再按数据量和查询性能评估启用 TimescaleDB。NASA POWER 不提供分钟级数据。届时建议：
 
 - 由有权限的数据库管理员检查服务器预加载配置和扩展启用条件，再在目标数据库执行 `CREATE EXTENSION timescaledb`；当前查询账户无权查看 `shared_preload_libraries`，不能据此判断是否需要修改配置或重启；
 - 新建计量读数超表（如 `fact.meter_reading`），月度能源活动由连续聚合自动生成，与现有 `fact.energy_activity` 口径衔接。

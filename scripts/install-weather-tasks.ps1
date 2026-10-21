@@ -24,7 +24,7 @@ if (-not $dbLine) { throw 'DATABASE_URL missing from .env' }
 $databaseUrl = $dbLine.Substring('DATABASE_URL='.Length).Trim().Trim('"')
 $psql = (Get-Command psql -ErrorAction Stop).Source
 & $psql $databaseUrl -X -q -v ON_ERROR_STOP=1 -c `
-    "update raw.api_source set enabled=true, schedule_cron=case code when 'AMAP_WEATHER' then '0 * * * *' else '0 2 * * *' end where code in ('AMAP_WEATHER','NASA_POWER_DAILY')"
+    "update raw.api_source set enabled=true, schedule_cron=case code when 'AMAP_WEATHER' then '0 * * * *' else '0 2 * * *' end where code in ('AMAP_WEATHER','NASA_POWER_DAILY','NASA_POWER_HOURLY')"
 if ($LASTEXITCODE -ne 0) { throw 'Registered tasks, but could not enable database source metadata' }
 
 Get-ScheduledTask -TaskName 'XinyangCarbonPlatform-AMapWeather','XinyangCarbonPlatform-NasaPower' |

@@ -10,11 +10,11 @@
 
 ## 现在能否自动更新
 
-结论（v0.29.0）：**高德天气与 NASA POWER 已接入、入库并在本机 Windows 任务计划程序中定时同步。**网页打开或提问本身仍不执行抓取；企业电表、光伏逆变器等现场实时采集尚未接通。
+结论：**高德天气与 NASA POWER 日值、小时值已接入并按本机 Windows 任务计划定时同步。**NASA POWER 没有分钟级接口。网页打开或提问本身仍不执行抓取；企业电表、光伏逆变器等现场实时采集尚未接通。
 
 1. `apps/web/app/(platform)/admin/data/page.tsx` 明示网页上传表单尚未开放，企业能管、电网、光伏实时采集接口尚未接通。已入库数据可由动态页面在再次请求时读到，但这只是展示刷新。
 2. Excel 导入流水线可保存原始文件、生成导入批次和原始记录、解析入业务表。`packages/ingest/src/ingest.ts` 支持在导入时指定计算；CLI 有 `--calc`。数据库 Agent 的 `import_excel` 工具导入后自动触发治理检查，**未自动调用** `engine.run_all`；需另行运行 `run_calculation` 才会更新能耗、碳核算及指标结果。
-3. `raw.api_source` 现有两个启用来源：`AMAP_WEATHER` 与 `NASA_POWER_DAILY`；`raw.api_sync_state` 记录逐请求分段的成功时间、哈希和错误。Windows 计划任务分别在本机整点与每日 02:00 运行 `scripts/run-weather-sync.ps1`。任务使用本机 SSH 隧道和被 Git 忽略的密钥文件；电脑关机或该账户未登录期间不能保证运行，恢复后补抓。
+3. `raw.api_source` 有三个启用来源：`AMAP_WEATHER`、`NASA_POWER_DAILY` 与 `NASA_POWER_HOURLY`；`raw.api_sync_state` 记录逐请求分段的成功时间、哈希和错误。Windows 计划任务分别在本机整点与每日 02:00 运行 `scripts/run-weather-sync.ps1`。任务使用本机 SSH 隧道和被 Git 忽略的密钥文件；电脑关机或该账户未登录期间不能保证运行，恢复后补抓。
 4. 既有 3 个 `source_type='api'` 批次来自 CEA、CCER、产品碳足迹公开网页的一次性采集；新增天气批次由 `weather-sync` 建立，原始 JSON 在 `raw.import_record`，标准化值在 `fact.weather_*`。天气参考数据不会伪装为实测能源活动；当前能源活动仍以估算数据为主。
 5. 导入或计算后会在后台触发治理规则、生成问题记录；治理检查并不等于自动修复或自动审核。因子/公式变更尤其需要人工审核。
 
@@ -66,10 +66,24 @@ NASA 的[参数字典](https://power.larc.nasa.gov/docs/tutorials/parameters/)�
 
 **各字段最新有效日期（2026-10-21，114.12°E、32.22°N）：**`T2M`、`T2M_MAX`、`T2M_MIN`、`RH2M`、`WS10M`、`PRECTOTCORR`、`CDD18_3`、`HDD18_3` 均到 **2026-10-18**；`ALLSKY_SFC_SW_DWN` 到 **2026-10-16**；`CLRSKY_SFC_SW_DWN` 到 **2026-10-11**；`ALLSKY_SFC_SW_DNI`、`ALLSKY_SFC_SW_DIFF`、`CLOUD_AMT` 均只到 **2026-07-30**。这是逐字段排除 `-999` 缺测占位后的结果；请求的 `end` 日期或 JSON 中出现的日期不能视作都有有效数据。接入时应逐字段记录实际可用末日与缺测情况，不能假设所有太阳辐照字段都只有常规的数日延迟。
 
+### 小时级接入与分钟级边界
+
+[NASA POWER Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/) 返回逐小时平均值；本项目已验证并接入 `ALLSKY_SFC_SW_DWN`、`ALLSKY_SFC_SW_DNI`、`ALLSKY_SFC_SW_DIFF`、`CLOUD_AMT`、`T2M`、`RH2M`、`WS10M`、`PRECTOTCORR`。小时太阳辐照单位为 `Wh/m²`，降水为 `mm/hour`，温湿度、风速为 `°C`、`%`、`m/s`。请求显式指定 `time-standard=UTC`，在 `fact.weather_hourly.period_at` 保存带时区时间戳；`-999` 缺测不入库，异常值标为 `suspect`，原始 JSON 留在 `raw.import_record`。
+
+示例：
+
+```text
+https://power.larc.nasa.gov/api/temporal/hourly/point?parameters=ALLSKY_SFC_SW_DWN,T2M,RH2M,WS10M&community=RE&longitude=114.12&latitude=32.22&start=20261015&end=20261015&format=JSON&time-standard=UTC
+```
+
+NASA POWER 官方时间序列接口提供小时、日、月等粒度，**不提供分钟级气象值**。不能把小时值插值成“真实分钟值”。分钟级实时监测需要园区现场气象站、辐照计等测点及其采集接口；TimescaleDB 可以用于存储高频数据，但启用扩展本身不会产生分钟观测。小时值是历史至近实时网格参考数据，不能代替未来逐小时辐照预报。
+
 ### 已落地的自动同步与处理
 
 - 首轮导入（2026-10-21）：NASA 从 2021-01-01 回填 13 个参数，排除 `-999` 后在 `fact.weather_daily` 得到 **27,207** 条日值；高德 `411503` 实况与未来 4 天预报分别进入 `fact.weather_live`、`fact.weather_forecast`，随接口发布继续积累快照。每次响应另存 `raw.import_batch` 与 `raw.import_record`，不会混入能源活动或碳排放实测表。
 - 高德每小时整点检查两种接口，按 `reporttime` 和响应内容去重，保留历次实况与预报版本。NASA 每天按自然年查询 12 个日值参数；年初至 4 月还检查上一自然年，以接住发布滞后的太阳辐照字段。降水 `PRECTOTCORR` 单独按月拉取小时值，完整 24 小时求和为 mm/日，日常复查最近 6 个月。响应哈希不变时跳过写入，变更时按“日期+参数”幂等更新；每字段的最新响应日、最新可信日和异常数见 `mart.weather_parameter_latest`，状态见 `mart.weather_sync_health`。总管 Agent 的 `get_weather_data` 可读取这些状态与数据。
+- NASA 小时数据按月拉取，日常至少复查最近 6 个月；若太阳辐照/云量的末时更早，则从最早末时的前一个月开始复查，以接住滞后发布。数据按“UTC 小时+参数”幂等更新；逐参数有效末时与异常数见 `mart.weather_hourly_parameter_latest`。总管 Agent 的 `get_weather_data` 同时提供最新 24 条逐参数小时值。小时事实表保留为普通 PostgreSQL 索引表，尚未启用 TimescaleDB。
+- 2026-10-21 已回填 2021-01 起 **398,976** 条有效小时值（8 参数，`suspect=0`），70 个逐月原始响应批次均已保存。逐小时辐照/云量最新到 2026-07-31 23:00 UTC；温湿度、风速、降水到 2026-10-19 23:00 UTC。现有本机每日任务会继续更新这些数据，但不能消除 NASA 上游的发布延迟。
 - 质量核验发现 NASA 长区间日接口对部分降水日给出 **24 倍**数值，例如 2026-06-19 返回 1130.4 mm/日，而小时值求和为 47.1 mm/日。已用小时求和重算 2025-10 至 2026-10 的降水；2026-07-02 的小时响应含异常值，转用同日单日接口的 1.82 mm/日。标准化表目前 **27,207 条均为 `ok`**；原始异常响应与纠正响应均保留，`fact.weather_daily.derivation` 标识直接日值或小时求和。后续若来源数据超出合理范围仍标为 `suspect`，分析时需排除待复核值。
 - 调度运行在当前 Windows 用户会话，依赖电脑开机、用户已登录、外网可用和 SSH 数据库隧道可建立；它不能让 NASA 提前发布新数据。日志保存在被 Git 忽略的 `storage/logs/weather-sync.log`。重新安装：`powershell -File scripts/install-weather-tasks.ps1`；手工补抓：在 `packages/ingest` 运行 `npm run sync:weather -- --backfill`。调度结果可用 `Get-ScheduledTaskInfo` 核对。若要无人登录仍持续更新，应将同一连接器迁移到常驻服务器的任务调度。
 
