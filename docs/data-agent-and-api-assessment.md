@@ -39,6 +39,18 @@
 - [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) 在园区附近坐标的一次公开 API 请求验证了 `ALLSKY_SFC_SW_DWN`（单位 kWh/m²/日）、`T2M`（°C）和 `WS10M`（m/s）历史日值。其[太阳与气象数据发布延迟](https://power.larc.nasa.gov/docs/faqs/data/)约为 5–7 天和 2–3 天，适合历史资源评估与训练/校验，不提供未来四天的辐照预报；网格数据也不能代替现场辐照计和逆变器读数。
 - 当前 `packages/forecast/forecast.py` 的 Chronos-2 月度能耗/碳排放预测只读取历史能耗与碳排放，不使用气象协变量；项目也没有独立的光伏逐日/逐时发电预测模型。因此两类气象 API 目前都**未接入预测流水线**。如果只做当前天气展示或几天内温度影响说明，高德足够；若要做可信的光伏预测，NASA POWER 仍适合补历史辐照数据，但还需未来辐照预报源与实际光伏发电量，并开发/回测对应模型。对 12 个月能耗预测，未来天气未知，应使用气候常年值或情景假设，不能把高德 4 天预报外推一年。
 
+### NASA POWER 无需申请 Key 的调用示例
+
+[NASA 官方入门说明](https://power.larc.nasa.gov/docs/tutorials/api-getting-started/)中的“Try it out”是填查询参数并执行，不是申请账号。2026-10-21 在浏览器直接打开下列请求，未提供任何凭据即返回成功的 JSON 数据：
+
+```text
+https://power.larc.nasa.gov/api/temporal/daily/point?parameters=ALLSKY_SFC_SW_DWN,T2M,WS10M&community=RE&longitude=114.12&latitude=32.22&start=20251001&end=20251003&format=JSON
+```
+
+- `parameters`：`ALLSKY_SFC_SW_DWN` 为全天候水平面太阳短波辐照量（返回单位 kWh/m²/日），`T2M` 为 2 米气温（°C），`WS10M` 为 10 米风速（m/s）；`community=RE` 表示可再生能源场景。
+- `longitude`、`latitude`：此处为园区附近的演示点，不是已经核准的园区中心 WGS84 坐标。正式接入前应选定园区或光伏站 WGS84 坐标；不要直接把高德地图 GCJ-02 坐标当作精确采样点。
+- `start`、`end`：历史日期，格式为 `YYYYMMDD`；`format=JSON` 便于程序解析。若用官方交互页面，依次填同样的值并按“Execute”，无需注册或填写 API Key。
+
 ## 建议的自动更新链路
 
 按优先级先做企业能源实测数据接入，再做气象与市场参考数据。每个连接器应执行：按计划拉取 → 保存原始响应及来源/发布时间/校验值 → 幂等解析并校验单位、时间和对象编码 → 写入导入批次与事实表（保留修订历史）→ 对受影响年份执行计算 → 运行治理检查 → 告警并在页面显示最近同步时间及数据质量。因子更新单独进入待审流程，批准后才重算。Pi Agent 可读取这些同步状态、解释异常和建议处理，但不应承担无人值守的抓取与写库调度。
