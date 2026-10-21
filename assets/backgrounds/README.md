@@ -1,13 +1,29 @@
-# 信阳经开区实景背景素材线索
+# Frontend background references
 
-用户否定的 AI 生成背景已从项目素材中移除。以下只记录可核对地点和出处的**实拍候选**；网页预览图尚未获得平台使用授权，也不足以作为全屏高清背景，因此未复制到 `apps/web/public/backgrounds/`。
+The five English-named WebP files in [`reference/`](reference/) are visual references for future front-end backgrounds, each approximately 1672 × 941 px. They are not active page backgrounds.
 
-| 候选 | 可核对的地点与出处 | 网页图尺寸 | 画面与用途判断 |
-| --- | --- | --- | --- |
-| 万华禾香集团航拍 | [河南日报 2025-10-27](https://dzb.henandaily.cn/html5/2025-10/27/content_329_1763563.htm)；[图片预览](https://dzb.henandaily.cn/resfile/2025-10-27/T5/p50_b.jpg)。报道明确万华无醛生态产业园位于信阳经济技术开发区，图片由羊山新区党委宣传统战部提供。 | 400 × 332 | 真厂区鸟瞰，场地辨识度高；纵向比例及分辨率不适合作登录页主背景。 |
-| 羊山新区产业园航拍 | [河南日报同篇报道](https://dzb.henandaily.cn/html5/2025-10/27/content_329_1763563.htm)；[图片预览](https://dzb.henandaily.cn/resfile/2025-10-27/T5/p48_b.jpg)。文章说明羊山新区与信阳经开区深度融合，但图片标题只写“羊山新区产业园”，具体拍摄地点仍需供图方确认。 | 400 × 299 | 厂房、道路和塔楼有工业感；只能做选景参考。 |
-| 万华无醛生态产业园全景 | [河南日报客户端报道转载页 2024-09-14](https://www.sohu.com/a/808924403_121375869)；[图片预览](https://q9.itc.cn/q_70/images03/20240914/3f701e9a31984fd9930e52a9bc75d991.png)。图注写明“信阳万华无醛生态产业园”，文末注明图片由羊山新区宣传统战部提供。 | 737 × 353 | 横幅构图较适合页面顶部，但照片偏亮，清晰度仍不足以铺满桌面登录页。 |
+| File | Origin | Intended reference |
+| --- | --- | --- |
+| [`user-supplied-sunrise-campus.webp`](reference/user-supplied-sunrise-campus.webp) | First image supplied by the user in this task; converted to WebP without redrawing. Its depicted location is unverified. | Warm sunrise, broad aerial view. |
+| [`user-supplied-green-campus.webp`](reference/user-supplied-green-campus.webp) | Second image supplied by the user in this task; converted to WebP without redrawing. Its depicted location is unverified. | Bright green campus with central road. |
+| [`wanhua-panorama-redraw.webp`](reference/wanhua-panorama-redraw.webp) | AI reconstruction based on a [737 × 353 real photo](https://q9.itc.cn/q_70/images03/20240914/3f701e9a31984fd9930e52a9bc75d991.png) captioned “信阳万华无醛生态产业园” in this [2024 report](https://www.sohu.com/a/808924403_121375869). | Long industrial hall across a wide frame. |
+| [`wanhua-aerial-redraw.webp`](reference/wanhua-aerial-redraw.webp) | AI reconstruction based on a [400 × 332 real photo](https://dzb.henandaily.cn/resfile/2025-10-27/T5/p50_b.jpg) captioned “航拍绿色家居产业龙头万华禾香集团” in [河南日报](https://dzb.henandaily.cn/html5/2025-10/27/content_329_1763563.htm). | Aerial view of plant roofs and surrounding roads. |
+| [`yangshan-industrial-park-redraw.webp`](reference/yangshan-industrial-park-redraw.webp) | AI reconstruction based on a [400 × 299 real photo](https://dzb.henandaily.cn/resfile/2025-10-27/T5/p48_b.jpg) captioned “航拍羊山新区产业园” in the [same report](https://dzb.henandaily.cn/html5/2025-10/27/content_329_1763563.htm). The exact site within Yangshan has not been independently confirmed. | Industrial blocks, slender tower and diagonal roads. |
 
-## 后续取图标准
+The three redraws preserve each source photo's main building placement and camera direction, while reconstructing missing detail and extending the frame. They are **AI-derived references, not site photographs or reliable records of individual buildings**. The cited report says its images were supplied by the 羊山新区党委宣传统战部; no reuse permission is stated. Keep the images as internal design references until the rights holder supplies approved high-resolution originals or permission for publication. Do not label unrelated 信阳国家高新区 or 豫东南高新区 images as 信阳经开区.
 
-优先向羊山新区党委宣传统战部或万华园区索取可用于本平台的原始照片与使用授权。登录页优先选经开区内真实厂区的横向原图，建议至少 2560 × 1440 像素，建筑主体在右侧、左侧留出标题空间。允许在前端叠加深灰渐变以接近参考图质感，但不改变场地结构，也不将信阳国家高新区或豫东南高新区的照片标成“信阳经开区”。取得高清授权图后再制作 WebP 和登录页预览。
+## Redraw prompts
+
+All three images used the built-in Codex image generation tool in edit mode, one source image per output, with a photorealistic-natural reference style and no text or logos.
+
+### Wanhua panorama
+
+> Faithfully redraw and enlarge the supplied low-resolution aerial photo of the Xinyang Wanhua formaldehyde-free ecological industrial park. Preserve the long white industrial hall, repeating grey sawtooth roof strips, processing equipment at far left, multi-story white building at upper right, perpendicular tree-lined roads, flat tree line, and undeveloped green ground. Keep the same aerial view and relative building positions. Recompose only enough for a wide landscape frame, restore plausible photographic detail and natural cool daylight. Do not add mountains, lake, solar panels, skyscrapers, new buildings, signage, text, UI or logos.
+
+### Wanhua aerial
+
+> Redraw the low-resolution authentic aerial photo of the Wanhua Hexiang industrial plant in Xinyang as a high-resolution photographic landscape reference. Preserve the central white and grey sawtooth-roofed production halls, processing equipment at the back, small pale administrative block near the bottom center, divided road on the right, diagonal lower-left road, flat green surroundings and hazy horizon. Extend only plausible adjacent surroundings for a wide frame. Do not add mountains, lake, solar panels, new towers, signage, text or logos.
+
+### Yangshan industrial park
+
+> Redraw the low-resolution aerial photo captioned Yangshan New District industrial park. Preserve the tall slender tower left of center, warm brown mid-rise buildings at its base, long low halls with orange-blue striped roofs, diagonal tree-lined roads, flat green surroundings and lightly hazy skyline. Extend the composition to a wide panorama while keeping relative positions. Restore plausible fine detail and restrained daylight. Do not add mountains, lake, solar roofs, new high-rises, extra towers, text, logos or UI.
