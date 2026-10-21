@@ -17,7 +17,7 @@ $migrationDir = (Resolve-Path (Join-Path $PSScriptRoot '..\database\migrations')
 $adminSecretPath = Join-Path (Join-Path $env:LOCALAPPDATA 'XinyangCarbonPlatform') 'postgres-password.dpapi'
 
 if (Test-Path -LiteralPath $adminSecretPath -PathType Leaf) {
-    $securePassword = Get-Content -LiteralPath $adminSecretPath -Raw | ConvertTo-SecureString
+    $securePassword = ConvertTo-SecureString -String ((Get-Content -LiteralPath $adminSecretPath -Raw).Trim())
 } elseif ($env:PGPASSWORD) {
     $securePassword = ConvertTo-SecureString $env:PGPASSWORD -AsPlainText -Force
 } else {

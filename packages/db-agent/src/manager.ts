@@ -18,12 +18,12 @@ const BOARDS: Record<Board, { label: string; purpose: string; tools: string[] }>
   overview: {
     label: "园区总览",
     purpose: "跨板块汇总、园区总体表现、年度比较和达标概览",
-    tools: [...COMMON, "get_energy_summary", "get_carbon_summary", "get_indicators", "get_data_coverage"],
+    tools: [...COMMON, "get_energy_summary", "get_carbon_summary", "get_indicators", "get_data_coverage", "get_weather_data"],
   },
   energy: {
     label: "能源管理",
     purpose: "综合能耗、能源品种、企业用能、强度、能效和能源因子",
-    tools: [...COMMON, "get_energy_summary", "get_factors", "get_data_coverage"],
+    tools: [...COMMON, "get_energy_summary", "get_factors", "get_data_coverage", "get_weather_data"],
   },
   carbon: {
     label: "碳管理",
@@ -33,7 +33,7 @@ const BOARDS: Record<Board, { label: string; purpose: string; tools: string[] }>
   diagnosis: {
     label: "综合诊断",
     purpose: "绿色园区指标、未达标原因、预测、预警、目标和改进建议",
-    tools: [...COMMON, "get_indicators", "explain_indicator", "get_energy_summary", "get_carbon_summary", "list_governance_issues", "get_data_coverage"],
+    tools: [...COMMON, "get_indicators", "explain_indicator", "get_energy_summary", "get_carbon_summary", "list_governance_issues", "get_data_coverage", "get_weather_data"],
   },
   enterprises: {
     label: "企业与项目名录",
@@ -43,7 +43,7 @@ const BOARDS: Record<Board, { label: string; purpose: string; tools: string[] }>
   governance: {
     label: "数据治理",
     purpose: "数据覆盖、模拟值、来源、口径、语义目录和治理工单",
-    tools: [...COMMON, "get_data_coverage", "list_governance_issues", "get_indicators", "explain_indicator"],
+    tools: [...COMMON, "get_data_coverage", "get_weather_data", "list_governance_issues", "get_indicators", "explain_indicator"],
   },
 };
 

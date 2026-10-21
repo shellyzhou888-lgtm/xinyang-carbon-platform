@@ -10,12 +10,12 @@
 
 ## 现在能否自动更新
 
-结论：**网页打开或提问不会自动从外部网站采集数据；目前没有已接通且定时运行的数据 API。**
+结论（v0.29.0）：**高德天气与 NASA POWER 已接入、入库并在本机 Windows 任务计划程序中定时同步。**网页打开或提问本身仍不执行抓取；企业电表、光伏逆变器等现场实时采集尚未接通。
 
 1. `apps/web/app/(platform)/admin/data/page.tsx` 明示网页上传表单尚未开放，企业能管、电网、光伏实时采集接口尚未接通。已入库数据可由动态页面在再次请求时读到，但这只是展示刷新。
 2. Excel 导入流水线可保存原始文件、生成导入批次和原始记录、解析入业务表。`packages/ingest/src/ingest.ts` 支持在导入时指定计算；CLI 有 `--calc`。数据库 Agent 的 `import_excel` 工具导入后自动触发治理检查，**未自动调用** `engine.run_all`；需另行运行 `run_calculation` 才会更新能耗、碳核算及指标结果。
-3. `raw.api_source` 已有来源地址、认证类型、`schedule_cron`、上次运行时间等字段，但当前没有使用这些字段执行抓取的调度器。核查时该表为 **0 条来源、0 条启用**。
-4. 核查时 `raw.import_batch` 中有 3 个 `source_type='api'` 批次，系 CEA、CCER、产品碳足迹公开网页的一次性采集记录；该标记不能证明存在定时 API 连接。当前有效的能源活动记录为 1,895 条估算数据，没有实测记录。
+3. `raw.api_source` 现有两个启用来源：`AMAP_WEATHER` 与 `NASA_POWER_DAILY`；`raw.api_sync_state` 记录逐请求分段的成功时间、哈希和错误。Windows 计划任务分别在本机整点与每日 02:00 运行 `scripts/run-weather-sync.ps1`。任务使用本机 SSH 隧道和被 Git 忽略的密钥文件；电脑关机或该账户未登录期间不能保证运行，恢复后补抓。
+4. 既有 3 个 `source_type='api'` 批次来自 CEA、CCER、产品碳足迹公开网页的一次性采集；新增天气批次由 `weather-sync` 建立，原始 JSON 在 `raw.import_record`，标准化值在 `fact.weather_*`。天气参考数据不会伪装为实测能源活动；当前能源活动仍以估算数据为主。
 5. 导入或计算后会在后台触发治理规则、生成问题记录；治理检查并不等于自动修复或自动审核。因子/公式变更尤其需要人工审核。
 
 ## 候选数据源
@@ -37,7 +37,7 @@
 - 使用新提供的高德 Web Service Key 对平桥区 `411503` 分别请求 `extensions=base`、`extensions=all`，两者均返回 `status=1`、`infocode=10000`。实况有天气、气温、湿度、风向/风力与发布时间；预报实际返回当天加未来三天共 4 天，字段为昼夜天气、温度、风向/风力。调用期间未在文件、日志或 Git 中保存 Key。
 - [高德天气接口文档](https://lbs.amap.com/api/webservice/guide/api/weatherinfo)中没有辐照度（GHI/DNI/DHI）、日照时数、云量或逐时太阳辐照预报；仅凭“晴/多云”无法做可靠的定量光伏发电预测。短期空调与供暖负荷分析可先用高德温度，但需要持续收集才能积累历史训练样本。
 - [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) 在园区附近坐标的一次公开 API 请求验证了 `ALLSKY_SFC_SW_DWN`（单位 kWh/m²/日）、`T2M`（°C）和 `WS10M`（m/s）历史日值。其[太阳与气象数据发布延迟](https://power.larc.nasa.gov/docs/faqs/data/)约为 5–7 天和 2–3 天，适合历史资源评估与训练/校验，不提供未来四天的辐照预报；网格数据也不能代替现场辐照计和逆变器读数。
-- 当前 `packages/forecast/forecast.py` 的 Chronos-2 月度能耗/碳排放预测只读取历史能耗与碳排放，不使用气象协变量；项目也没有独立的光伏逐日/逐时发电预测模型。因此两类气象 API 目前都**未接入预测流水线**。如果只做当前天气展示或几天内温度影响说明，高德足够；若要做可信的光伏预测，NASA POWER 仍适合补历史辐照数据，但还需未来辐照预报源与实际光伏发电量，并开发/回测对应模型。对 12 个月能耗预测，未来天气未知，应使用气候常年值或情景假设，不能把高德 4 天预报外推一年。
+- 当前 `packages/forecast/forecast.py` 的 Chronos-2 月度能耗/碳排放预测只读取历史能耗与碳排放，不使用气象协变量；项目也没有独立的光伏逐日/逐时发电预测模型。因此两类气象 API **虽已入库，但尚未参与预测计算**。如果只做当前天气展示或几天内温度影响说明，高德足够；若要做可信的光伏预测，仍需未来辐照预报源与实际光伏发电量，并开发/回测对应模型。对 12 个月能耗预测，未来天气未知，应使用气候常年值或情景假设，不能把高德 4 天预报外推一年。
 
 ### NASA POWER 无需申请 Key 的调用示例
 
@@ -62,9 +62,16 @@ NASA 的[参数字典](https://power.larc.nasa.gov/docs/tutorials/parameters/)�
 | 光伏及能耗 | `T2M`、`T2M_MAX`、`T2M_MIN`、`RH2M`、`WS10M` | °C、%、m/s | 平均/最高/最低气温、相对湿度、风速；气温与风速还影响组件温度 |
 | 能耗辅助 | `PRECTOTCORR`、`CDD18_3`、`HDD18_3` | mm/日、°C·日 | 降水、18.3°C 基准的制冷/采暖度日；度日主要解释空调和采暖负荷，不能直接解释工艺能耗 |
 
-**时间范围需要分开理解：**当前浏览器演示请求 `start=20251001&end=20251003`，只取 2025-10-01 至 2025-10-03 **3 天**，未导入项目数据库。另一次只读请求验证 13 个参数能同时返回 2021-01-01 至 2025-12-31 的 **1,826 天**；这是与项目现有月度能耗序列对齐的建议历史回填范围，也尚未落库。NASA [Daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)总体覆盖 1981 年至近实时，但[气象源](https://power.larc.nasa.gov/docs/methodology/communities/)可追溯至 1981 年、太阳辐照源一般从 1984 年开始，且具体字段可能更晚；[Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/)从 2001 年至近实时。以 2026-10-21 的现场查询为例，该地点最后有效的 `ALLSKY_SFC_SW_DWN` 为 2026-10-16，`T2M` 为 2026-10-18；近实时末日会随发布进度变化。正式接入宜先按年回填 2021–2025，再按可用日期增量更新，并保留源时间尺度与时区口径。NASA 的近实时数据不是未来预报。
+**时间范围需要分开理解：**旧浏览器演示请求 `start=20251001&end=20251003` 只取 2025-10-01 至 2025-10-03 **3 天**；正式同步另行从 2021-01-01 回填至各字段最近有效日期。NASA [Daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)总体覆盖 1981 年至近实时，但[气象源](https://power.larc.nasa.gov/docs/methodology/communities/)可追溯至 1981 年、太阳辐照源一般从 1984 年开始，且具体字段可能更晚；[Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/)从 2001 年至近实时。以 2026-10-21 的现场查询为例，该地点最后有效的 `ALLSKY_SFC_SW_DWN` 为 2026-10-16，`T2M` 为 2026-10-18；近实时末日会随发布进度变化。NASA 的近实时数据不是未来预报。
 
 **各字段最新有效日期（2026-10-21，114.12°E、32.22°N）：**`T2M`、`T2M_MAX`、`T2M_MIN`、`RH2M`、`WS10M`、`PRECTOTCORR`、`CDD18_3`、`HDD18_3` 均到 **2026-10-18**；`ALLSKY_SFC_SW_DWN` 到 **2026-10-16**；`CLRSKY_SFC_SW_DWN` 到 **2026-10-11**；`ALLSKY_SFC_SW_DNI`、`ALLSKY_SFC_SW_DIFF`、`CLOUD_AMT` 均只到 **2026-07-30**。这是逐字段排除 `-999` 缺测占位后的结果；请求的 `end` 日期或 JSON 中出现的日期不能视作都有有效数据。接入时应逐字段记录实际可用末日与缺测情况，不能假设所有太阳辐照字段都只有常规的数日延迟。
+
+### 已落地的自动同步与处理
+
+- 首轮导入（2026-10-21）：NASA 从 2021-01-01 回填 13 个参数，排除 `-999` 后在 `fact.weather_daily` 得到 **27,207** 条日值；高德 `411503` 实况与未来 4 天预报分别进入 `fact.weather_live`、`fact.weather_forecast`，随接口发布继续积累快照。每次响应另存 `raw.import_batch` 与 `raw.import_record`，不会混入能源活动或碳排放实测表。
+- 高德每小时整点检查两种接口，按 `reporttime` 和响应内容去重，保留历次实况与预报版本。NASA 每天按自然年查询 12 个日值参数；年初至 4 月还检查上一自然年，以接住发布滞后的太阳辐照字段。降水 `PRECTOTCORR` 单独按月拉取小时值，完整 24 小时求和为 mm/日，日常复查最近 6 个月。响应哈希不变时跳过写入，变更时按“日期+参数”幂等更新；每字段的最新响应日、最新可信日和异常数见 `mart.weather_parameter_latest`，状态见 `mart.weather_sync_health`。总管 Agent 的 `get_weather_data` 可读取这些状态与数据。
+- 质量核验发现 NASA 长区间日接口对部分降水日给出 **24 倍**数值，例如 2026-06-19 返回 1130.4 mm/日，而小时值求和为 47.1 mm/日。已用小时求和重算 2025-10 至 2026-10 的降水；2026-07-02 的小时响应含异常值，转用同日单日接口的 1.82 mm/日。标准化表目前 **27,207 条均为 `ok`**；原始异常响应与纠正响应均保留，`fact.weather_daily.derivation` 标识直接日值或小时求和。后续若来源数据超出合理范围仍标为 `suspect`，分析时需排除待复核值。
+- 调度运行在当前 Windows 用户会话，依赖电脑开机、用户已登录、外网可用和 SSH 数据库隧道可建立；它不能让 NASA 提前发布新数据。日志保存在被 Git 忽略的 `storage/logs/weather-sync.log`。重新安装：`powershell -File scripts/install-weather-tasks.ps1`；手工补抓：在 `packages/ingest` 运行 `npm run sync:weather -- --backfill`。调度结果可用 `Get-ScheduledTaskInfo` 核对。若要无人登录仍持续更新，应将同一连接器迁移到常驻服务器的任务调度。
 
 ## 建议的自动更新链路
 

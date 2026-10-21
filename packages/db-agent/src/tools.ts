@@ -330,8 +330,43 @@ const getDataCoverage = tool({
     const batches = await c.query(`select batch_id, source_type, source_name, status, row_count, error_count, submitted_at::date as date,
                                           left(estimation_method, 80) as estimation_method
                                      from raw.import_batch order by batch_id desc limit 10`);
-    return result({ energy_activity: energy.rows, statistic_value: stats.rows, recent_batches: batches.rows,
+    const weather = await c.query(`select (select count(*)::int from fact.weather_daily) as nasa_daily_values,
+                                         (select count(*)::int from fact.weather_live) as amap_live_snapshots,
+                                         (select count(*)::int from fact.weather_forecast) as amap_forecast_days,
+                                         (select count(*)::int from fact.weather_daily where quality_flag='suspect') as weather_suspect_values`);
+    return result({ energy_activity: energy.rows, statistic_value: stats.rows, weather_reference: weather.rows[0], recent_batches: batches.rows,
                     note: "data_source: measured/manual 为真实数据，estimated 为模拟估值，interpolated 为插值" });
+  }),
+});
+
+const getWeatherData = tool({
+  name: "get_weather_data",
+  label: "查询天气与辐照数据",
+  description: "读取高德平桥区最新实况、短期预报，以及 NASA POWER 园区附近网格日值和每个参数的最新有效日。"
+    + "两者均为外部气象参考，NASA 日值不是实时观测，高德天气不含辐照预报。",
+  parameters: Type.Object({
+    days: Type.Optional(Type.Integer({ minimum: 1, maximum: 31, description: "返回最近多少天的 NASA 日值，默认 7 天" })),
+    parameter_codes: Type.Optional(Type.Array(Type.String(), { minItems: 1, maxItems: 6,
+      description: "NASA 参数编码；默认总辐照、气温、湿度、风速" })),
+  }),
+  execute: async ({ days, parameter_codes }) => readOnly(async (c) => {
+    const allowed = new Set(["ALLSKY_SFC_SW_DWN", "ALLSKY_SFC_SW_DNI", "ALLSKY_SFC_SW_DIFF", "CLRSKY_SFC_SW_DWN",
+      "CLOUD_AMT", "T2M", "T2M_MAX", "T2M_MIN", "RH2M", "WS10M", "PRECTOTCORR", "CDD18_3", "HDD18_3"]);
+    const codes = parameter_codes ?? ["ALLSKY_SFC_SW_DWN", "T2M", "RH2M", "WS10M"];
+    if (codes.some((code) => !allowed.has(code))) throw new Error("不支持的 NASA 气象参数编码");
+    const health = await c.query("select * from mart.weather_sync_health order by source_code");
+    const latest = await c.query("select *,current_date-latest_date as lag_days from mart.weather_parameter_latest order by parameter_code");
+    const live = await c.query("select adcode,report_at,round((extract(epoch from now()-report_at)/3600)::numeric,1) as age_hours,weather,temperature_c,humidity_pct,wind_direction,wind_power,quality_flag from fact.weather_live order by report_at desc limit 1");
+    const forecast = await c.query(`select forecast_date,issued_at,day_weather,night_weather,day_temp_c,night_temp_c,
+                      day_wind,night_wind,quality_flag from fact.weather_forecast
+                where issued_at=(select max(issued_at) from fact.weather_forecast)
+                order by forecast_date`);
+    const daily = await c.query(`select period_date,parameter_code,value,unit,quality_flag from fact.weather_daily
+                where parameter_code=any($1::text[]) and period_date>=current_date-$2::int
+                order by period_date desc,parameter_code`, [codes, days ?? 7]);
+    return result({ sync_health: health.rows, nasa_latest_by_parameter: latest.rows,
+      amap_live: live.rows[0] ?? null, amap_forecast: forecast.rows, nasa_recent_daily: daily.rows,
+      note: "高德是平桥区行政区天气；NASA 是 WGS84 114.12E,32.22N 网格日值。quality_flag=suspect 需复核；没有未来太阳辐照预测。" });
   }),
 });
 
@@ -482,12 +517,12 @@ const executeWriteSql = tool({
 });
 
 export const READ_TOOL_NAMES = ["search_catalog", "plan_joins", "query_metric", "find_entities", "get_energy_summary",
-  "get_carbon_summary", "get_indicators", "explain_indicator", "get_factors", "get_data_coverage", "list_governance_issues", "query_sql"];
+  "get_carbon_summary", "get_indicators", "explain_indicator", "get_factors", "get_data_coverage", "get_weather_data", "list_governance_issues", "query_sql"];
 export const WRITE_TOOLS = new Set(["run_calculation", "import_excel", "execute_write_sql"]);
 
 export function buildTools(cfg: AgentConfig, ctx: ToolContext = { getQuestion: () => undefined, sqlFailures: 0 }): AgentTool<any>[] {
   const read = [searchCatalogTool(ctx), planJoinsTool, queryMetric, findEntities, getEnergySummary, getCarbonSummary, getIndicators,
-                explainIndicator, getFactors, getDataCoverage, listGovernanceIssues, querySql(cfg, ctx)];
+                explainIndicator, getFactors, getDataCoverage, getWeatherData, listGovernanceIssues, querySql(cfg, ctx)];
   if (cfg.writeMode === "off") return read;
   return [...read, runCalculation(cfg), importExcel(cfg), executeWriteSql];
 }
