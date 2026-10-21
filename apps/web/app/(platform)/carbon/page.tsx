@@ -4,6 +4,7 @@ import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } fr
 import { LinkTabs, Reveal } from "@/components/MotionParts";
 import { AnnualComboChart, ContributionList, KpiCard, ShareBreakdown, YearCompareChart } from "@/components/InsightParts";
 import { BudgetComparison, CarbonReferences } from "@/components/CarbonDataSections";
+import FlowNetworkMap from "@/components/FlowNetworkMap";
 import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +40,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <KpiCard label="单位综合能耗 CO₂" value={perEnergyOf(year)} unit="tCO₂/tce" digits={3} tone="info" previous={perEnergyOf(year - 1)} foot="反映用能结构的低碳程度" delay={0.1} />
       <KpiCard label="前三大排放企业占比" value={data?.co2_t ? top3 / data.co2_t * 100 : null} unit="%" digits={1} tone="accent" foot={ranking.slice(0, 3).map((item) => shortName(item.name)).join("、")} delay={0.15} />
     </div>
-    <LinkTabs id="carbon" label="碳排管理模块" active={tab} items={[{ key: "analysis", label: "碳排放分析", href: `/carbon?year=${year}` }, { key: "flow", label: "碳流分析", href: `/carbon?year=${year}&tab=flow` }]} />
+    <LinkTabs id="carbon" label="碳排管理模块" active={tab} items={[{ key: "analysis", label: "碳排放分析", href: `/carbon?year=${year}` }, { key: "flow", label: "碳流网络", href: `/carbon?year=${year}&tab=flow` }]} />
 
     {tab === "analysis" ? <div className="stack">
       <div className="grid-main-side" style={{ marginTop: 0 }}>
@@ -62,10 +63,12 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <Reveal><BudgetComparison data={extended} kind="carbon" /></Reveal>
       <Reveal><CarbonReferences data={extended} /></Reveal>
       <AchievedIndicators data={data} codes={["I17", "I18", "I19"]} title="碳排放达标表现" />
-    </div> : <Panel title="碳流与内部转供">
-      <Empty title={detail?.transfers.length ? "内部转供尚未关联独立排放因子" : "尚无可闭合的碳流记录"} action={<MoreLink href={`/energy?year=${year}&tab=flow`}>查看能流数据</MoreLink>}>
-        碳流需由对应能流、计量单位和因子逐项换算；现有排放结构可在“碳排放分析”查看。
-      </Empty>
-    </Panel>}
+    </div> : <div className="stack">
+      <Reveal><Panel className="panel-flush" title="碳流网络互动地图" subtitle="企业 → 产业片区 → 园区的排放汇聚；卡片显示排放量、占比与单位产值 CO₂，红色光罩为存在未处理预警的企业"
+        action={<MoreLink href={`/energy?year=${year}&tab=flow`}>能流网络</MoreLink>}>
+        <FlowNetworkMap mode="carbon" year={year} parkTotal={data?.co2_t} nodes={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))}
+          alerts={(detail?.alerts || []).filter((item) => item.status === "open").map((item) => item.node)} />
+      </Panel></Reveal>
+    </div>}
   </>;
 }

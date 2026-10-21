@@ -1,4 +1,4 @@
-import { charts, management, overview, carbonManagement } from "@/lib/server";
+import { charts, management, overview, carbonManagement, enterpriseMonthly } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
 import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
@@ -6,7 +6,8 @@ import { RankingChart } from "@/components/EnergyCharts";
 import { KpiCard, ShareBreakdown, YearCompareChart } from "@/components/InsightParts";
 import { IndicatorBoard } from "@/components/OverviewBoards";
 import MetricChart from "@/components/MetricChart";
-import Energy3DPanel from "@/components/Energy3DPanel";
+import EnergyHeatTwin from "@/components/EnergyHeatTwin";
+import FlowNetworkMap from "@/components/FlowNetworkMap";
 import { BudgetComparison } from "@/components/CarbonDataSections";
 import EnergyFlow from "@/components/EnergyFlow";
 import { C } from "@/lib/chart-theme";
@@ -20,7 +21,8 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const tab = TABS.some(([key]) => key === sp.tab) ? sp.tab! : "consumption";
   let data: Awaited<ReturnType<typeof overview>> | null = null, chart: Awaited<ReturnType<typeof charts>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, error = "";
   let extended: Awaited<ReturnType<typeof carbonManagement>> | null = null;
-  try { [data, chart, detail, extended] = await Promise.all([overview(year), charts(year), management(year), carbonManagement(year)]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
+  let monthlyBySite: Awaited<ReturnType<typeof enterpriseMonthly>> = [];
+  try { [data, chart, detail, extended, monthlyBySite] = await Promise.all([overview(year), charts(year), management(year), carbonManagement(year), enterpriseMonthly(year)]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const monthly = chart?.monthly.filter((row) => row.month.startsWith(String(year))) || [];
   const renewable = detail?.renewable.filter((row) => row.renewable).reduce((total, row) => total + row.tce, 0);
   const renewableShare = renewable != null && data?.tce ? renewable / data.tce * 100 : null;
@@ -44,6 +46,9 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
     <LinkTabs id="energy" label="能源模块" active={tab} items={TABS.map(([key, label]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` }))} />
 
     {tab === "consumption" && <div className="stack">
+      <Reveal><Panel className="panel-flush" title="园区能耗热力孪生" subtitle="点阵按各企业当月综合能耗与位置扩散建模，颜色越暖能耗越高；底部时间轴可逐月播放">
+        {monthlyBySite.length ? <EnergyHeatTwin year={year} rows={monthlyBySite} /> : <Empty title="暂无企业逐月能耗" />}
+      </Panel></Reveal>
       <div className="grid-main-side" style={{ marginTop: 0 }}>
         <Reveal><Panel title={`${year} 年月度综合能耗`} subtitle={`柱为 ${year} 年，虚线为 ${year - 1} 年同期；悬停查看同比`}>
           {monthly.length ? <YearCompareChart months={months} current={monthly.map((row) => row.tce)} previous={monthly.map((row) => lastYear.find((prev) => prev.month.slice(5) === row.month.slice(5))?.tce ?? null)} year={year} unit="tce" color={C.energy} label="月度综合能耗同比" /> : <Empty title="暂无月度数据" />}
@@ -54,7 +59,6 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       </div>
       <Reveal><BudgetComparison data={extended} kind="energy" /></Reveal>
       {!!data?.achieved.length && <Reveal><Panel title="绿色工业园区评价 · 达标指标" subtitle="GIP_2026 指标体系中已达到引领值的指标；白色刻度为引领值"><IndicatorBoard rows={data.achieved} year={year} /></Panel></Reveal>}
-      <Reveal><Panel title="企业能耗空间对比" subtitle="ECharts-GL 三维柱图，点击柱体查看企业"><Energy3DPanel year={year} ranking={chart?.ranking || []} /></Panel></Reveal>
       <AchievedIndicators data={data} codes={["I04", "I05", "I06"]} title="能源利用达标表现" />
     </div>}
 
@@ -83,6 +87,10 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
     </div>}
 
     {tab === "flow" && <div className="stack">
+      <Reveal><Panel className="panel-flush" title="能流网络互动地图" subtitle="园区 → 产业片区 → 企业的供能关系；卡片显示能耗、占比与单位产值能耗，红色光罩为存在未处理预警的企业">
+        <FlowNetworkMap mode="energy" year={year} parkTotal={data?.tce} nodes={(chart?.ranking || []).map((row) => ({ code: row.code, name: row.name, value: row.tce, intensity: row.intensity }))}
+          alerts={(detail?.alerts || []).filter((row) => row.status === "open").map((row) => row.node)} />
+      </Panel></Reveal>
       <Reveal><Panel title="企业 → 厂区 → 产线能流" subtitle="桑基图按能源品种与计量单位分别绘制">
         {detail?.transfers.length ? <EnergyFlow rows={detail.transfers} /> : <Empty title="尚无内部转供记录" action={<MoreLink href={`/admin/data?year=${year}`}>查看数据接入</MoreLink>}>录入来源、去向与计量单位后，可按能源品种建立能流网络。</Empty>}
       </Panel></Reveal>

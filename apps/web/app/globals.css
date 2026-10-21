@@ -850,3 +850,42 @@ table.cols { background: var(--surface); border-radius: 18px; padding: 8px; }
 .trophy-name strong { font-size: 16px; }
 .trophy-holders button { padding: 2px 9px; font-size: 12px; }
 .trophy-hero { padding: 0 0 10px; }
+
+/* ---------- Heat twin and flow network maps ---------- */
+.panel-flush { padding-bottom: 14px; }
+.twin, .flowmap { position: relative; height: 620px; border-radius: 18px; overflow: hidden; background: var(--bg-2); isolation: isolate; }
+.twin-map { position: absolute; inset: 0; }
+.twin-map .amap-inner { position: absolute; inset: 0; }
+.twin .map-loading, .flowmap .map-loading, .twin .map-error, .flowmap .map-error { position: absolute; inset: 0; z-index: 2; }
+.twin-legend { position: absolute; z-index: 4; left: 16px; top: 16px; display: grid; grid-template-columns: auto auto; grid-template-rows: auto 1fr; gap: 6px 8px; height: 190px; padding: 10px 12px; border-radius: 14px; background: var(--glass); backdrop-filter: blur(14px); font-size: 12px; color: var(--text-2); }
+.twin-legend b { grid-column: 1 / -1; font-weight: 600; color: var(--text); }
+.twin-ramp { width: 8px; border-radius: 4px; }
+.twin-ticks { display: flex; flex-direction: column; justify-content: space-between; }
+.twin-panel { position: absolute; z-index: 4; right: 16px; top: 16px; bottom: 84px; width: 290px; display: flex; flex-direction: column; gap: 8px; padding: 16px 18px; border-radius: 18px; overflow: auto; }
+.twin-total { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.twin-total strong { font-size: 34px; font-weight: 500; line-height: 1.1; }
+.twin-total small { color: var(--text-3); font-size: 13px; }
+.twin-total .kpi-delta { margin-left: 0; }
+.twin-note { color: var(--text-3); font-size: 12.5px; margin-bottom: 6px; }
+.twin-rank { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.twin-rank li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; font-size: 13px; }
+.twin-rank b { font-weight: 500; }
+.twin-rank i { grid-column: 1 / -1; height: 5px; border-radius: 3px; background: var(--surface-3); overflow: hidden; }
+.twin-rank em { display: block; height: 100%; border-radius: 3px; transition: width 0.6s var(--ease); }
+.twin-timeline { position: absolute; z-index: 4; left: 16px; right: 16px; bottom: 16px; display: flex; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 16px; }
+.twin-play { width: 36px; height: 36px; flex: none; border: 0; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 12px; }
+.twin-months { flex: 1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; }
+.twin-months button { position: relative; border: 0; background: transparent; color: var(--text-3); padding: 7px 0; border-radius: 10px; font-size: 13px; }
+.twin-months button span { position: relative; z-index: 1; }
+.twin-months button.on { color: var(--accent-ink); font-weight: 600; }
+.twin-month-pill { position: absolute; inset: 0; border-radius: 10px; background: var(--accent); }
+.twin-year { color: var(--text-3); font-size: 13px; }
+.flowmap-legend { position: absolute; z-index: 4; left: 16px; bottom: 16px; display: flex; flex-wrap: wrap; gap: 14px; padding: 9px 14px; border-radius: 14px; font-size: 12.5px; color: var(--text-2); }
+.flowmap-legend span { display: inline-flex; align-items: center; gap: 7px; }
+.flowmap-legend .dash { width: 22px; height: 0; border-top: 3px dotted var(--c); }
+.flowmap-legend .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 10px var(--c); }
+@media (max-width: 900px) {
+  .twin, .flowmap { height: 520px; }
+  .twin-panel { display: none; }
+  .twin-months button { font-size: 11px; }
+}

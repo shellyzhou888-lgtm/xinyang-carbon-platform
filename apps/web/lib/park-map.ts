@@ -158,7 +158,9 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
       element.className = "amap-inner"; element.style.cssText = "width:100%;height:100%;";
       container.current.appendChild(element);
       map = new AMap.Map(element, { viewMode: "3D", zoom, center, pitch, rotation, zooms,
-        mapStyle: isLight() ? "amap://styles/whitesmoke" : "amap://styles/dark", showBuildingBlock: true, features: ["bg", "road", "building", "point"] });
+        mapStyle: isLight() ? "amap://styles/whitesmoke" : "amap://styles/dark", showBuildingBlock: true, features: ["bg", "road", "building", "point"],
+        // Sky behind a tilted camera matches the page background instead of AMap's default blue.
+        skyColor: isLight() ? "#e9ece5" : "#121318" });
       resize = new ResizeObserver((entries) => { if (entries[0]?.contentRect.width > 0) map.resize(); });
       resize.observe(container.current);
       // The camera projection is not ready before the first complete event; overlays added earlier can get NaN pixels.
@@ -193,4 +195,18 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
     };
   }, [container, retry]);
   return { handle, ready, l7Ready, error, retry: () => setRetry((n) => n + 1) };
+}
+
+/**
+ * Frames the four zones in a wide, short map box: the park runs SW–NE, so the view is rotated to lay it horizontally,
+ * fitted top-down (AMap avoid order [top, bottom, left, right]) and then tilted; tilting shrinks the far side,
+ * so the zoom is stepped in a little.
+ */
+export function frameParkTilted(map: any, AMap: any, { rotation = 40, pitch = 50, avoid = [40, 70, 40, 40], boost = 0.45 }: { rotation?: number; pitch?: number; avoid?: number[]; boost?: number } = {}) {
+  const targets = zonePoints("all").map((point) => new AMap.Marker({ position: point }));
+  map.setRotation(rotation, true);
+  map.setPitch(0, true);
+  map.setFitView(targets, true, avoid, 16);
+  map.setPitch(pitch, true);
+  map.setZoom(map.getZoom() + boost, true);
 }
