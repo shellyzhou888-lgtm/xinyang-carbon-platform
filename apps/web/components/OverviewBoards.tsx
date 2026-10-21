@@ -1,22 +1,98 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import type { ParkOverview } from "@xinyang/db-agent";
 import { formatNumber as fmt } from "@/lib/workspace";
-import { FLOW_EVENT, HONOR_KINDS, focusEnterprise, honorLevel, type HonorKind } from "@/lib/honors";
-import type { FlowEnterprise, FlowMode, MapHonor } from "./ParkSpatialOverview";
-import { IconAward, IconCheck } from "./icons";
+import { HONOR_KINDS, focusEnterprise, honorLevel } from "@/lib/honors";
+import type { MapHonor } from "./ParkSpatialOverview";
+import { CountUp } from "./MotionParts";
+import { Sparkline } from "./EnergyCharts";
+import { IconCheck, IconTrophy } from "./icons";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+export const shortName = (name: string) => name.replace(/（[^）]*）/g, "").replace(/\(.*?\)/g, "");
+const change = (value: number | null | undefined, previous: number | null | undefined) => value != null && previous ? (value - previous) / Math.abs(previous) * 100 : null;
 
-/** Achieved GIP_2026 indicators, each with its value against the leading benchmark. */
+function Delta({ value, lowerIsBetter = true }: { value: number | null; lowerIsBetter?: boolean }) {
+  if (value == null) return null;
+  const good = lowerIsBetter ? value <= 0 : value >= 0;
+  return <em className={`kpi-delta ${good ? "good" : "bad"}`} title="与上年相比">{value > 0 ? "▲" : value < 0 ? "▼" : "■"} {fmt(Math.abs(value), 1)}%</em>;
+}
+
+/** Honours with trophy icons: the park title first, then each category with its enterprises (click flies the map there). */
+export function HonorShowcase({ honors }: { honors: MapHonor[] }) {
+  const reduce = useReducedMotion();
+  const park = honors.find((honor) => honor.kind === "green_park");
+  const groups = HONOR_KINDS.filter((kind) => kind.kind !== "green_park")
+    .map((kind) => ({ ...kind, rows: honors.filter((honor) => honor.kind === kind.kind) }))
+    .filter((group) => group.rows.length);
+  return <section className="brief" aria-label="园区荣誉">
+    <div className="float-head"><span className="eyebrow">荣誉认定</span><span className="count-pill">{honors.length} 项</span></div>
+    {park && <div className="trophy-hero"><IconTrophy size={40} className="trophy" /><div><b>{park.title.replace(/^\d{4}\s*年度\s*/, "")}</b><small>{park.title.match(/^\d{4}/)?.[0] ?? ""} 年度 · 河南省工业和信息化厅</small></div></div>}
+    <ul className="trophy-list">
+      {groups.map((group, index) => <motion.li key={group.kind} initial={reduce ? false : { opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + index * 0.05, duration: 0.45, ease }}>
+        <IconTrophy size={20} className="trophy" />
+        <div className="trophy-body">
+          <span className="trophy-name">{group.label}<strong className="num">{group.rows.length}</strong></span>
+          <span className="trophy-holders">{group.rows.map((honor, i) => <button key={i} type="button" disabled={!honor.code} onClick={() => focusEnterprise(honor.code)} title={honor.title}>
+            {shortName(honor.node)}{honorLevel(honor.title) && <small>{honorLevel(honor.title)}</small>}
+          </button>)}</span>
+        </div>
+      </motion.li>)}
+    </ul>
+  </section>;
+}
+
+type Row = { code: string; name: string; value: number };
+
+/** Energy brief: total with year-on-year change and monthly trend, the source mix and the largest consumers. */
+export function EnergyBrief({ year, total, previous, months, structure, leaders }: { year: number; total: number | null | undefined; previous: number | null | undefined; months: (number | null)[]; structure: { name: string; value: number }[]; leaders: Row[] }) {
+  const sum = structure.reduce((a, row) => a + row.value, 0);
+  const top = leaders[0]?.value || 1;
+  return <section className="brief tone-energy" aria-label="能源">
+    <div className="float-head"><span className="eyebrow tone-energy">能源 · {year}</span><a className="more-link" href={`/energy?year=${year}`}>能源管理</a></div>
+    <div className="brief-figure"><span>综合能耗</span><strong><CountUp value={total} digits={0} /><small>tce</small></strong><Delta value={change(total, previous)} /></div>
+    {months.some((v) => v != null) && <Sparkline values={months} color="#2ee8a5" label={`${year}年月度综合能耗`} />}
+    <div className="mini-bars">{structure.slice(0, 3).map((row) => <div key={row.name}><span>{row.name}</span><b className="num">{fmt(sum ? row.value / sum * 100 : 0, 1)}%</b><i><em style={{ width: `${sum ? row.value / sum * 100 : 0}%` }} /></i></div>)}</div>
+    <ol className="leader-list">{leaders.slice(0, 3).map((row, index) => <li key={row.code}><button type="button" onClick={() => focusEnterprise(row.code)}>
+      <span className="num">{index + 1}</span><span>{shortName(row.name)}</span><b className="num">{fmt(row.value, 0)}<small>tce</small></b><i><em style={{ width: `${row.value / top * 100}%` }} /></i>
+    </button></li>)}</ol>
+  </section>;
+}
+
+/** Carbon headline: emissions with year-on-year change and trend, intensity and emissions per unit of energy. */
+export function CarbonBrief({ year, total, previous, months, intensity, intensityPrev, perEnergy, structure }: { year: number; total: number | null | undefined; previous: number | null | undefined; months: (number | null)[]; intensity: number | null; intensityPrev: number | null; perEnergy: number | null; structure: { name: string; value: number }[] }) {
+  const sum = structure.reduce((a, row) => a + row.value, 0);
+  return <section className="brief tone-carbon" aria-label="碳排放">
+    <div className="float-head"><span className="eyebrow tone-carbon">碳排 · {year}</span><a className="more-link" href={`/carbon?year=${year}`}>碳排管理</a></div>
+    <div className="brief-figure"><span>二氧化碳排放</span><strong><CountUp value={total} digits={0} /><small>tCO₂</small></strong><Delta value={change(total, previous)} /></div>
+    {months.some((v) => v != null) && <Sparkline values={months} color="#ffab3d" label={`${year}年月度碳排放`} />}
+    <div className="brief-pair">
+      <div><span>单位增加值 CO₂</span><strong className="num">{fmt(intensity, 3)}<small>t/万元</small></strong><Delta value={change(intensity, intensityPrev)} /></div>
+      <div><span>单位能耗 CO₂</span><strong className="num">{fmt(perEnergy, 2)}<small>t/tce</small></strong></div>
+    </div>
+    <div className="mini-bars carbon">{structure.slice(0, 3).map((row) => <div key={row.name}><span>{row.name}</span><b className="num">{fmt(sum ? row.value / sum * 100 : 0, 1)}%</b><i><em style={{ width: `${sum ? row.value / sum * 100 : 0}%` }} /></i></div>)}</div>
+  </section>;
+}
+
+/** Largest emitters with share of the park total. */
+export function CarbonLeaders({ total, leaders }: { total: number | null | undefined; leaders: Row[] }) {
+  const top = leaders[0]?.value || 1;
+  const top3 = leaders.slice(0, 3).reduce((a, row) => a + row.value, 0);
+  return <section className="brief tone-carbon" aria-label="重点排放企业">
+    <div className="float-head"><span className="eyebrow">重点排放企业</span>{total ? <span className="count-pill carbon">前三占 {fmt(top3 / total * 100, 1)}%</span> : null}</div>
+    <ol className="leader-list carbon">{leaders.slice(0, 6).map((row, index) => <li key={row.code}><button type="button" onClick={() => focusEnterprise(row.code)}>
+      <span className="num">{index + 1}</span><span>{shortName(row.name)}</span><b className="num">{fmt(row.value, 0)}<small>tCO₂</small></b><i><em style={{ width: `${row.value / top * 100}%` }} /></i>
+    </button></li>)}</ol>
+  </section>;
+}
+
+/** Achieved GIP_2026 indicators, each with its value against the leading benchmark (shown on the energy page). */
 export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"]; year: number }) {
   const reduce = useReducedMotion();
+  if (!rows.length) return null;
   return <section className="indicator-board" aria-label="绿色工业园区达标指标">
-    <div className="float-head"><span className="eyebrow">绿色工业园区 · 达标情况</span><span className="eyebrow muted">{year}</span></div>
-    <div className="park-title-badge"><IconAward /><div><b>河南省省级绿色工业园区</b><small>2024 年度 · 河南省工业和信息化厅</small></div></div>
-    <div className="indicator-headline"><strong className="num">{rows.length}</strong><span>项评价指标<br />达到引领值</span></div>
+    <div className="indicator-headline"><IconTrophy size={34} className="trophy" /><strong className="num">{rows.length}</strong><span>项 GIP_2026 评价指标达到引领值 · {year}</span></div>
     <ol className="indicator-list">
       {rows.map((row, index) => {
         const lower = row.comparator === "<=" || row.comparator === "<";
@@ -25,12 +101,12 @@ export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"];
         const top = Math.max(Math.abs(row.value), Math.abs(bench)) * 1.18 || 1;
         const fill = Math.max(0.04, Math.min(1, Math.max(row.value, 0) / top));
         const tick = Math.min(1, Math.abs(bench) / top);
-        return <motion.li key={row.code} initial={reduce ? false : { opacity: 0, x: 12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.15 + index * 0.06, duration: 0.5, ease }}>
+        return <motion.li key={row.code} initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + index * 0.05, duration: 0.45, ease }}>
           <span className="indicator-check"><IconCheck /></span>
           <div className="indicator-body">
             <div className="indicator-row"><span className="indicator-name">{row.name}</span><strong className="num">{fmt(row.value, 2)}<small>{row.unit || ""}</small></strong></div>
             <div className="indicator-bar" aria-hidden="true">
-              <motion.i initial={reduce ? false : { scaleX: 0 }} animate={{ scaleX: fill }} transition={{ delay: 0.3 + index * 0.06, duration: 0.9, ease }} />
+              <motion.i initial={reduce ? false : { scaleX: 0 }} animate={{ scaleX: fill }} transition={{ delay: 0.25 + index * 0.05, duration: 0.9, ease }} />
               <b style={{ left: `${tick * 100}%` }} />
             </div>
             <small className="indicator-bench">引领值 {lower ? "≤" : "≥"} {fmt(bench, 2)}{row.unit || ""}</small>
@@ -40,58 +116,3 @@ export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"];
     </ol>
   </section>;
 }
-
-/** Honour counts by category (green factory, zero-carbon factory …) with the holders; a name flies the map to it. */
-export function HonorBoard({ honors }: { honors: MapHonor[] }) {
-  const groups = HONOR_KINDS.filter((kind) => kind.kind !== "green_park")
-    .map((kind) => ({ ...kind, rows: honors.filter((honor) => honor.kind === kind.kind) }))
-    .filter((group) => group.rows.length);
-  return <section aria-label="绿色制造与荣誉">
-    <div className="float-head"><span className="eyebrow">绿色制造 · 荣誉认定</span><span className="achieved-count">{honors.length} 项</span></div>
-    <div className="honor-grid">
-      {groups.map((group) => <div key={group.kind} className="honor-tile" style={{ ["--tone" as string]: group.color }}>
-        <div className="honor-tile-head"><i aria-hidden="true" /><span>{group.label}</span><strong className="num">{group.rows.length}</strong></div>
-        <div className="honor-holders">{group.rows.map((honor, index) => <button key={index} type="button" disabled={!honor.code} onClick={() => focusEnterprise(honor.code)} title={honor.title}>
-          {shortName(honor.node)}{honorLevel(honor.title) && <em>{honorLevel(honor.title)}</em>}
-        </button>)}</div>
-      </div>)}
-    </div>
-  </section>;
-}
-
-/** Enterprise ranking by energy or CO2; switching the tab also switches the map's flow layer. */
-export function EnterpriseRanking({ rows }: { rows: FlowEnterprise[] }) {
-  const [mode, setMode] = useState<Exclude<FlowMode, "off">>("energy");
-  useEffect(() => {
-    const sync = (event: Event) => { const next = (event as CustomEvent<FlowMode>).detail; if (next !== "off") setMode(next); };
-    window.addEventListener(FLOW_EVENT, sync);
-    return () => window.removeEventListener(FLOW_EVENT, sync);
-  }, []);
-  const choose = (next: Exclude<FlowMode, "off">) => { setMode(next); window.dispatchEvent(new CustomEvent(FLOW_EVENT, { detail: next })); };
-  const valueOf = (row: FlowEnterprise) => (mode === "energy" ? row.tce : row.co2_t) ?? 0;
-  const sorted = [...rows].filter((row) => valueOf(row) > 0).sort((a, b) => valueOf(b) - valueOf(a));
-  const total = sorted.reduce((sum, row) => sum + valueOf(row), 0);
-  return <section aria-label="重点企业排行">
-    <div className="float-head">
-      <span className="eyebrow">重点企业{mode === "energy" ? "能耗" : "碳排放"}排行</span>
-      <nav className="mini-switch" aria-label="排行口径">
-        <button type="button" aria-pressed={mode === "energy"} onClick={() => choose("energy")}>能流</button>
-        <button type="button" aria-pressed={mode === "carbon"} onClick={() => choose("carbon")}>碳流</button>
-      </nav>
-    </div>
-    <ol className={`rank-list tone-${mode}`}>
-      {sorted.map((row, index) => <li key={row.code}>
-        <button type="button" onClick={() => focusEnterprise(row.code)}>
-          <span className="rank-no num">{String(index + 1).padStart(2, "0")}</span>
-          <span className="rank-name">{shortName(row.name)}</span>
-          <span className="rank-value num">{fmt(valueOf(row), 0)}<small>{mode === "energy" ? "tce" : "tCO₂"}</small></span>
-          <span className="rank-share num">{total ? fmt((valueOf(row) / total) * 100, 1) : "—"}%</span>
-          <span className="rank-bar" aria-hidden="true"><i style={{ width: `${(valueOf(row) / (valueOf(sorted[0]) || 1)) * 100}%` }} /></span>
-        </button>
-      </li>)}
-    </ol>
-  </section>;
-}
-
-export const shortName = (name: string) => name.replace(/（[^）]*）/g, "").replace(/\(.*?\)/g, "");
-export type { HonorKind };

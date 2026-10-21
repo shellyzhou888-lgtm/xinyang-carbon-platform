@@ -1,16 +1,16 @@
 import { charts, management, overview } from "@/lib/server";
-import ParkSpatialOverview, { type FlowEnterprise, type MapHonor } from "@/components/ParkSpatialOverview";
-import { Sparkline } from "@/components/EnergyCharts";
-import { DataError, MoreLink } from "@/components/WorkspaceParts";
-import { CountUp, Stat } from "@/components/MotionParts";
-import { EnterpriseRanking, HonorBoard, IndicatorBoard } from "@/components/OverviewBoards";
+import ParkSpatialOverview, { type MapEnterprise, type MapHonor } from "@/components/ParkSpatialOverview";
+import { DataError } from "@/components/WorkspaceParts";
+import { CarbonBrief, CarbonLeaders, EnergyBrief, HonorShowcase } from "@/components/OverviewBoards";
 import { honorKind } from "@/lib/honors";
-import { C } from "@/lib/chart-theme";
 import { selectedYear } from "@/lib/workspace";
 
 export const dynamic = "force-dynamic";
 
-/** Full-screen park dashboard: the map fills the viewport and the energy, carbon and achievement panels float over it. */
+/**
+ * Full-screen park dashboard: the map fills the viewport; energy floats on the left (under the honour showcase)
+ * and carbon on the right. Indicator achievements live on the energy page.
+ */
 export default async function Home({ searchParams }: { searchParams: Promise<{ year?: string; enterprise?: string }> }) {
   const sp = await searchParams;
   // No year switch on the screen (latest year); ?year= still works for the voice assistant's switch_year.
@@ -22,13 +22,11 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
   try { [data, chartData, detail] = await Promise.all([overview(year), charts(year), management(year)]); }
   catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
 
-  const indicator = (code: string) => data?.achieved.find((row) => row.code === code);
   const months = chartData?.monthly.filter((row) => row.month.startsWith(String(year))) || [];
-  const co2Intensity = data?.co2_t != null && data?.value_added_wan ? data.co2_t / data.value_added_wan : null;
-
-  // Enterprise flows: energy from the ranking, CO2 from the carbon ranking (same org_node codes).
+  const annual = (y: number) => detail?.annual.find((row) => row.year === y);
+  const intensity = (y: number) => { const row = annual(y); return row?.co2_t != null && row.value_added ? row.co2_t / row.value_added : null; };
   const co2 = new Map((detail?.carbonRanking || []).map((row) => [row.code, row.co2_t]));
-  const flows: FlowEnterprise[] = (chartData?.ranking || []).map((row) => ({ code: row.code, name: row.name, tce: row.tce, co2_t: co2.get(row.code) ?? null, output_wan: row.output_wan }));
+  const metrics: MapEnterprise[] = (chartData?.ranking || []).map((row) => ({ code: row.code, name: row.name, tce: row.tce, co2_t: co2.get(row.code) ?? null }));
   const codeByName = new Map([...(chartData?.ranking || []), ...(detail?.carbonRanking || [])].map((row) => [row.name, row.code]));
   const honors: MapHonor[] = (data?.honors || []).flatMap((honor) => {
     const kind = honorKind(honor.title);
@@ -36,29 +34,20 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
   });
 
   const left = <>
-    <div className="float-card">
-      <div className="float-head"><span className="eyebrow">园区能碳总量 · {year}</span><MoreLink href={`/energy?year=${year}`}>详情</MoreLink></div>
-      <div className="twin-figure">
-        <div className="hero-figure tone-energy"><span>综合能耗</span><strong><CountUp value={data?.tce} digits={0} /><small>tce</small></strong>
-          {months.length > 0 && <Sparkline values={months.map((row) => row.tce)} color={C.energy} label={`${year}年月度综合能耗走势`} />}</div>
-        <div className="hero-figure tone-carbon"><span>二氧化碳排放</span><strong><CountUp value={data?.co2_t} digits={0} /><small>tCO₂</small></strong>
-          {months.length > 0 && <Sparkline values={months.map((row) => row.co2_t)} color={C.carbon} label={`${year}年月度碳排放走势`} />}</div>
-      </div>
-      <div className="mini-stats two">
-        <Stat label="工业增加值" value={data?.value_added_wan} unit="万元" digits={0} tone="neutral" />
-        <Stat label="单位增加值 CO₂" value={indicator("I17")?.value ?? co2Intensity} unit="t/万元" digits={3} tone="carbon" />
-      </div>
-    </div>
-    <div className="float-card scroll"><EnterpriseRanking rows={flows} /></div>
+    <div className="float-card"><HonorShowcase honors={honors} /></div>
+    <div className="float-card"><EnergyBrief year={year} total={data?.tce} previous={annual(year - 1)?.tce} months={months.map((row) => row.tce)}
+      structure={(chartData?.structure || []).map((row) => ({ name: row.name, value: row.tce }))}
+      leaders={(chartData?.ranking || []).map((row) => ({ code: row.code, name: row.name, value: row.tce }))} /></div>
   </>;
-
   const right = <>
-    <div className="float-card scroll"><IndicatorBoard rows={data?.achieved || []} year={year} /></div>
-    <div className="float-card"><HonorBoard honors={honors} /></div>
+    <div className="float-card"><CarbonBrief year={year} total={data?.co2_t} previous={annual(year - 1)?.co2_t} months={months.map((row) => row.co2_t)}
+      intensity={intensity(year)} intensityPrev={intensity(year - 1)} perEnergy={data?.co2_t != null && data?.tce ? data.co2_t / data.tce : null}
+      structure={(detail?.carbonStructure || []).map((row) => ({ name: row.name, value: row.co2_t }))} /></div>
+    <div className="float-card"><CarbonLeaders total={data?.co2_t} leaders={(detail?.carbonRanking || []).map((row) => ({ code: row.code, name: row.name, value: row.co2_t }))} /></div>
   </>;
 
   return <div className="overview-screen">
     <DataError error={error} />
-    <ParkSpatialOverview year={year} ranking={chartData?.ranking} flows={flows} honors={honors} parkTotal={{ tce: data?.tce ?? null, co2_t: data?.co2_t ?? null }} initialEnterprise={sp.enterprise} left={left} right={right} />
+    <ParkSpatialOverview year={year} ranking={chartData?.ranking} metrics={metrics} honors={honors} initialEnterprise={sp.enterprise} left={left} right={right} />
   </div>;
 }

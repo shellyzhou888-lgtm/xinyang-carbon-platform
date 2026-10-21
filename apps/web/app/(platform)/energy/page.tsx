@@ -4,6 +4,7 @@ import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } fr
 import { LinkTabs, Reveal } from "@/components/MotionParts";
 import { RankingChart } from "@/components/EnergyCharts";
 import { KpiCard, ShareBreakdown, YearCompareChart } from "@/components/InsightParts";
+import { IndicatorBoard } from "@/components/OverviewBoards";
 import MetricChart from "@/components/MetricChart";
 import Energy3DPanel from "@/components/Energy3DPanel";
 import { BudgetComparison } from "@/components/CarbonDataSections";
@@ -52,6 +53,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
         </Panel></Reveal>
       </div>
       <Reveal><BudgetComparison data={extended} kind="energy" /></Reveal>
+      {!!data?.achieved.length && <Reveal><Panel title="绿色工业园区评价 · 达标指标" subtitle="GIP_2026 指标体系中已达到引领值的指标；白色刻度为引领值"><IndicatorBoard rows={data.achieved} year={year} /></Panel></Reveal>}
       <Reveal><Panel title="企业能耗空间对比" subtitle="ECharts-GL 三维柱图，点击柱体查看企业"><Energy3DPanel year={year} ranking={chart?.ranking || []} /></Panel></Reveal>
       <AchievedIndicators data={data} codes={["I04", "I05", "I06"]} title="能源利用达标表现" />
     </div>}

@@ -14,8 +14,9 @@ export function enterpriseBadge(code: string, name: string, color: string, activ
     let image:HTMLImageElement|undefined;
     if(brand?.logo){try{image=await new Promise<HTMLImageElement>((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=brand.logo!;});}catch{image=undefined;}}
     if(image){const ratio=Math.min(208/image.naturalWidth,58/image.naturalHeight);const w=image.naturalWidth*ratio,h=image.naturalHeight*ratio;c.drawImage(image,(240-w)/2,10+(58-h)/2,w,h);}
-    else{c.fillStyle="#174d3c";c.font='bold 29px "Microsoft YaHei",sans-serif';c.textAlign="center";c.fillText(brand?.shortName||name,120,48);}
-    c.fillStyle="#17382f";c.font='20px "Microsoft YaHei",sans-serif';c.textAlign="center";c.fillText(image?(brand?.shortName||name):"企业简称",120,96);
+    // Without a verified logo the badge shows the short name only (no imitation logo).
+    else{c.fillStyle="#174d3c";c.font='bold 32px "Microsoft YaHei",sans-serif';c.textAlign="center";c.textBaseline="middle";c.fillText(brand?.shortName||name.replace(/（[^）]*）/g,""),120,58);}
+    if(image){c.fillStyle="#17382f";c.font='20px "Microsoft YaHei",sans-serif';c.textAlign="center";c.textBaseline="alphabetic";c.fillText(brand?.shortName||name,120,96);}
     return canvas.toDataURL("image/png");
   })();
   badges.set(key,promise);return promise;

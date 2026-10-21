@@ -24,9 +24,6 @@ export function honorKind(title: string): HonorKind | null {
 
 export const honorLevel = (title: string) => /国家级|工业和信息化部/.test(title) ? "国家级" : /省级|河南省/.test(title) ? "省级" : "";
 
-/** Window event that switches the map's flow layer (energy / carbon) and keeps the ranking tab in sync. */
-export const FLOW_EVENT = "park:flow-mode";
-
 /** Window event used by overview panels to fly the map to an enterprise. */
 export const FOCUS_EVENT = "park:focus-enterprise";
 export function focusEnterprise(code: string) {
