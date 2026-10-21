@@ -1,11 +1,19 @@
 {
-  "reviewedAt": "2026-10-20",
+  "reviewedAt": "2026-10-21",
   "scope": "信阳经济技术开发区公开资料核实名录；企业、品牌基地、项目与待核条目分别标注，不是管委会全量备案企业名册。",
+  "reportedScale": {
+    "value": 55,
+    "unit": "家规上工业企业",
+    "asOf": "2025-03-20",
+    "sourceId": "scale-2025",
+    "note": "信阳日报报道的当时辖区规上工业企业数量，不代表2026年企业总量，也不等于本页已逐名核验条目数。"
+  },
   "notes": [
     "原10家是数据库能耗样本，不代表园区全部企业。",
     "报道或资料能核实对应时间的入驻/调研/项目事实，不等于2026年实时经营或土地确权证明。",
     "重点展示为本平台选取的公开报道重点企业，不等于新增官方龙头资质认定。",
-    "不将信阳高新区、平桥产业集聚区或全市企业名单整体纳入本经开区。"
+    "不将信阳高新区、平桥产业集聚区或全市企业名单整体纳入本经开区。",
+    "2025年媒体报道辖区有55家规上工业企业；本页只收录能逐名核验的部分企业。"
   ],
   "sources": [
     {
@@ -55,19 +63,86 @@
       "date": "2025-04-23",
       "title": "国家开发银行调研信阳经开区商贸物流产业",
       "url": "https://www.xinyang.gov.cn/2025/04-23/599538.html"
+    },
+    {
+      "id": "scale-2025",
+      "date": "2025-03-20",
+      "title": "信阳日报：信阳经开区辖区55家规上工业企业",
+      "url": "https://ribao.xyxww.com.cn/html/2025-03/20/content_153676.htm"
+    },
+    {
+      "id": "service-2024",
+      "date": "2024-01-15",
+      "title": "信阳晚报：羊山新区、信阳经开区辖区企业帮扶",
+      "url": "https://wanbao.xyxww.com.cn/html/2024-01/15/content_137214.htm"
+    },
+    {
+      "id": "industry-white-2022",
+      "date": "2022-06-13",
+      "title": "信阳市工业企业白名单公开副本（用于核对法人全称，不单凭县区认定园区归属）",
+      "url": "https://att.dahecube.com/f/220613/c760889745ee39b65cfa044c9f9807e7"
+    },
+    {
+      "id": "kaiyuan-site",
+      "date": "2026-10-21",
+      "title": "河南凯源智慧水务企业官网",
+      "url": "https://www.kyzhwater.com/"
+    },
+    {
+      "id": "factory-2024",
+      "date": "2024-11-28",
+      "title": "信阳日报：经开区三家5G工厂的企业全称",
+      "url": "https://ribao.xyxww.com.cn/html/2024-11/28/content_149595.htm"
+    },
+    {
+      "id": "furniture-2023",
+      "date": "2023-10-26",
+      "title": "信阳日报：经开区组织辖区家居企业参加物流推介会",
+      "url": "https://ribao.xyxww.com.cn/html/2023-10/26/content_133470.htm"
+    },
+    {
+      "id": "rights-2025",
+      "date": "2025-08-06",
+      "title": "河南省科技型中小企业评价入库名单：权盛实业",
+      "url": "https://xcoss.henan.gov.cn/typtfile/20250806/eaa9050c67054b42bb4b8c0a170e1eb6.pdf"
+    },
+    {
+      "id": "estate-2023",
+      "date": "2023-12",
+      "title": "深交所披露材料：信阳经开区产业投资有限公司参股今上半导体",
+      "url": "https://reportdocs.static.szse.cn/UpFiles/rasinfodisc1/202312/RAS_202312_5022886E9F6E44DB8ADC3A400407F683.pdf"
+    },
+    {
+      "id": "court-2026",
+      "date": "2026-09-08",
+      "title": "全国企业破产重整案件信息网：左右鑫室破产清算案公告",
+      "url": "https://pccz.court.gov.cn/pcajxxw/pcgg/ggxq?id=d6c47f639c674f018019bba692faeb05"
+    },
+    {
+      "id": "outili-site",
+      "date": "2026-10-21",
+      "title": "河南欧缇丽材料科技发展有限公司官网",
+      "url": "https://hnotl.com/"
+    },
+    {
+      "id": "yonghaoxuan-2025",
+      "date": "2025-12-11",
+      "title": "信阳日报：信阳永豪轩家具有限公司在经开区绿色家居产业园",
+      "url": "https://ribao.xyxww.com.cn/html/2025-12/11/content_164163.htm"
     }
   ],
   "items": [
     {
       "id": "WANHUA",
-      "name": "万华禾香 / 万华生态（信阳基地）",
+      "name": "万华禾香集团股份有限公司（信阳基地）",
       "area": "羊山片区",
       "business": "绿色家居",
-      "type": "品牌基地",
+      "type": "企业",
       "evidence": [
-        "industry-2024"
+        "industry-2024",
+        "factory-2024"
       ],
-      "note": "按公开报道保留集团/基地名称，不把品牌名称作为独立法人确权。",
+      "note": "2024年信阳日报明确经开区5G工厂企业全称；此处为集团法人及信阳基地识别，不推定各产线由同一法人运营。",
       "featured": true,
       "mapCode": "E_WANHUA"
     },
@@ -105,7 +180,8 @@
       "business": "绿色家居",
       "type": "企业",
       "evidence": [
-        "catalog-2023"
+        "catalog-2023",
+        "yonghaoxuan-2025"
       ],
       "note": "PDF第83页；与河南永豪轩智能家居股份有限公司的承继关系未取得确证，不直接合并。",
       "featured": true,
@@ -154,14 +230,15 @@
     },
     {
       "id": "GUMAI",
-      "name": "谷麦光电（信阳生产基地）",
+      "name": "信阳市谷麦光电子科技有限公司（谷麦信阳基地）",
       "area": "金牛物流片区",
       "business": "电子信息",
-      "type": "品牌基地",
+      "type": "企业",
       "evidence": [
-        "industry-2024"
+        "industry-2024",
+        "factory-2024"
       ],
-      "note": "公开报道称谷麦光电，地图为集团园区POI；不将母子公司或共用厂区拆成虚构地块。",
+      "note": "2024年信阳日报明确5G工厂法人名称；地图仍为谷麦品牌园区POI，不把集团与子公司拆成虚构地块。",
       "featured": true,
       "mapCode": "E_GUMAI"
     },
@@ -219,14 +296,15 @@
     },
     {
       "id": "OUTILI",
-      "name": "河南欧缇丽材料科技有限公司",
+      "name": "河南欧缇丽材料科技发展有限公司",
       "area": "羊山片区",
       "business": "绿色家居",
       "type": "企业",
       "evidence": [
-        "visit-2023"
+        "visit-2023",
+        "outili-site"
       ],
-      "note": "政府调研报道使用该名称，POI使用材料科技发展有限公司；名称差异保留，不擅改法人。",
+      "note": "2023年政府调研报道使用“材料科技有限公司”简称；企业官网明确为“材料科技发展有限公司”，并记录2026年复工。",
       "featured": false,
       "mapCode": "REG_OUTILI"
     },
@@ -258,14 +336,15 @@
     },
     {
       "id": "ZUOYOU",
-      "name": "河南省左右鑫室家具股份公司",
+      "name": "河南省左右鑫室家具股份有限公司",
       "area": "羊山片区",
       "business": "绿色家居",
-      "type": "企业",
+      "type": "历史企业",
       "evidence": [
-        "catalog-2023"
+        "catalog-2023",
+        "court-2026"
       ],
-      "note": "PDF第79/81页正文名称，标题有家居/家具差异；第81页明确在羊山新区家居小镇建生产基地。",
+      "note": "2023年资料记录其在家居小镇；法院平台公告载明2026年7月20日破产清算获受理，故从当前企业计数中移出，保留历史记录。",
       "featured": false,
       "mapCode": "REG_ZUOYOU"
     },
@@ -344,6 +423,84 @@
         "logistics-2025"
       ],
       "note": "政府实地调研项目，建设及运营状态需按后续资料更新。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "RUOBANG",
+      "name": "河南若邦电子材料有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息材料",
+      "type": "企业",
+      "evidence": ["scale-2025", "industry-white-2022"],
+      "note": "2025年经开区报道明确走访若邦电子；2022年工业白名单核对法人名称。未取得2026年在营证明或可信Logo。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "CHUANGWEIDA",
+      "name": "河南省创伟达通信设备有限公司",
+      "area": "金牛物流片区",
+      "business": "电子信息与通信设备",
+      "type": "企业",
+      "evidence": ["service-2024", "industry-white-2022"],
+      "note": "2024年辖区帮扶报道提及创伟达；公开工业白名单核对法人全称。未把广东或深圳同名企业Logo当作本厂区标识。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "KAIYUAN",
+      "name": "河南凯源水务科技有限公司",
+      "area": "经开区（片区待核）",
+      "business": "智慧水务与给排水设备",
+      "type": "企业",
+      "evidence": ["service-2024", "scale-2025", "kaiyuan-site"],
+      "note": "经开区报道明确将凯源水务列为辖区服务企业；官网核对法人全称与品牌标识，具体厂区片区待核。",
+      "featured": false,
+      "mapCode": null,
+      "brandCode": "B_KAIYUAN"
+    },
+    {
+      "id": "LINGSHI",
+      "name": "信阳市灵石科技有限公司",
+      "area": "经开区关联（区位待核）",
+      "business": "绿色建材与混凝土外加剂",
+      "type": "企业",
+      "evidence": ["scale-2025"],
+      "note": "2025年信阳日报将灵石科技列为经开区支持申报省级绿色工厂的辖区企业；公开登记地址在陆庙，厂区与经开区界址关系仍需管委会核对。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "YALIQI",
+      "name": "信阳市亚力奇家居有限公司",
+      "area": "羊山片区（具体厂区待核）",
+      "business": "绿色家居",
+      "type": "企业",
+      "evidence": ["furniture-2023"],
+      "note": "2023年信阳日报列为经开区组织的辖区家居企业参会者；未取得近期经营状态与可信Logo。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "QUANSHENG",
+      "name": "信阳市权盛实业有限公司",
+      "area": "羊山片区",
+      "business": "沙发与软体家具",
+      "type": "企业",
+      "evidence": ["furniture-2023", "catalog-2023", "rights-2025"],
+      "note": "政府采购公开资料载明位于羊山新区家具小镇；2025年河南省科技型中小企业名单仍有该法人。",
+      "featured": false,
+      "mapCode": null
+    },
+    {
+      "id": "PARK_INVESTMENT",
+      "name": "信阳经开区产业投资有限公司",
+      "area": "经开区（办公地址待核）",
+      "business": "园区投资与运营",
+      "type": "企业",
+      "evidence": ["estate-2023"],
+      "note": "深交所披露材料确认该公司由经开区管委会全资持有并参股今上半导体；属于园区运营主体，不计入制造业企业或55家规上工业企业。",
       "featured": false,
       "mapCode": null
     }

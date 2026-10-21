@@ -16,7 +16,7 @@
 | `docs/dem-role-in-platform.md` | DEM当前接入状态、未来三维地形用途与精度限制 |
 | `docs/terrain-and-osm-assessment.md` | 26号文3个四至片区、2020年11.7km²沿革、规划辅助图、已下载OSM及DEM/影像获取与建模条件 |
 | `docs/frontend-workspaces.md` | 5个工作区的页面结构、只读数据接口、模拟数据标识与当前验证 |
-| `docs/enterprise-directory-review.md` | 22条企业/品牌/项目公开核验记录、15个POI、Logo来源与名称争议 |
+| `docs/enterprise-directory-review.md` | 29条企业/品牌/项目公开核验记录、15个POI、Logo来源与名称争议 |
 | `docs/web-and-voice.md` | 网站（Next.js）与小云语音接入：结构、为什么这样拆、本机启动、测试记录 |
 | `docs/deploy-xiaoyun.md` | 小云服务器部署：公开 GitHub 依赖、环境变量、HTTPS/WebSocket 代理与验证 |
 | `docs/data-inventory.md` | **数据清单**：哪些数据已导入（真实/公开）、哪些是模拟估值、哪些尚缺，以及当前计算结果 |

@@ -1,5 +1,5 @@
 {
-  "reviewedAt":"2026-10-20",
+  "reviewedAt":"2026-10-21",
   "note":"公开品牌识别用途，商标权归原权利人。部分为公开历史版标识，品牌集团不等同于厂区独立法人；未核实者使用企业简称，不生成仿冒Logo。",
   "brands": [
     {"code":"E_WANHUA","shortName":"万华禾香","logo":"/enterprise-logos/wanhua.jpg","status":"public_brand","sourceUrl":"https://www.whstby.cn/","imageUrl":"https://www.whstby.cn/UserFiles/Article/38dc393f-2b3b-4921-b449-24ec7943ffdc.jpg","note":"万华禾香官网页眉品牌标识，不使用万华化学或万华地产标识。"},
@@ -11,6 +11,8 @@
     {"code":"E_YONGHAOXUAN","shortName":"永豪轩","logo":null,"status":"unverified","sourceUrl":"http://www.yonghaoxuan.com/","note":"官网本次不可达，未取得可靠原图；不用新豪轩、永豪家具等不同企业标识。"},
     {"code":"E_JINSHANG","shortName":"今上半导体","logo":null,"status":"unverified","sourceUrl":"http://www.tkse.com.cn/","note":"已找到今上公司官网，访问返回502，尚未取得可靠Logo原图。"},
     {"code":"E_XINGYUAN","shortName":"星原智能","logo":null,"status":"unverified","sourceUrl":null,"note":"公开检索混有多家同名企业，未采用合肥中徽星原、东莞星原等其他公司标识。"},
-    {"code":"E_QINJIE","shortName":"螓杰智能","logo":null,"status":"unverified","sourceUrl":null,"note":"公开检索未取得可靠原图，未采用冠杰、万杰或捷盟等其他企业标识。"}
+    {"code":"E_QINJIE","shortName":"螓杰智能","logo":null,"status":"unverified","sourceUrl":null,"note":"公开检索未取得可靠原图，未采用冠杰、万杰或捷盟等其他企业标识。"},
+    {"code":"B_KAIYUAN","shortName":"凯源水务","logo":"/enterprise-logos/kaiyuan.png","status":"official_site","sourceUrl":"https://www.kyzhwater.com/","imageUrl":"https://www.kyzhwater.com/upload/1/appLogo/1729560340238.png","note":"企业官网页眉原图为白色凯源智慧标识；目录在深蓝底上显示。"},
+    {"code":"REG_OUTILI","shortName":"欧缇丽","logo":null,"status":"unverified","sourceUrl":"https://hnotl.com/","note":"官网品牌图文件经目视核验仅呈现纯色矩形，不作为可用企业Logo；未采用同名商标图片。"}
   ]
 }
