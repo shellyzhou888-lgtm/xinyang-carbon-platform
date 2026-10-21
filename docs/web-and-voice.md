@@ -42,6 +42,7 @@
    | 键 | 值 |
    | --- | --- |
    | `DASHSCOPE_API_KEY` | 千问（阿里云百炼）Key |
+   | `QWEN_REALTIME_URL` | 千问实时语音地址。使用 `sk-ws-` 开头的工作空间 Key 时填该工作空间的专属地址 `wss://<工作空间域名>.cn-beijing.maas.aliyuncs.com/api-ws/v1/realtime`；不填则用公共地址 `wss://dashscope.aliyuncs.com/api-ws/v1/realtime` |
    | `DEEPSEEK_API_KEY` | DeepSeek Key |
    | `DEEPSEEK_MODEL` | `deepseek-v4-flash` |
    | `PYTHON_EXECUTABLE` | `C:\Users\53472\anaconda3\python.exe`（需 3.12+） |
@@ -52,6 +53,8 @@
    Key 不要加 `NEXT_PUBLIC_` 前缀，否则会被打包进浏览器代码。
 3. 网页文字对话读取仓库根目录 `.env` 的 `DEEPSEEK_API_KEY`（或启动时的环境变量），请在根目录 `.env` 中补上这一行。
 4. 启动小云后台：在 `apps/web` 运行 `npm run voice`（等于 `xiaoyun start --env .env.xiaoyun`）。
+   - 小云后台用 dotenv 读取 `.env.xiaoyun`，**已存在的进程环境变量优先**。若启动脚本向进程注入了旧 Key，会覆盖文件里的新 Key；换 Key 后请直接用 `npm run voice` 启动，并用 `http://127.0.0.1:8766/api/health` 确认 `voiceReady`、`agentReady` 均为 `true`。
+   - 语音接不通时依次检查：8766 端口是否在监听（后台进程停止后网页不会报错，只是不出现小云）；`.env.xiaoyun` 中两个 Key 是否为空；千问 Key 与 `QWEN_REALTIME_URL` 是否属于同一工作空间。
 5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先自动构建 `packages/db-agent`），打开 http://localhost:3001 。未登录访问任何页面都会跳转到 `/login`。
 6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
 
