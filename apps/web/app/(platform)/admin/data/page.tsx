@@ -4,6 +4,7 @@ import { AdminNavigation, DataError, MoreLink, PageHeading, Panel } from "@/comp
 import { Reveal, Stat } from "@/components/MotionParts";
 import ImportPanel from "@/components/ImportPanel";
 import { IMPORT_TEMPLATES } from "@xinyang/db-agent";
+import SectionPager from "@/components/SectionPager";
 
 export const dynamic = "force-dynamic";
 const SOURCES: Record<string, string> = { estimated: "测算值", manual: "手动录入", measured: "实测接入", interpolated: "插值补全" };
@@ -27,7 +28,7 @@ export default async function DataManagement({ searchParams }: { searchParams: P
       <Stat label="核算因子" value={factors} unit="条" digits={0} tone="info" delay={0.1} />
       <Stat label="指标标准版本" value={data?.standards.length} unit="套" digits={0} delay={0.15} />
     </div>
-    <div className="stack">
+    <SectionPager labels={["导入数据", "来源覆盖", "接入与因子"]}>
       <Reveal><Panel title="导入数据" subtitle="按平台模板填写后上传；先校验再导入，导入后自动更新语义目录并运行数据检测">
         <ImportPanel templates={IMPORT_TEMPLATES.map(({ code, name, note }) => ({ code, name, note }))} />
       </Panel></Reveal>
@@ -47,6 +48,6 @@ export default async function DataManagement({ searchParams }: { searchParams: P
           <div className="list">{data?.factors.map((row) => <div className="list-row" key={row.kind}><div><b>{FACTORS[row.kind] || row.kind}</b><small>{row.kind}</small></div><div className="list-figure"><span className="num">{row.records}</span><small>条</small></div></div>)}</div>
         </Panel></Reveal>
       </div>
-    </div>
+    </SectionPager>
   </>;
 }

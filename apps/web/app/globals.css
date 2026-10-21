@@ -1112,12 +1112,16 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .section-pager-tabs button.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
 .section-pager-view { flex: 1; min-height: 0; overflow: auto; scrollbar-width: thin; }
 @media (min-width: 1181px) {
-  .app[data-module="analysis"] { height: 100vh; min-height: 0; overflow: hidden; }
-  .app[data-module="analysis"] .app-main { height: 100vh; min-height: 0; overflow: hidden; }
-  .app[data-module="analysis"] .page { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; padding-bottom: 14px; }
-  .app[data-module="analysis"] .section-pager { flex: 1; }
-  .app[data-module="analysis"] .section-pager-view .twin,
-  .app[data-module="analysis"] .section-pager-view .flowmap { height: clamp(320px, calc(100vh - 410px), 620px); }
+  .app[data-module="workspace"] { height: 100vh; min-height: 0; overflow: hidden; }
+  .app[data-module="workspace"] .app-main { height: 100vh; min-height: 0; overflow: hidden; }
+  .app[data-module="workspace"] .page { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; padding-bottom: 14px; }
+  .app[data-module="workspace"] .section-pager { flex: 1; }
+  .app[data-module="workspace"] .section-pager-view .twin,
+  .app[data-module="workspace"] .section-pager-view .flowmap { height: clamp(320px, calc(100vh - 410px), 620px); }
+  .app[data-module="workspace"] .diagnosis-workspace { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+  .app[data-module="workspace"] .diagnosis-scroll { flex: 1; min-height: 0; overflow: auto; scrollbar-width: thin; }
+  .app[data-module="workspace"] .page > .grid-main-side { flex: 1; min-height: 0; overflow: auto; }
+  .app[data-module="workspace"] .page > .panel-note:last-child { margin-top: 8px !important; }
 }
 
 @media (max-width: 900px) {

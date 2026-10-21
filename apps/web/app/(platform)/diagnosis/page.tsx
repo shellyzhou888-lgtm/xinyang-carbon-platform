@@ -11,6 +11,7 @@ import StrategyReportButton from "@/components/StrategyReportButton";
 import { Roadmap } from "@/components/CarbonDataSections";
 import { cleanSource } from "@/lib/source-text";
 import { C } from "@/lib/chart-theme";
+import SectionPager from "@/components/SectionPager";
 
 export const dynamic = "force-dynamic";
 const CATEGORIES: Record<string, string> = { clean_energy: "清洁能源", green_power: "绿电交易", efficiency: "能效提升", waste_heat: "余热回收", electrification: "电气化", process: "工艺优化", management: "运行管理", offset: "抵消" };
@@ -31,12 +32,12 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
     <DataError error={error} />
     <DiagnosisSteps year={year} active={tab} counts={{ alerts: openAlerts.length, causes: detail?.carbonRanking.length ?? 0, strategies: extended?.plans.length ?? 0, forecast: chart?.forecast.length ?? 0 }} />
 
-    {tab === "alerts" && <div className="stack">
+    {tab === "alerts" && <div className="stack diagnosis-workspace">
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
         <LinkTabs id="alert-status" label="预警状态" active={sp.status === "all" ? "all" : "open"} items={[{ key: "open", label: "待处理预警", href: `/diagnosis?year=${year}`, badge: openAlerts.length }, { key: "all", label: "全部与历史", href: `/diagnosis?year=${year}&status=all` }]} />
         <MoreLink href={`/admin?year=${year}`}>数据质量工单</MoreLink>
       </div>
-      {visibleAlerts.length ? <DiagnosisAlerts alerts={visibleAlerts} openCount={openAlerts.length} /> : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}
+      <div className="diagnosis-scroll">{visibleAlerts.length ? <DiagnosisAlerts alerts={visibleAlerts} openCount={openAlerts.length} /> : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}</div>
     </div>}
 
     {tab === "causes" && <div className="grid-main-side" style={{ marginTop: 0 }}>
@@ -53,7 +54,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
       </Panel></Reveal>
     </div>}
 
-    {tab === "strategies" && <div className="stack">
+    {tab === "strategies" && <SectionPager labels={["预警关联策略", "策略库"]}>
       <Reveal><Panel title="预警关联策略推荐" subtitle="节能量与减碳量按策略参数测算；不同策略可能重叠，不直接求和。" action={<StrategyReportButton year={year} />}>
         {extended?.plans.length ? <div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th className="num">预计节能 / tce</th><th className="num">预计减碳 / tCO₂</th></tr></thead>
           <tbody>{extended.plans.map((row, index) => <tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td className="num">{fmt(row.tce_saving)}</td><td className="num">{fmt(row.co2_reduction_t)}</td></tr>)}</tbody></table></div>
@@ -62,15 +63,15 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
       <Reveal><Panel title="减碳策略库" subtitle={`${detail?.strategies.length ?? 0} 项可选策略`}>
         <div className="strategy-grid">{detail?.strategies.map((row) => <article className="strategy-item" key={row.code}><span className="strategy-category">{CATEGORIES[row.category] || row.category}</span><h3>{row.name}</h3><p>{row.description || "按企业工况和适用条件进一步核查。"}</p>{cleanSource(row.reference) && <small>{cleanSource(row.reference)}</small>}</article>)}</div>
       </Panel></Reveal>
-    </div>}
+    </SectionPager>}
 
-    {tab === "forecast" && <div className="stack">
+    {tab === "forecast" && <SectionPager labels={["月度预测", "减碳路线"]}>
       <Reveal><Panel title="月度能耗与碳排放预测" subtitle="最新成功批次；虚线为中位预测，阴影为 10%—90% 区间">
         {chart?.forecast.length ? <><TrendChart data={chart} /><div className="meta-row">{chart.forecast.map((row) => <span key={row.target}><b>{row.target === "energy_tce" ? "能耗" : "碳排放"}</b>{row.model || "基准模型"} · 批次 {row.run_id} · {row.points[0]?.month}—{row.points.at(-1)?.month}</span>)}</div></>
           : <Empty title="暂无已发布的预测批次" />}
       </Panel></Reveal>
       <Reveal><Roadmap data={extended} /></Reveal>
-    </div>}
+    </SectionPager>}
     <p className="panel-note" style={{ marginTop: 20 }}>诊断顺序：预警发现问题 → 根因溯源定位对象 → 策略库匹配对策 → 预测检验效果。<Link href={`/carbon?year=${year}`}>返回碳管理</Link></p>
   </>;
 }

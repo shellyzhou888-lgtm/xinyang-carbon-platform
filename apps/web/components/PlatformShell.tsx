@@ -50,7 +50,7 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     return () => window.removeEventListener("keydown", close);
   }, [chatOpen]);
 
-  return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined} data-module={path === "/energy" || path === "/carbon" ? "analysis" : undefined}>
+  return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined} data-module={path === "/energy" || path === "/carbon" || path === "/diagnosis" || path === "/admin/data" ? "workspace" : undefined}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
     <aside className="rail" aria-label="主导航">
       <Link className="rail-logo" href={`/?year=${year}`} aria-label="返回园区总览">
