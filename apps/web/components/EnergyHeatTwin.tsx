@@ -92,12 +92,20 @@ export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year
   const total = ranking.reduce((sum, row) => sum + row.value, 0);
   const prevTotal = index > 0 ? sites.reduce((sum, site) => sum + energyAt(months[index - 1], site.code), 0) : null;
 
-  // Camera over the park.
+  // Camera over the park: the zones fill the space left of the analysis panel, above the timeline and below room for the
+  // month callouts. Until the user drags or zooms, the view is refitted when the map box changes size.
   useEffect(() => {
-    const current = handle.current;
-    if (!ready || !current) return;
-    // Keep the zones left of the analysis panel (right avoid ≈ panel width) and above the timeline.
-    frameParkTilted(current.map, current.AMap, { avoid: [30, 90, 60, 330] });
+    const current = handle.current, element = container.current;
+    if (!ready || !current || !element) return;
+    let touched = false, timer = 0;
+    const frame = () => frameParkTilted(current.map, current.AMap, { avoid: [100, 96, 40, 330], fill: 0.95 });
+    frame();
+    const mark = () => { touched = true; };
+    element.addEventListener("pointerdown", mark);
+    element.addEventListener("wheel", mark, { passive: true });
+    const observer = new ResizeObserver(() => { if (touched) return; window.clearTimeout(timer); timer = window.setTimeout(frame, 150); });
+    observer.observe(element);
+    return () => { observer.disconnect(); window.clearTimeout(timer); element.removeEventListener("pointerdown", mark); element.removeEventListener("wheel", mark); };
   }, [ready, handle]);
 
   // Dot layer: created once, data refreshed per month.

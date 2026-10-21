@@ -29,21 +29,21 @@ export function KpiCard({ label, value, unit, digits = 1, tone = "energy", previ
       {change != null && <em className={`kpi-delta ${good ? "good" : "bad"}`} title="与上年相比">{change > 0 ? "▲" : change < 0 ? "▼" : "■"} {fmt(Math.abs(change), 1)}%</em>}
     </div>
     <strong className="kpi-value"><CountUp value={value} digits={digits} /><small>{unit}</small></strong>
-    {spark && spark.some((v) => v != null) && <KpiSpark values={spark} tone={tone} dark={featured} />}
+    {spark && spark.some((v) => v != null) && <KpiSpark values={spark} tone={tone} />}
     {foot && <span className="kpi-foot">{foot}</span>}
   </motion.div>;
 }
 
-function KpiSpark({ values, tone, dark }: { values: (number | null)[]; tone: Tone; dark: boolean }) {
+function KpiSpark({ values, tone }: { values: (number | null)[]; tone: Tone }) {
   const option = useMemo(() => {
-    const color = dark ? "#11160a" : toneColor(tone);
+    const color = toneColor(tone);
     return {
     backgroundColor: "transparent", animationDuration: 900,
     grid: { left: 0, right: 0, top: 2, bottom: 0 },
     xAxis: { type: "category", show: false, data: values.map((_, i) => i), boundaryGap: false },
     yAxis: { type: "value", show: false, scale: true },
     series: [{ type: "line", data: values, smooth: 0.4, symbol: "none", lineStyle: { color, width: 1.6 }, areaStyle: { color: fade(color, 0.28) } }],
-  }; }, [values, tone, dark]);
+  }; }, [values, tone]);
   const ref = useChart(option);
   return <div ref={ref} className="kpi-spark" aria-hidden="true" />;
 }

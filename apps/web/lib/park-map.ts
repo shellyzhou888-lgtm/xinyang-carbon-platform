@@ -175,7 +175,16 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
         map.on("complete", () => { window.clearTimeout(timer); resolve(); });
       });
       if (disposed) return;
-      if (limit) { const [sw, ne] = limit === true ? PARK_BOUNDS : limit; map.setLimitBounds(new AMap.Bounds(sw, ne)); }
+      if (limit) {
+        // Soft limit on the centre only. AMap's setLimitBounds clamps the whole visible area; under a tilted camera the
+        // horizon always lies outside the box, so it fought every drag frame and panning stuttered.
+        const [sw, ne] = limit === true ? PARK_BOUNDS : limit;
+        map.on("moveend", () => {
+          const c = map.getCenter();
+          const lng = Math.min(ne[0], Math.max(sw[0], c.lng)), lat = Math.min(ne[1], Math.max(sw[1], c.lat));
+          if (lng !== c.lng || lat !== c.lat) map.panTo([lng, lat], 400);
+        });
+      }
       const imagery = satellite ? [new AMap.TileLayer.Satellite({ zIndex: 10 }), new AMap.TileLayer.RoadNet({ zIndex: 11 })] : [];
       if (imagery.length) { map.add(imagery); imagery.forEach((layer) => layer.hide()); }
       handle.current = { map, AMap, scene: null, satellite: imagery };
@@ -208,11 +217,25 @@ export function useParkMap(container: RefObject<HTMLDivElement | null>, options:
  * fitted top-down (AMap avoid order [top, bottom, left, right]) and then tilted; tilting shrinks the far side,
  * so the zoom is stepped in a little.
  */
-export function frameParkTilted(map: any, AMap: any, { rotation = 40, pitch = 50, avoid = [40, 70, 40, 40], boost = 0.45 }: { rotation?: number; pitch?: number; avoid?: number[]; boost?: number } = {}) {
-  const targets = zonePoints("all").map((point) => new AMap.Marker({ position: point }));
+export function frameParkTilted(map: any, AMap: any, { rotation = 40, pitch = 50, avoid = [40, 70, 40, 40], boost = 0.45, fill }: { rotation?: number; pitch?: number; avoid?: number[]; boost?: number; fill?: number } = {}) {
+  const points = zonePoints("all");
+  const targets = points.map((point) => new AMap.Marker({ position: point }));
   map.setRotation(rotation, true);
   map.setPitch(0, true);
   map.setFitView(targets, true, avoid, 16);
   map.setPitch(pitch, true);
-  map.setZoom(map.getZoom() + boost, true);
+  if (!fill) { map.setZoom(map.getZoom() + boost, true); return; }
+  // `fill`: measure the tilted zones on screen and step zoom and centre until their box fills that share of the free area.
+  const [top, bottom, left, right] = avoid;
+  const size = map.getSize(), width = size.width ?? size.getWidth(), height = size.height ?? size.getHeight();
+  const freeW = width - left - right, freeH = height - top - bottom;
+  for (let i = 0; i < 3; i++) {
+    const pixels = points.map((point) => map.lngLatToContainer(point));
+    const xs = pixels.map((p: any) => p.x ?? p.getX()), ys = pixels.map((p: any) => p.y ?? p.getY());
+    const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+    if (!(maxX > minX && maxY > minY) || freeW <= 0 || freeH <= 0) return;
+    const shiftX = (minX + maxX) / 2 - (left + freeW / 2), shiftY = (minY + maxY) / 2 - (top + freeH / 2);
+    map.setCenter(map.containerToLngLat(new AMap.Pixel(width / 2 + shiftX, height / 2 + shiftY)), true);
+    map.setZoom(map.getZoom() + Math.log2(Math.min(freeW / (maxX - minX), freeH / (maxY - minY)) * fill), true);
+  }
 }

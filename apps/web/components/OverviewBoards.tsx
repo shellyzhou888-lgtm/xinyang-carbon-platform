@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import type { ParkOverview } from "@xinyang/db-agent";
 import { formatNumber as fmt } from "@/lib/workspace";
-import { HONOR_KINDS, focusEnterprise, honorLevel } from "@/lib/honors";
+import { HONOR_KINDS, focusEnterprise } from "@/lib/honors";
 import type { MapHonor } from "./ParkSpatialOverview";
 import { CountUp } from "./MotionParts";
 import { Sparkline } from "./EnergyCharts";
@@ -20,25 +20,29 @@ function Delta({ value, lowerIsBetter = true }: { value: number | null; lowerIsB
   return <em className={`kpi-delta ${good ? "good" : "bad"}`} title="与上年相比">{value > 0 ? "▲" : value < 0 ? "▼" : "■"} {fmt(Math.abs(value), 1)}%</em>;
 }
 
-/** Honours, one icon per category: the park title first, then each category with its enterprises (click flies the map there). */
+const HONOR_PHRASES: Record<string, string> = {
+  green_factory: "获评绿色工厂", zero_carbon: "获评零碳工厂", smart_factory: "入选5G工厂",
+  little_giant: "入选专精特新小巨人", high_tech: "认定高新技术企业", cluster: "入选特色产业集群",
+};
+
+/** The park award leads; six concise achievement types follow in two columns. */
 export function HonorShowcase({ honors, achieved = [], year }: { honors: MapHonor[]; achieved?: ParkOverview["achieved"]; year?: number }) {
   const reduce = useReducedMotion();
   const park = honors.find((honor) => honor.kind === "green_park");
-  const groups = HONOR_KINDS.filter((kind) => kind.kind !== "green_park")
-    .map((kind) => ({ ...kind, rows: honors.filter((honor) => honor.kind === kind.kind) }))
-    .filter((group) => group.rows.length);
+  const groups = HONOR_KINDS.filter((kind) => kind.kind !== "green_park" && honors.some((honor) => honor.kind === kind.kind));
   return <section className="brief" aria-label="园区荣誉">
     {year != null && achieved.length > 0 && <IndicatorBoard rows={achieved} year={year} />}
-    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={25} /><b>2024 年度获评<strong>河南省省级绿色工业园区</strong></b></div>}
-    <ul className="trophy-list">
-      {groups.map((group, index) => <motion.li key={group.kind} initial={reduce ? false : { opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + index * 0.05, duration: 0.45, ease }}>
-        <div className="trophy-body">
-          <span className="trophy-name" title={group.label}><HonorIcon kind={group.kind} size={22} /><span>{group.label}</span></span>
-          <span className="trophy-holders">{group.rows.map((honor, i) => <button key={i} type="button" disabled={!honor.code} onClick={() => focusEnterprise(honor.code)} title={honor.title}>
-            {shortName(honor.node)}{honorLevel(honor.title) && <small>{honorLevel(honor.title)}</small>}
-          </button>)}</span>
-        </div>
-      </motion.li>)}
+    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={25} /><b>2024 年度获评河南省省级绿色工业园区</b></div>}
+    <ul className="honor-rows">
+      {groups.map((group, index) => {
+        const holders = honors.filter((honor) => honor.kind === group.kind);
+        return <motion.li key={group.kind} style={{ ["--honor" as string]: group.color }} title={holders.map((honor) => shortName(honor.node)).join("、")}
+          initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + index * 0.04, duration: 0.4, ease }}>
+          <span className="honor-badge"><HonorIcon kind={group.kind} size={16} /></span>
+          <span className="honor-phrase">{HONOR_PHRASES[group.kind]}</span>
+          <b className="honor-count num">{holders.length}<small>{group.kind === "cluster" ? "项" : "家"}</small></b>
+        </motion.li>;
+      })}
     </ul>
   </section>;
 }
@@ -50,7 +54,7 @@ export function EnergyBrief({ year, total, previous, months, structure, leaders 
   const sum = structure.reduce((a, row) => a + row.value, 0);
   const top = leaders[0]?.value || 1;
   return <section className="brief tone-energy" aria-label="能源">
-    <div className="float-head"><span className="brief-tag energy">能源 · {year}</span><a className="more-link" href={`/energy?year=${year}`}>能源管理</a></div>
+    <div className="float-head"><span className="brief-tag energy">能源</span><a className="more-link" href={`/energy?year=${year}`}>能源管理</a></div>
     <div className="brief-figure"><span>综合能耗</span><strong><CountUp value={total} digits={0} /><small>tce</small></strong><Delta value={change(total, previous)} /></div>
     {months.some((v) => v != null) && <Sparkline values={months} color="#2ee8a5" label={`${year}年月度综合能耗`} />}
     <div className="mini-bars">{structure.slice(0, 3).map((row) => <div key={row.name}><span>{row.name}</span><b className="num">{fmt(sum ? row.value / sum * 100 : 0, 1)}%</b><i><em style={{ width: `${sum ? row.value / sum * 100 : 0}%` }} /></i></div>)}</div>
@@ -64,7 +68,7 @@ export function EnergyBrief({ year, total, previous, months, structure, leaders 
 export function CarbonBrief({ year, total, previous, months, intensity, intensityPrev, perEnergy, structure }: { year: number; total: number | null | undefined; previous: number | null | undefined; months: (number | null)[]; intensity: number | null; intensityPrev: number | null; perEnergy: number | null; structure: { name: string; value: number }[] }) {
   const sum = structure.reduce((a, row) => a + row.value, 0);
   return <section className="brief tone-carbon" aria-label="碳排放">
-    <div className="float-head"><span className="brief-tag carbon">碳排 · {year}</span><a className="more-link" href={`/carbon?year=${year}`}>碳排管理</a></div>
+    <div className="float-head"><span className="brief-tag carbon">碳排</span><a className="more-link" href={`/carbon?year=${year}`}>碳排管理</a></div>
     <div className="brief-figure"><span>二氧化碳排放</span><strong><CountUp value={total} digits={0} /><small>tCO₂</small></strong><Delta value={change(total, previous)} /></div>
     {months.some((v) => v != null) && <Sparkline values={months} color="#ffab3d" label={`${year}年月度碳排放`} />}
     <div className="brief-pair">
@@ -85,12 +89,12 @@ export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"];
   if (!rows.length) return null;
   return <section className="indicator-board glass" aria-label={`${year} 年绿色工业园区评价达标指标`}>
     <div className="indicator-hero">
-      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达标<span>达到GIP2026指标值</span></small></strong>
+      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达到绿色工业园区<br />评价要求 2026 年指标</small></strong>
     </div>
     <ol className="indicator-summary-list">
       {rows.map((row, index) => <motion.li key={row.code} title={`${row.name} · 引领值 ${row.comparator === "<=" || row.comparator === "<" ? "≤" : "≥"} ${fmt(row.benchmark, 2)}${row.unit || ""}`}
         initial={reduce ? false : { opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.12 + index * 0.04, duration: 0.35, ease }}>
-        <IconCheck size={14} /><span>{INDICATOR_SHORT[row.code] ?? (row.name.length > 8 ? `${row.name.slice(0, 8)}…` : row.name)}</span>
+        <IconCheck size={15} className="indicator-tick" /><span>{INDICATOR_SHORT[row.code] ?? (row.name.length > 8 ? `${row.name.slice(0, 8)}…` : row.name)}</span>
         <strong className="num">{fmt(row.value, 2)}<small>{row.unit || ""}</small></strong>
       </motion.li>)}
     </ol>
@@ -118,7 +122,7 @@ export function EmitterRanking({ total, rows, year }: { total: number | null | u
   const reduce = useReducedMotion();
   const top3 = rows.slice(0, 3).reduce((a, row) => a + row.value, 0);
   return <section className="brief tone-carbon" aria-label="重点排放企业排名">
-    <div className="float-head"><span className="brief-tag carbon">重点排放企业 · {year}</span>{total ? <span className="count-pill carbon">前三占 {fmt(top3 / total * 100, 1)}%</span> : null}</div>
+    <div className="float-head"><span className="brief-tag carbon">重点排放企业</span>{total ? <span className="count-pill carbon">前三占 {fmt(top3 / total * 100, 1)}%</span> : null}</div>
     <ol className="emitter-list">{rows.slice(0, 5).map((row, index) => {
       const yoy = change(row.value, row.previous);
       const share = total ? row.value / total * 100 : 0;

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "motion/react";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { conePin, fmt, frameParkTilted, HENAN_BOUNDS, infoCard, SECTOR_ZONE, shortName, useParkMap, zoneFeature, zoneHub, type ZoneKey } from "@/lib/park-map";
+import { canvas, conePin, fmt, frameParkTilted, HENAN_BOUNDS, infoCard, roundRect, SECTOR_ZONE, shortName, useParkMap, zoneFeature, zoneHub, type ZoneKey } from "@/lib/park-map";
 
 export interface FlowNode { code: string; name: string; value: number; intensity?: number | null }
 export interface FlowMix { code: string; carrier: string; tce: number; co2_t: number }
@@ -28,6 +28,19 @@ function arrowIcon() {
   return c.toDataURL("image/png");
 }
 
+/** A numbered plate stays visible for every enterprise; the side list carries its full name. */
+function sitePlate(number: number, name: string, color: string) {
+  const w = 170, h = 30;
+  const { element, ctx } = canvas(w, h);
+  ctx.fillStyle = "rgba(14,15,19,.94)"; roundRect(ctx, 0, 0, w, h, 9); ctx.fill();
+  ctx.fillStyle = color; roundRect(ctx, 5, 5, 22, 20, 6); ctx.fill();
+  ctx.fillStyle = "#101714"; ctx.font = "700 12px sans-serif"; ctx.textAlign = "center"; ctx.fillText(String(number), 16, 19);
+  ctx.fillStyle = "#fff"; ctx.textAlign = "left"; ctx.font = '600 12px "Microsoft YaHei", sans-serif';
+  const label = shortName(name);
+  ctx.fillText(label.length > 10 ? `${label.slice(0, 9)}…` : label, 34, 20);
+  return { image: element.toDataURL("image/png"), size: [w, h] as [number, number] };
+}
+
 /**
  * Flow network on a 3D dark map, split by energy carrier: for each carrier a curved link runs park → zone → enterprise
  * (energy) or enterprise → zone → park (carbon), with a faint base arc, streaming particles and moving arrows in the
@@ -43,6 +56,7 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
   const labels = useRef<any>(null);
   const flowLayers = useRef<any[]>([]);
   const [only, setOnly] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   const network = useMemo(() => {
     const amount = (row: FlowMix) => mode === "energy" ? row.tce : row.co2_t;
@@ -75,8 +89,8 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
     const current = handle.current;
     if (!ready || !current) return;
     // Leave room on the right for the flow panel (avoid order: top, bottom, left, right).
-    frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 300], boost: 0.7 });
-  }, [ready, handle]);
+    frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 300], boost: showAll ? 0.15 : 1.4 });
+  }, [ready, handle, showAll]);
 
   // One set of layers per carrier (base arc, streaming particles, arrows), each with its own curve offset.
   useEffect(() => {
@@ -123,17 +137,17 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
     return () => { disposed = true; };
   }, [l7Ready, handle, network, style, only]);
 
-  // Cone pins and info cards: park, zones, the three largest enterprises and every enterprise with an alert.
+  // Cone pins and numbered name plates for every enterprise; park and zones retain detailed cards.
   useEffect(() => {
     const current = handle.current;
     if (!ready || !current) return;
     const { AMap, map } = current;
     if (!labels.current) {
-      labels.current = { pins: new AMap.LabelsLayer({ zIndex: 165, collision: false }), cards: new AMap.LabelsLayer({ zIndex: 170, collision: true, allowCollision: false }) };
-      map.add([labels.current.pins, labels.current.cards]);
+      labels.current = { pins: new AMap.LabelsLayer({ zIndex: 165, collision: false }), cards: new AMap.LabelsLayer({ zIndex: 170, collision: true, allowCollision: false }), names: new AMap.LabelsLayer({ zIndex: 175, collision: false }) };
+      map.add([labels.current.pins, labels.current.cards, labels.current.names]);
     }
-    const { pins, cards } = labels.current;
-    pins.clear(); cards.clear();
+    const { pins, cards, names } = labels.current;
+    pins.clear(); cards.clear(); names.clear();
     const mixText = (list: { carrier: string; value: number }[], sum: number) => list.slice().sort((a, b) => b.value - a.value).slice(0, 2)
       .map((c) => `${c.carrier} ${fmt(c.value / (sum || 1) * 100, 0)}%`).join(" · ");
     // Alerts rank highest, then the park and zone cards, then by flow size.
@@ -146,22 +160,24 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
     for (const zone of network.zones) {
       add(zone.at, infoCard(zoneFeature(zone.key)?.properties.name ?? zone.key, [[`${style.label}汇聚`, `${fmt(zone.value, 0)} ${style.unit}`], ["占园区", `${fmt(zone.value / (total || 1) * 100, 1)}%`], ["主要品种", mixText(zone.carriers, zone.value)]], style.card), 1e5, style.pin);
     }
-    for (const site of [...network.sites].sort((a, b) => b.value - a.value).filter((s, i) => i < 3 || s.alert)) {
-      const rows: [string, string][] = [[mode === "energy" ? "综合能耗" : "碳排放", `${fmt(site.value, 0)} ${style.unit}`], ["主要品种", mixText(site.carriers, site.value)]];
-      if (site.intensity != null) rows.push(["强度", `${fmt(site.intensity, 3)} ${style.intensityUnit}`]);
-      if (site.alert) rows.unshift(["状态", "存在未处理预警"]);
-      add(site.at, infoCard(shortName(site.name), rows, site.alert ? ALERT : style.card, site.alert), site.alert ? 5e6 : site.value, site.alert ? ALERT : style.pin);
-    }
+    [...network.sites].sort((a, b) => b.value - a.value).forEach((site, index) => {
+      const color = site.alert ? ALERT : style.card;
+      const pin = conePin(color, 18);
+      pins.add(new AMap.LabelMarker({ position: site.at, zIndex: 3, icon: { image: pin.image, size: pin.size, anchor: "bottom-center" } }));
+      const plate = sitePlate(index + 1, site.name, color);
+      names.add(new AMap.LabelMarker({ position: site.at, zIndex: 7, icon: { image: plate.image, size: plate.size, anchor: "bottom-left", offset: [8, -24] } }));
+    });
   }, [ready, handle, network, mode, style, total, year]);
   useEffect(() => () => { labels.current = null; flowLayers.current = []; }, []);
 
   const carrierSum = network.totals.reduce((a, t) => a + t.value, 0);
+  const visibleSites = [...network.sites].sort((a, b) => b.value - a.value).filter((site) => !only || site.carriers.some((carrier) => carrier.carrier === only));
   return <div className="flowmap">
     <div ref={container} className="twin-map" role="img" aria-label={`${style.label}网络互动地图`} />
     {!ready && !error && <div className="map-loading" role="status"><span className="spinner" />正在载入园区三维底图…</div>}
     {error && <div className="map-error" role="status">{error}<button type="button" className="btn-ghost small" onClick={retry}>重试</button></div>}
     <aside className="flowmap-panel glass" aria-label="流向说明">
-      <span className="eyebrow">{style.label}说明 · {year}</span>
+      <div className="flowmap-panel-head"><span className="eyebrow">{style.label}说明</span><button type="button" className="flowmap-view" onClick={() => setShowAll(!showAll)}>{showAll ? "放大视角" : "全览节点"}</button></div>
       <p className="flowmap-direction">{style.direction}</p>
       <ol className="flowmap-carriers">
         <li><button type="button" className={only === null ? "on" : ""} onClick={() => setOnly(null)}><i style={{ background: "linear-gradient(90deg,#4cb4ff,#ffab3d,#ff6b81)" }} /><span>全部品种</span><b className="num">{fmt(carrierSum, 0)}<small>{style.unit}</small></b></button></li>
@@ -169,6 +185,12 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
           <i style={{ background: c.color }} /><span>{c.name}</span><b className="num">{fmt(c.value, 0)}<small>{fmt(c.value / (carrierSum || 1) * 100, 1)}%</small></b>
           <em><u style={{ width: `${c.value / (network.totals[0]?.value || 1) * 100}%`, background: c.color }} /></em>
         </motion.button></li>)}
+      </ol>
+      <div className="flowmap-node-title">{mode === "energy" ? "供能节点" : "排放节点"}<small>园区、片区与企业均标注在图上</small></div>
+      <ol className="flowmap-nodes">
+        <li><b className="flowmap-node-index">起</b><span>{mode === "energy" ? "信阳经开区 · 供能起点" : "信阳经开区 · 碳排汇点"}</span></li>
+        {network.zones.map((zone) => <li key={zone.key}><b className="flowmap-node-index">中</b><span>{zoneFeature(zone.key)?.properties.name ?? zone.key} · 中转汇聚</span></li>)}
+        {visibleSites.map((site) => <li key={site.code}><b className="flowmap-node-index">{network.sites.slice().sort((a, b) => b.value - a.value).findIndex((row) => row.code === site.code) + 1}</b><span title={site.name}>{site.name}<small>{mode === "energy" ? "用能终点" : "排放起点"} · {fmt(site.value, 0)} {style.unit}</small></span></li>)}
       </ol>
       <small className="flowmap-note">线宽表示量，光点与箭头表示方向；点选品种只看该品种的流向。</small>
     </aside>

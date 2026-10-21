@@ -10,7 +10,7 @@
 .groupHead { display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:15px; font-weight:650; }
 .groupHead b { font-size:24px; color:var(--group-color); }
 .groupCard small { display:block; min-height:36px; margin-top:8px; color:#a8b7b2; line-height:1.5; }
-.barTrack { height:5px; margin-top:14px; background:rgba(255,255,255,.09); border-radius:10px; overflow:hidden; }
+.barTrack { display:block; height:5px; margin-top:14px; background:rgba(255,255,255,.09); border-radius:10px; overflow:hidden; }
 .barFill { display:block; height:100%; background:var(--group-color); border-radius:10px; }
 .sectionHead { display:flex; justify-content:space-between; align-items:center; gap:12px; margin:6px 0 12px; }
 .sectionHead h2 { margin:0; font-size:18px; }

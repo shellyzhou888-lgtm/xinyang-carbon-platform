@@ -284,7 +284,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
 function EnterpriseDetail({ feature, year, logo, metric, intensity, honors, onClose }: { feature: EnterpriseFeature; year: number; logo?: string; metric?: MapEnterprise; intensity?: number | null; honors: MapHonor[]; onClose: () => void }) {
   return <motion.aside className="map-drawer detail glass" aria-label="企业详情" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }} transition={{ duration: 0.25 }}>
     <header>
-      <div className="detail-title">{logo && <img className="detail-logo" src={logo} alt={`${feature.properties.name}品牌标识`} />}<div><span className="eyebrow">{feature.properties.sector} · {year}</span><h3>{feature.properties.name}</h3></div></div>
+      <div className="detail-title">{logo && <img className="detail-logo" src={logo} alt={`${feature.properties.name}品牌标识`} />}<div><span className="eyebrow">{feature.properties.sector}</span><h3>{feature.properties.name}</h3></div></div>
       <button type="button" className="icon-btn" onClick={onClose} aria-label="关闭企业详情"><IconClose /></button>
     </header>
     <div className="detail-metrics three">
