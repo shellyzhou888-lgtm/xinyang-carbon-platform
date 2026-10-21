@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import ParkLineArt from "@/components/ParkLineArt";
 import LoginForm from "@/components/LoginForm";
+import { enterprises } from "@/lib/park-geography";
 import { authConfigured, readSession, safeNext, SESSION_COOKIE } from "@/lib/auth";
 
 export const metadata: Metadata = { title: "登录 · 信阳经开区能碳管理平台" };
@@ -25,7 +26,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <p>汇聚园区企业能耗台账、碳排放核算与绿色工业园区指标，支撑 2026 年度绿色工业园区申报与日常运行。</p>
           <dl className="login-facts">
             <div><dt>规划功能片区</dt><dd>4</dd></div>
-            <div><dt>公开企业点位</dt><dd>15</dd></div>
+            <div><dt>企业点位</dt><dd>{enterprises.length}</dd></div>
             <div><dt>省级绿色工业园区</dt><dd>2024</dd></div>
           </dl>
         </div>

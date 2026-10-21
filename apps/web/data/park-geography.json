@@ -428,6 +428,34 @@
     {
       "type": "Feature",
       "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.127725,
+          32.210775
+        ]
+      },
+      "properties": {
+        "kind": "enterprise",
+        "code": "REG_QUANSHENG",
+        "name": "权盛实业",
+        "sector": "绿色家居",
+        "color": "#3ddc97",
+        "poiId": "B0MBP71TCD",
+        "poiName": "权盛实业有限公司",
+        "address": "纬北五路与经北一路交叉口东南180米",
+        "source": "高德地图公开企业POI",
+        "sourceUrl": "https://www.amap.com/detail/B0MBP71TCD",
+        "locatedAt": "2026-10-21T08:00:00+00:00",
+        "precision": "企业/厂区POI，非测绘界址点",
+        "note": "企业目录 v0.34.0 新增（沙发与软体家具），位于羊山片区纬北五路产业园；无已关联能耗。",
+        "boundaryStatus": "unavailable",
+        "boundary": null,
+        "metricBindingApproved": false
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
         "type": "Polygon",
         "coordinates": [
           [

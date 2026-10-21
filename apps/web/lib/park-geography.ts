@@ -1,4 +1,5 @@
 import geography from "@/data/park-geography.json";
+import directory from "@/data/enterprise-directory.json";
 
 export type Sector = "绿色家居" | "电子信息";
 export type Position = [number, number];
@@ -16,6 +17,8 @@ export interface DistributionFeature {
   geometry: { type: "Polygon"; coordinates: Position[][] };
   properties: { kind: "distribution"; code: string; name: string; sector: Sector; color: string; notLegalBoundary: boolean };
 }
-export const enterprises = geography.features.filter((feature) => feature.properties.kind === "enterprise") as unknown as EnterpriseFeature[];
+/** Map codes whose directory entry is a former enterprise (e.g. 历史企业): kept in the data, not drawn as operating sites. */
+const retired = new Set(directory.items.filter((item) => item.type === "历史企业" && item.mapCode).map((item) => item.mapCode));
+export const enterprises = geography.features.filter((feature) => feature.properties.kind === "enterprise" && !retired.has(feature.properties.code)) as unknown as EnterpriseFeature[];
 export const distributions = geography.features.filter((feature) => feature.properties.kind === "distribution") as unknown as DistributionFeature[];
 export { geography };
