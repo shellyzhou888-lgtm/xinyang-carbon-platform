@@ -52,13 +52,13 @@
 
 计算批次 72：园区与 11 个企业/公共设施，2026-01～2026-12 的能耗与碳排放，各含中位数与 10%/90% 分位，共 288 行。园区 2026 年综合能耗预测约 9.6 万 tce（同比约 +14%）。
 
-## 3. TimescaleDB：现在不急
+## 3. TimescaleDB 状态与启用时机
 
-TimescaleDB 是 PostgreSQL 扩展，优势在分钟级、小时级的高频计量数据（自动分区、压缩、连续聚合）。本项目当前数据是**月度**的（每月几百行），普通表加索引完全够用。
+TimescaleDB 是 PostgreSQL 扩展，适合分钟级、小时级的高频计量数据（自动分区、压缩、连续聚合）。2026-10-21 在当前 `greensystem` 数据库实测：服务器可用扩展包含 `timescaledb` 2.22.0，但 `installed_version` 为空，`pg_extension` 没有对应记录，`timescaledb_information.hypertables` 视图也不存在。因此当前数据库**尚未启用 TimescaleDB，也没有超表**。此次仅检测，没有执行 `CREATE EXTENSION`。
 
-需要它的时机：接入电表、燃气表、光伏逆变器等**实时计量**（15 分钟或小时级）。那时建议：
+当前已接入月度业务数据和每日气象数据；在接入电表、燃气表、光伏逆变器等 15 分钟或小时级实时计量数据时，再评估启用。届时建议：
 
-- 由服务器管理员在 Windows 上安装与 PostgreSQL 17 对应的 TimescaleDB，`shared_preload_libraries` 加 `timescaledb` 并重启数据库服务（需要停机窗口）；
+- 由有权限的数据库管理员检查服务器预加载配置和扩展启用条件，再在目标数据库执行 `CREATE EXTENSION timescaledb`；当前查询账户无权查看 `shared_preload_libraries`，不能据此判断是否需要修改配置或重启；
 - 新建计量读数超表（如 `fact.meter_reading`），月度能源活动由连续聚合自动生成，与现有 `fact.energy_activity` 口径衔接。
 
 ## 4. 对照竞品截图，还缺的功能（待讨论）
