@@ -10,8 +10,8 @@ const PROJECT_ID = "xinyang-park";
 const YEARS = [2023, 2024, 2025];
 
 /**
- * Mounts the Xiaoyun voice assistant in the browser. Qwen handles speech and routing; database questions go
- * to the backend project tools in voice-project.mjs (DeepSeek/Pi + our db-agent tools). The only page action
+ * Mounts the Xiaoyun voice assistant in the browser. Qwen handles speech; platform questions go
+ * to the shared Pi manager through voice-project.mjs. The only page action
  * registered here is the same year switch as the year buttons at the top of the page.
  */
 export default function VoiceAssistant({ year, overview, page = "/" }: { year: number; overview: Overview; page?: string }) {

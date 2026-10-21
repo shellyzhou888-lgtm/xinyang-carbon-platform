@@ -1,8 +1,8 @@
 # 网站与小云语音接入说明
 
-文档版本：v1.2（2026-10-21）
+文档版本：v1.3（2026-10-21）
 
-本文说明数据库 Agent 如何接入 Next.js 网站 `apps/web`，以及如何通过小云语音助手（`@xiaoyun/voice`）用语音查询同一个数据库。
+本文说明 Pi 总管 Agent 如何接入 Next.js 网站 `apps/web` 和小云语音助手（`@xiaoyun/voice`），统一调度各业务板块查询同一个数据库。
 
 总览已加入高德/L7地图与ECharts-GL企业3D能耗视图；小云形象改为吸碳云朵动图。高德本机环境变量、企业坐标来源与红线缺口见[地图与来源说明](park-map-and-sources.md)。
 
@@ -11,15 +11,18 @@
 ```text
 浏览器 http://localhost:3001（Next.js）
  ├─ 总览页（服务端组件）──── getParkOverview() ──────────────┐
- ├─ 右侧对话框 ── POST /api/agent（SSE 流式）── createDbAgent() ─┤── PostgreSQL greensystem
- └─ 小云组件（浏览器 SDK）── WebSocket ── 小云后台 :8766          │   （SSH 隧道 localhost:15432）
-                                         ├─ Qwen 实时语音（千问）  │
-                                         └─ DeepSeek / Pi ── voice-project.mjs 项目工具 ─┘
+ ├─ 右侧对话框 ── POST /api/agent（SSE）─────────────┐
+ └─ 小云组件 ── WebSocket ── 小云后台 :8766 ────┤
+                    千问实时语音 ── ask_platform_manager ┤
+                                                   ▼
+                                 Pi 总管（DeepSeek）→ 板块 Pi 专家
+                                                   ↓
+                                  板块只读工具 → PostgreSQL greensystem
 ```
 
-- **网站对话**（文字）：每个浏览器会话在服务器内存里建一个 Pi Agent，工具与命令行版完全相同（12 个），审计记录 `channel='web'`。
-- **语音**：小云后台用千问实时模型听说、分流；需要查库时，由小云自带的 DeepSeek/Pi Harness 调用我们注册的“项目工具”。审计记录 `channel='voice'`、`agent_name='xiaoyun_voice'`。
-- 两边共用 `packages/db-agent` 里的同一套工具代码，因此口径一致。
+- **网站对话**（文字）：每个浏览器会话在服务器内存里保存一个 Pi 总管；总管按问题调用总览、能源、碳管理、综合诊断、企业名录、数据治理专家；审计记录 `channel='web'`、`agent_name='platform_manager'`。
+- **语音**：千问负责听说与页面动作，园区业务问题通过 `ask_platform_manager` 调用同一个 Pi 总管；审计记录 `channel='voice'`、`agent_name='platform_manager'`。
+- 六个板块专家只加载各自相关的只读数据库工具；跨板块问题由总管咨询多个专家后汇总。网页与语音共用 `packages/db-agent/src/manager.ts` 的路由与工具定义。
 
 ## 2. 为什么这样拆
 
@@ -27,9 +30,8 @@
 | --- | --- |
 | Agent 跑在服务端（Route Handler），浏览器只收文字流 | 数据库密码和 DeepSeek Key 只在服务器读取；浏览器拿不到。 |
 | SSE 流式返回 | Pi 的 `message_update` 事件逐字转发，用户不用等整段答案。 |
-| 语音只开放只读工具 + `run_calculation` | 语音可能听错，不能让一句误识别的话导入文件或改库。导入、写 SQL 只在网页/命令行里做。 |
-| `query_sql` 改名 `park_query_sql` | 小云把 `query_sql` 保留给自己的 SQLite 工具，同名会冲突。 |
-| `park_overview` 设为直达工具（voiceDirect） | “园区整体情况怎么样”这类问题由千问直接调用、马上播报，不必启动后台任务。 |
+| 总管及板块专家只读 | 语音误识别和未实现确认弹窗都不能触发导入、重算、审核或写 SQL；管理操作走现有有权限流程。 |
+| `ask_platform_manager` 设为直达工具（voiceDirect） | 千问将完整园区业务问题交给共享总管，不需要在语音层复制板块工具选择规则。 |
 | 页面动作只注册 `switch_year` | 只注册网页上真实存在的按钮功能；语音切年份与点击顶部年份按钮效果相同。 |
 
 ## 3. 本机启动
@@ -44,6 +46,7 @@
    | `DASHSCOPE_API_KEY` | 千问（阿里云百炼）Key |
    | `QWEN_REALTIME_URL` | 千问实时语音地址。使用 `sk-ws-` 开头的工作空间 Key 时填该工作空间的专属地址 `wss://<工作空间域名>.cn-beijing.maas.aliyuncs.com/api-ws/v1/realtime`；不填则用公共地址 `wss://dashscope.aliyuncs.com/api-ws/v1/realtime` |
    | `DEEPSEEK_API_KEY` | DeepSeek Key |
+   | `DEEPSEEK_BASE_URL` | `https://api.deepseek.com` |
    | `DEEPSEEK_MODEL` | `deepseek-v4-flash` |
    | `PYTHON_EXECUTABLE` | `C:\Users\53472\anaconda3\python.exe`（需 3.12+） |
    | `VOICE_PROJECT_MODULE` | `./voice-project.mjs` |
@@ -77,10 +80,10 @@
 | 测试 | 结果 |
 | --- | --- |
 | 总览页读取数据库 | 2025 年 83,890 tce、288,428 tCO₂、增加值 177,874 万元、19 项中 6 项达标，与命令行 Agent 一致；显示模拟数据提示条 |
-| 网页文字对话 | 流式输出；调用 get_energy_summary、get_carbon_summary、get_indicators；Markdown 表格正常显示；审计记录 channel=web |
-| 小云直达工具 | “2025年园区整体能碳情况怎么样？”→ 千问直接调用 park_overview 并播报 |
+| 网页文字对话 | 原有数据库 Agent 测试记录；共享总管上线后的端到端记录见本次版本日志 |
+| 小云直达工具 | 原有 `park_overview` 测试记录；当前入口已改为 `ask_platform_manager` |
 | 小云页面动作 | “把页面切换到2024年”→ 执行 switch_year，网页切到 2024 |
-| 小云后台分析（DeepSeek/Pi） | “单位工业增加值能耗为什么没达标、哪几家企业能耗最高”→ 调用 get_indicators、explain_indicator(I04)、按企业汇总能耗等约 20 次工具，全部成功；结论“0.4716 tce/万元，能源产出率 2.12，低于 3.0 基准，含模拟数据”；审计记录 channel=voice |
+| 小云后台分析（DeepSeek/Pi） | 原有单数据库 Agent 测试记录；当前业务分析由共享总管转交板块专家 |
 
 文字测试用小云公开的 `submitText`，与语音走同一条会话；麦克风需要在浏览器里实际说话验证。
 
@@ -89,19 +92,20 @@
 | 文件 | 作用 |
 | --- | --- |
 | `apps/web/app/page.tsx` | 总览：综合能耗、碳排放、增加值、已达标指标、荣誉；含模拟数据时显示提示条 |
-| `apps/web/app/api/agent/route.ts` | 文字对话接口，SSE 事件：start / text / tool_start / tool_end / done / error |
+| `apps/web/app/api/agent/route.ts` | 总管文字对话接口，SSE 事件：start / text / tool_start / tool_end / done / error |
+| `packages/db-agent/src/manager.ts` | Pi 总管、六个板块专家、工具白名单和双入口共用调用函数 |
 | `apps/web/lib/server.ts` | 服务端单例：连接池、按会话缓存 Agent |
 | `apps/web/components/ChatPanel.tsx` | 右侧对话框 |
 | `apps/web/components/VoiceAssistant.tsx` | 挂载小云，注册 `switch_year`，年份变化时 `updateContext` |
-| `apps/web/voice-project.mjs` | 小云后台项目模块（id `xinyang-park`），注册数据库工具和 Skill |
+| `apps/web/voice-project.mjs` | 小云后台项目模块（id `xinyang-park`），只注册总管入口和 Skill |
 | `apps/web/app/admin/page.tsx` | 数据治理页（/admin）：治理工单、语义目录、问答对、关联图的审核（v0.13 起） |
 | `apps/web/voice/skills/park-energy-carbon/SKILL.md` | 告诉 Pi 什么问题用哪个工具、怎么回答 |
-| `packages/db-agent/src/voice-tools.ts` | 把数据库工具转换为小云项目工具，并写审计 |
+| `packages/db-agent/src/voice-tools.ts` | 将总管入口适配为小云直达工具 |
 | `packages/db-agent/src/overview.ts` | 总览查询，网页和语音共用 |
 
 ## 5. 已知限制
 
-- 网页对话的写操作：`AGENT_WRITE_MODE=confirm` 时网页没有确认弹窗，因此会拒绝写操作；需要写入时用命令行，或改为 `auto`。
+- 共享总管目前只读；导入、重算与审批需经现有有权限的管理流程，不受 `AGENT_WRITE_MODE=auto` 影响。
 - 对话记忆保存在 Next.js 进程内存里，重启服务后清空（审计表里仍有完整记录）。
 - 麦克风只能在 localhost 或 HTTPS 下使用；部署到别的机器需要 HTTPS 和同源代理。
 - 目前大部分能耗与统计数据为模拟值，网页与语音都会提示“仅供演示”。

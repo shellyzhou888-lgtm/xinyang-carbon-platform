@@ -10,6 +10,7 @@ import { logToolCall, startSession } from "./audit.js";
 import { loadConfig } from "./config.js";
 import { initPool } from "./db.js";
 import { getParkOverview, type ParkOverview } from "./overview.js";
+import { askManager } from "./manager.js";
 import { buildTools, READ_TOOL_NAMES, type ToolContext } from "./tools.js";
 import { callKey } from "./trajectory.js";
 
@@ -105,4 +106,38 @@ export function createVoiceTools() {
   });
 
   return projectTools;
+}
+
+/** The voice entrance delegates all platform questions to the same Pi supervisor used by web text. */
+export function createManagerVoiceTools() {
+  const cfg = loadConfig();
+  return [{
+    name: "ask_platform_manager",
+    description: "信阳经开区能碳平台所有业务问题的统一入口。把用户原话交给 Pi 总管，由总管判断总览、能源、碳、综合诊断、企业或数据治理板块，并调用对应板块专家及其数据库工具。页面切换等纯页面动作仍用页面工具。",
+    parameters: {
+      type: "object",
+      properties: {
+        question: { type: "string", minLength: 2, description: "用户完整原话，不要省略年份、企业或口径" },
+        page: { type: "string", description: "当前网页路径，例如 /energy" },
+        year: { type: "integer", description: "当前网页统计年份" },
+      },
+      required: ["question"],
+      additionalProperties: false,
+    },
+    readOnly: true,
+    voiceDirect: true,
+    execute: async (args: { question: string; page?: string; year?: number }, ctx: VoiceContext) => {
+      ctx.signal.throwIfAborted();
+      const answer = await askManager(cfg, args.question, { channel: "voice", userRef: `xiaoyun:${ctx.taskId}` },
+        { page: args.page, year: args.year });
+      ctx.signal.throwIfAborted();
+      return answer;
+    },
+    formatResult: (answer: string) => {
+      const plain = answer.replace(/^#+\s*[^\n]+/gm, "").replace(/[*|\n]/g, " ").replace(/\s+/g, " ").trim();
+      const first = plain.split(/[。！？]/)[0];
+      const summary = first.length <= 56 ? `${first}。` : `${first.slice(0, 55)}…`;
+      return { summary, markdown: answer, data: { kind: "platform_manager" } };
+    },
+  }];
 }

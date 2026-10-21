@@ -33,6 +33,7 @@ export type WriteMode = "auto" | "confirm" | "off";
 export interface AgentConfig {
   databaseUrl: string;
   deepseekApiKey: string;
+  deepseekBaseUrl: string;
   model: string;
   thinking: "off" | "low" | "medium" | "high";
   /** auto: write tools run directly; confirm: ask in the terminal first; off: write tools are not loaded. */
@@ -51,6 +52,7 @@ export function loadConfig(opts: { requireModelKey?: boolean } = {}): AgentConfi
   return {
     databaseUrl,
     deepseekApiKey,
+    deepseekBaseUrl: setting("DEEPSEEK_BASE_URL") ?? "https://api.deepseek.com",
     model: setting("DEEPSEEK_MODEL") ?? "deepseek-flash",
     thinking: (setting("AGENT_THINKING") as AgentConfig["thinking"]) ?? "off",
     writeMode: (setting("AGENT_WRITE_MODE") as WriteMode) ?? "auto",

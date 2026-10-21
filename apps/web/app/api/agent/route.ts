@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { conversation, logMessage } from "@/lib/server";
+import { managerPrompt } from "@xinyang/db-agent";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,7 +12,7 @@ export const dynamic = "force-dynamic";
  * Pi's event stream (message_update / tool_execution_*) is forwarded as it happens.
  */
 export async function POST(req: Request) {
-  const body = (await req.json()) as { conversationId?: string; message?: string };
+  const body = (await req.json()) as { conversationId?: string; message?: string; context?: { page?: string; year?: number } };
   const message = (body.message ?? "").trim();
   if (!message) return Response.json({ error: "message is required" }, { status: 400 });
   const conversationId = body.conversationId || randomUUID();
@@ -36,7 +37,7 @@ export async function POST(req: Request) {
           }
         });
         await logMessage(sessionId, "user", message);
-        await agent.prompt(message);
+        await agent.prompt(managerPrompt(message, body.context));
         const last: any = agent.state.messages.at(-1);
         if (last?.role === "assistant" && last.errorMessage) send({ type: "error", message: last.errorMessage });
         await logMessage(sessionId, "assistant", answer);

@@ -1,5 +1,5 @@
 import "server-only";
-import { admin, createDbAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
+import { admin, createManagerAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
 
 /** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
 export function adminApi() {
@@ -61,16 +61,15 @@ export function overview(year: number) {
   return getParkOverview(year);
 }
 
-type Conversation = Awaited<ReturnType<typeof createDbAgent>>;
+type Conversation = Awaited<ReturnType<typeof createManagerAgent>>;
 const g = globalThis as unknown as { __conversations?: Map<string, Conversation> };
 const conversations = (g.__conversations ??= new Map());
 
-/** One Pi agent per browser conversation, kept in memory (local single-user deployment). */
+/** One Pi supervisor per browser conversation, kept in memory (local single-user deployment). */
 export async function conversation(id: string): Promise<Conversation> {
   let c = conversations.get(id);
   if (!c) {
-    // Web has no confirmation dialog yet: writeMode "confirm" therefore refuses writes; "auto" runs them.
-    c = await createDbAgent(loadConfig(), { channel: "web", userRef: `web:${id}` });
+    c = await createManagerAgent(loadConfig(), { channel: "web", userRef: `web:${id}` });
     conversations.set(id, c);
   }
   return c;

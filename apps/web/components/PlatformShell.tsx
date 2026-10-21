@@ -56,7 +56,7 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
         })}
       </nav>
       <div className="rail-bottom">
-        <button type="button" ref={chatButton} className={`rail-item ${chatOpen ? "on" : ""}`} aria-expanded={chatOpen} onClick={() => setChatOpen((open) => !open)} title="小云数据助手">
+        <button type="button" ref={chatButton} className={`rail-item ${chatOpen ? "on" : ""}`} aria-expanded={chatOpen} onClick={() => setChatOpen((open) => !open)} title="小云总管助手">
           <IconChat size={21} /><span>助手</span>
         </button>
       </div>
@@ -86,9 +86,9 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     </div>
 
     <AnimatePresence>
-      {chatOpen && <motion.section className="assistant-drawer" aria-label="小云数据助手"
+      {chatOpen && <motion.section className="assistant-drawer" aria-label="小云总管助手"
         initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
-        <div className="assistant-bar"><div><b>小云 · 数据助手</b><small>查询数据库后回答，可追问</small></div>
+        <div className="assistant-bar"><div><b>小云 · 园区总管</b><small>按板块调度，可跨板块追问</small></div>
           <button type="button" className="icon-btn" aria-label="关闭数据助手" onClick={() => { setChatOpen(false); chatButton.current?.focus(); }}><IconClose /></button></div>
         <ChatPanel />
       </motion.section>}
