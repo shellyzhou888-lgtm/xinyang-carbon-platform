@@ -6,15 +6,12 @@ import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { DataZoomComponent, GridComponent, LegendComponent, MarkAreaComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
 import type { ChartData } from "@xinyang/db-agent";
+import { axis, barFade, C, fade, legend, SERIES, tooltip } from "@/lib/chart-theme";
 
 // Only the chart types we use are bundled (tree-shaking keeps the page small).
 echarts.use([LineChart, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent, MarkAreaComponent, CanvasRenderer]);
 
-const C = { text: "#e6f2ef", muted: "#9cbab3", line: "#24524a", energy: "#3ddc97", carbon: "#f2b84b", band: "rgba(61,220,151,0.15)", bandCo2: "rgba(242,184,75,0.15)" };
-const PIE = ["#3ddc97", "#4fb3ff", "#f2b84b", "#ef6f6c", "#a78bfa", "#7dd3c0", "#f472b6"];
-const axis = { axisLine: { lineStyle: { color: C.line } }, axisLabel: { color: C.muted }, splitLine: { lineStyle: { color: C.line, type: "dashed" as const } } };
-
-function useChart(option: echarts.EChartsCoreOption) {
+export function useChart(option: echarts.EChartsCoreOption) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!ref.current) return;
@@ -28,7 +25,7 @@ function useChart(option: echarts.EChartsCoreOption) {
 }
 
 /** Monthly park energy (tce) and CO2 (t), with the latest forecast: dashed median and 10–90 % band. */
-export function TrendChart({ data: original, forecast = true, recentYears = false }: { data: ChartData; forecast?: boolean; recentYears?: boolean }) {
+export function TrendChart({ data: original, forecast = true, recentYears = false, height = "tall" }: { data: ChartData; forecast?: boolean; recentYears?: boolean; height?: "tall" | "short" }) {
   const monthly = original.monthly.filter(row => (forecast && !recentYears || Number(row.month.slice(0,4)) <= original.year) && (!recentYears || Number(row.month.slice(0,4)) >= original.year - 2));
   const data = { ...original, monthly, forecast: forecast ? original.forecast : [] };
   const fe = data.forecast.find((f) => f.target === "energy_tce");
@@ -43,18 +40,18 @@ export function TrendChart({ data: original, forecast = true, recentYears = fals
   const width = (f: typeof fe) => f ? [...pad(hist), ...f.points.map((p) => (p.upper ?? 0) - (p.lower ?? 0))] : [];
   const option = {
     backgroundColor: "transparent",
-    tooltip: { trigger: "axis" },
-    legend: { top: 0, textStyle: { color: C.muted }, data: forecast ? ["综合能耗", "碳排放", "能耗预测", "碳排放预测"] : ["综合能耗", "碳排放"] },
-    grid: { left: 60, right: 60, top: 36, bottom: 56 },
-    dataZoom: [{ type: "slider", height: 16, bottom: 8, textStyle: { color: C.muted }, borderColor: C.line }, { type: "inside" }],
-    xAxis: { type: "category", data: months, ...axis },
-    yAxis: [{ type: "value", name: "tce", nameTextStyle: { color: C.muted }, ...axis },
-            { type: "value", name: "tCO₂", nameTextStyle: { color: C.muted }, ...axis, splitLine: { show: false } }],
+    tooltip: tooltip(),
+    legend: legend({ top: 0, right: 0, data: forecast ? ["综合能耗", "碳排放", "能耗预测", "碳排放预测"] : ["综合能耗", "碳排放"] }),
+    grid: { left: 8, right: 8, top: 40, bottom: hist + (fe?.points.length ?? 0) > 18 ? 44 : 8, containLabel: true },
+    dataZoom: hist + (fe?.points.length ?? 0) > 18 ? [{ type: "slider", height: 14, bottom: 6, borderColor: "transparent", backgroundColor: "rgba(255,255,255,0.03)", fillerColor: "rgba(197,240,92,0.12)", handleStyle: { color: C.accent, borderColor: C.accent }, moveHandleSize: 0, textStyle: { color: C.muted }, dataBackground: { lineStyle: { color: "rgba(255,255,255,.15)" }, areaStyle: { color: "rgba(255,255,255,.04)" } } }, { type: "inside" }] : [],
+    xAxis: { type: "category", data: months, boundaryGap: false, ...axis },
+    yAxis: [{ type: "value", name: "tce", nameTextStyle: { color: C.muted, align: "left" }, ...axis },
+            { type: "value", name: "tCO₂", nameTextStyle: { color: C.muted, align: "right" }, ...axis, splitLine: { show: false } }],
     series: [
-      { name: "综合能耗", type: "line", data: data.monthly.map((m) => m.tce), smooth: true, symbol: "none", lineStyle: { color: C.energy, width: 2 }, itemStyle: { color: C.energy },
-        markArea: fe ? { silent: true, itemStyle: { color: "rgba(255,255,255,0.04)" }, label: { color: C.muted, position: "insideTop" },
-                         data: [[{ name: "预测", xAxis: fe.points[0].month }, { xAxis: fe.points.at(-1)!.month }]] } : undefined },
-      { name: "碳排放", type: "line", yAxisIndex: 1, data: data.monthly.map((m) => m.co2_t), smooth: true, symbol: "none", lineStyle: { color: C.carbon, width: 2 }, itemStyle: { color: C.carbon } },
+      { name: "综合能耗", type: "line", data: data.monthly.map((m) => m.tce), smooth: 0.35, symbol: "none", lineStyle: { color: C.energy, width: 2.2 }, itemStyle: { color: C.energy }, areaStyle: { color: fade(C.energy, 0.28) },
+        markArea: fe ? { silent: true, itemStyle: { color: "rgba(255,255,255,0.025)" }, label: { color: C.muted, position: "insideTop", fontSize: 11 },
+                         data: [[{ name: "预测区间", xAxis: fe.points[0].month }, { xAxis: fe.points.at(-1)!.month }]] } : undefined },
+      { name: "碳排放", type: "line", yAxisIndex: 1, data: data.monthly.map((m) => m.co2_t), smooth: 0.35, symbol: "none", lineStyle: { color: C.carbon, width: 2.2 }, itemStyle: { color: C.carbon }, areaStyle: { color: fade(C.carbon, 0.16) } },
       { name: "能耗区间下沿", type: "line", data: lower(fe), stack: "e-band", symbol: "none", lineStyle: { opacity: 0 }, tooltip: { show: false } },
       { name: "能耗 10–90% 区间", type: "line", data: width(fe), stack: "e-band", symbol: "none", lineStyle: { opacity: 0 }, areaStyle: { color: C.band }, tooltip: { show: false } },
       { name: "碳排放区间下沿", type: "line", yAxisIndex: 1, data: lower(fc), stack: "c-band", symbol: "none", lineStyle: { opacity: 0 }, tooltip: { show: false } },
@@ -64,54 +61,52 @@ export function TrendChart({ data: original, forecast = true, recentYears = fals
     ],
   };
   const ref = useChart(option);
-  return <div ref={ref} className="chart tall" />;
+  return <div ref={ref} className={`chart ${height}`} role="img" aria-label="月度综合能耗与碳排放趋势" />;
+}
+
+/** Tiny trend line for KPI panels (no axes). */
+export function Sparkline({ values, color = C.energy, label }: { values: (number | null)[]; color?: string; label: string }) {
+  const option = {
+    backgroundColor: "transparent", animationDuration: 900,
+    grid: { left: 0, right: 0, top: 4, bottom: 0 },
+    xAxis: { type: "category", show: false, data: values.map((_, i) => i), boundaryGap: false },
+    yAxis: { type: "value", show: false, scale: true },
+    series: [{ type: "line", data: values, smooth: 0.4, symbol: "none", lineStyle: { color, width: 1.8 }, areaStyle: { color: fade(color, 0.3) } }],
+  };
+  const ref = useChart(option);
+  return <div ref={ref} className="sparkline" role="img" aria-label={label} />;
 }
 
 export function StructureChart({ data }: { data: ChartData }) {
   const total = data.structure.reduce((a, s) => a + s.tce, 0);
   const option = {
-    backgroundColor: "transparent", color: PIE,
-    tooltip: { trigger: "item", formatter: "{b}：{c} tce（{d}%）" },
-    legend: { orient: "vertical", right: 0, top: "middle", textStyle: { color: C.muted } },
-    series: [{ type: "pie", radius: ["48%", "72%"], center: ["35%", "52%"], itemStyle: { borderColor: "#12302b", borderWidth: 2 },
-               label: { show: true, position: "center", formatter: () => `${Math.round(total).toLocaleString("zh-CN")}\ntce`, color: C.text, fontSize: 16 },
+    backgroundColor: "transparent", color: SERIES,
+    tooltip: { ...tooltip("item"), formatter: "{b}<br/><b>{c}</b> tce（{d}%）" },
+    legend: legend({ orient: "vertical", right: 0, top: "middle", itemWidth: 8, itemHeight: 8, icon: "circle" }),
+    series: [{ type: "pie", radius: ["58%", "80%"], center: ["32%", "50%"], padAngle: 2, itemStyle: { borderRadius: 6, borderWidth: 0 },
+               label: { show: true, position: "center", formatter: () => `{v|${Math.round(total).toLocaleString("zh-CN")}}\n{u|tce 合计}`, rich: { v: { color: C.text, fontSize: 22, fontWeight: 600, fontFamily: "Bahnschrift, DIN Alternate, sans-serif" }, u: { color: C.muted, fontSize: 11, padding: [6, 0, 0, 0] } } },
+               emphasis: { scale: true, scaleSize: 4, label: { show: true } },
                data: data.structure.map((s) => ({ name: s.name, value: s.tce })) }],
   };
   const ref = useChart(option);
-  return <div ref={ref} className="chart" />;
+  return <div ref={ref} className="chart" role="img" aria-label="能源消费结构" />;
 }
 
 export function RankingChart({ data }: { data: ChartData }) {
   const rows = [...data.ranking].reverse();
   const option = {
     backgroundColor: "transparent",
-    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
-    legend: { top: 0, textStyle: { color: C.muted }, data: ["综合能耗", "单位产值能耗"] },
-    grid: { left: 110, right: 50, top: 30, bottom: 24 },
+    tooltip: { ...tooltip(), axisPointer: { type: "shadow", shadowStyle: { color: "rgba(255,255,255,0.03)" } } },
+    legend: legend({ top: 0, right: 0, data: ["综合能耗", "单位产值能耗"] }),
+    grid: { left: 8, right: 16, top: 36, bottom: 4, containLabel: true },
     xAxis: [{ type: "value", name: "tce", nameTextStyle: { color: C.muted }, ...axis },
             { type: "value", name: "tce/万元", position: "top", nameTextStyle: { color: C.muted }, ...axis, splitLine: { show: false } }],
-    yAxis: { type: "category", data: rows.map((r) => r.name.replace(/（.*?）/g, "")), ...axis },
+    yAxis: { type: "category", data: rows.map((r) => r.name.replace(/（.*?）/g, "")), ...axis, axisLabel: { color: C.text, fontSize: 12 } },
     series: [
-      { name: "综合能耗", type: "bar", data: rows.map((r) => r.tce), itemStyle: { color: C.energy, borderRadius: [0, 4, 4, 0] }, barWidth: "55%" },
-      { name: "单位产值能耗", type: "line", xAxisIndex: 1, data: rows.map((r) => r.intensity), itemStyle: { color: C.carbon }, lineStyle: { color: C.carbon } },
+      { name: "综合能耗", type: "bar", data: rows.map((r) => r.tce), itemStyle: { color: barFade(C.energy, true), borderRadius: [0, 6, 6, 0] }, barWidth: 12, showBackground: true, backgroundStyle: { color: "rgba(255,255,255,0.03)", borderRadius: 6 } },
+      { name: "单位产值能耗", type: "line", xAxisIndex: 1, data: rows.map((r) => r.intensity), symbolSize: 7, itemStyle: { color: C.carbon }, lineStyle: { color: C.carbon, width: 1.6 } },
     ],
   };
   const ref = useChart(option);
-  return <div ref={ref} className="chart" />;
-}
-
-export default function EnergyCharts({ data }: { data: ChartData }) {
-  const fe = data.forecast.find((f) => f.target === "energy_tce");
-  return (
-    <>
-      <section className="section">
-        <h2>月度综合能耗与碳排放（{data.profile} 口径）{fe ? <span className="muted">　虚线为 {fe.model ?? "模型"} 预测，阴影为 10%–90% 区间</span> : null}</h2>
-        <TrendChart data={data} />
-      </section>
-      <div className="chart-row">
-        <section className="section"><h2>{data.year} 年能源消费结构</h2><StructureChart data={data} /></section>
-        <section className="section"><h2>{data.year} 年企业综合能耗与单位产值能耗</h2><RankingChart data={data} /></section>
-      </div>
-    </>
-  );
+  return <div ref={ref} className="chart tall" role="img" aria-label="企业综合能耗与单位产值能耗" />;
 }

@@ -23,6 +23,7 @@
     "@xinyang/db-agent": "file:../../packages/db-agent",
     "echarts": "^6.1.0",
     "echarts-gl": "^2.1.0",
+    "motion": "^14.5.0",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1"

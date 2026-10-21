@@ -37,7 +37,7 @@
 | `data/simulated/` | 模拟占位数据：假设文件 `assumptions.json` 与按模板生成的 Excel（以 estimated 导入） |
 | `data/public/` | 公开渠道获得的真实数值（按模板整理） |
 | `templates/` | 数据导入 Excel 模板（由 `scripts/generate_import_templates.py` 从数据库配置生成） |
-| `apps/web/` | 网站（Next.js 16）：总览、能源、碳、综合诊断、后台5个工作区及公开企业名录；数据库Agent与小云助手；`npm run voice` + `npm run dev`，http://localhost:3001 |
+| `apps/web/` | 网站（Next.js 16）：登录页与总览、能源、碳、综合诊断、后台5个工作区及公开企业名录；数据库Agent与小云助手；`npm run voice` + `npm run dev`，http://localhost:3001（登录账户见 `apps/web/.env.local`） |
 | `packages/forecast/` | 能耗与碳排放月度预测（Python + PyTorch，Chronos-2）：`forecast.py backtest` / `run --write` |
 | `packages/db-agent/` | 数据库 Agent（TypeScript，Pi 架构）：`npm run chat`；同时供网站和小云语音调用 |
 | `packages/ingest/` | Excel 导入工具（TypeScript）：解析模板 → 入湖 → 调用数据库引擎；`npm run ingest` / `npm run calc` |

@@ -2,8 +2,15 @@
 
 import { useRef, useState } from "react";
 import Markdown from "./Markdown";
+import { useHealth } from "./HealthContext";
 
 type Msg = { role: "user" | "assistant"; text: string; tools: string[]; error?: string };
+
+/** Turns configuration errors into an instruction instead of a raw stack message. */
+const friendly = (message: string) =>
+  /DEEPSEEK_API_KEY/.test(message) ? "AI 助手尚未配置模型密钥：请在项目根目录 .env 中添加 DEEPSEEK_API_KEY 后重启网站。"
+  : /HTTP 401/.test(message) ? "登录已过期，请刷新页面重新登录。"
+  : /ECONNREFUSED|database|数据库/.test(message) ? `数据库暂不可用：${message}` : message;
 
 const EXAMPLES = ["2025 年园区综合能耗和碳排放是多少？", "GIP_2026 有哪些指标已经达标？", "单位工业增加值能耗为什么没达标？", "哪些数据还是模拟的？"];
 
@@ -14,6 +21,8 @@ export default function ChatPanel() {
   const [busy, setBusy] = useState(false);
   const conversationId = useRef<string>("");
   const logRef = useRef<HTMLDivElement>(null);
+  const { health } = useHealth();
+  const unavailable = !health.loading && health.checkedAt && !health.agent.ok;
 
   const update = (fn: (m: Msg) => Msg) =>
     setMessages((all) => [...all.slice(0, -1), fn(all[all.length - 1])]);
@@ -46,12 +55,12 @@ export default function ChatPanel() {
           if (ev.type === "start") conversationId.current = ev.conversationId;
           else if (ev.type === "text") update((m) => ({ ...m, text: m.text + ev.delta }));
           else if (ev.type === "tool_start") update((m) => ({ ...m, tools: [...m.tools, ev.name] }));
-          else if (ev.type === "error") update((m) => ({ ...m, error: ev.message }));
+          else if (ev.type === "error") update((m) => ({ ...m, error: friendly(ev.message) }));
         }
         logRef.current?.scrollTo({ top: logRef.current.scrollHeight });
       }
     } catch (err) {
-      update((m) => ({ ...m, error: err instanceof Error ? err.message : String(err) }));
+      update((m) => ({ ...m, error: friendly(err instanceof Error ? err.message : String(err)) }));
     } finally {
       setBusy(false);
     }
@@ -59,22 +68,24 @@ export default function ChatPanel() {
 
   return (
     <>
-      <div className="chat-head">
-        <b>数据库 Agent</b>
-        <button onClick={() => { setMessages([]); conversationId.current = ""; }} disabled={busy}>新对话</button>
-      </div>
       <div className="chat-log" ref={logRef}>
-        {messages.length === 0 && (
-          <div className="hint">
-            可以直接问园区能耗、碳排放、指标达标情况，Agent 会查询数据库后回答。也可以点击吸碳云朵，用语音提问。
-            {EXAMPLES.map((q) => <button key={q} onClick={() => send(q)}>{q}</button>)}
+        {messages.length === 0 && (unavailable ? (
+          <div className="chat-setup">
+            <b>AI 助手暂不可用</b>
+            <p>网站未读取到 DeepSeek 模型密钥。请在项目根目录的 <code>.env</code> 中加入一行 <code>DEEPSEEK_API_KEY=sk-…</code>，然后重启网站。</p>
+            <p className="muted">页面上的能耗、碳排放等数据直接读取数据库，不受影响。</p>
           </div>
-        )}
+        ) : (
+          <div className="chat-empty">
+            <p>可以直接问园区能耗、碳排放、指标达标情况，助手会先查询数据库再回答。</p>
+            <div className="chat-examples">{EXAMPLES.map((q) => <button type="button" key={q} onClick={() => send(q)}>{q}</button>)}</div>
+          </div>
+        ))}
         {messages.map((m, i) => (
           <div key={i} className={`msg ${m.role}`}>
-            {m.tools.length > 0 && <div className="tools">{m.tools.map((t, j) => <span key={j}>🔧 {t}</span>)}</div>}
-            {m.role === "assistant" ? (m.text ? <Markdown text={m.text} /> : busy && i === messages.length - 1 ? "思考中…" : "") : m.text}
-            {m.error && <div className="error">出错：{m.error}</div>}
+            {m.tools.length > 0 && <div className="tools">{m.tools.map((t, j) => <span key={j}>{t}</span>)}</div>}
+            {m.role === "assistant" ? (m.text ? <Markdown text={m.text} /> : busy && i === messages.length - 1 ? <span className="typing"><i /><i /><i /></span> : "") : m.text}
+            {m.error && <div className="msg-error">{m.error}</div>}
           </div>
         ))}
       </div>
@@ -85,7 +96,10 @@ export default function ChatPanel() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); } }}
         />
-        <button type="submit" disabled={busy || !input.trim()}>发送</button>
+        <div className="chat-actions">
+          <button type="button" className="btn-ghost small" onClick={() => { setMessages([]); conversationId.current = ""; }} disabled={busy || !messages.length}>新对话</button>
+          <button type="submit" className="btn-primary small" disabled={busy || !input.trim()}>发送</button>
+        </div>
       </form>
     </>
   );

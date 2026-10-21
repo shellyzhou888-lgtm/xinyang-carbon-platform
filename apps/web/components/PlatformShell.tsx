@@ -4,55 +4,145 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import ChatPanel from "./ChatPanel";
 import VoiceAssistant from "./VoiceAssistant";
-import styles from "./PlatformBrand.module.css";
+import { HealthProvider, useHealth } from "./HealthContext";
+import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconOverview } from "./icons";
 import { selectedYear, YEARS } from "@/lib/workspace";
+import { logout } from "@/app/login/actions";
 
 const NAV = [
-  { href: "/", label: "园区总览", detail: "园区态势与企业空间", icon: "◈" },
-  { href: "/energy", label: "能源管理", detail: "消费 · 强度 · 能流", icon: "ϟ" },
-  { href: "/carbon", label: "碳管理", detail: "核算 · 排放 · 碳流", icon: "◎" },
-  { href: "/diagnosis", label: "能碳综合诊断", detail: "预警 · 溯源 · 策略", icon: "⌁" },
-  { href: "/admin/data", label: "后台管理", detail: "数据 · 指标 · 治理", icon: "▦" },
+  { href: "/", label: "总览", title: "园区运行总览", Icon: IconOverview, match: (p: string) => p === "/" },
+  { href: "/energy", label: "能源", title: "能源管理", Icon: IconEnergy, match: (p: string) => p.startsWith("/energy") },
+  { href: "/carbon", label: "碳管理", title: "碳管理", Icon: IconCarbon, match: (p: string) => p.startsWith("/carbon") },
+  { href: "/diagnosis", label: "诊断", title: "能碳综合诊断", Icon: IconDiagnosis, match: (p: string) => p.startsWith("/diagnosis") },
+  { href: "/enterprises", label: "名录", title: "企业与项目名录", Icon: IconDirectory, match: (p: string) => p.startsWith("/enterprises") },
+  { href: "/admin/data", label: "后台", title: "后台管理", Icon: IconAdmin, match: (p: string) => p.startsWith("/admin") },
 ];
 
-export default function PlatformShell({ children }: { children: React.ReactNode }) {
+export default function PlatformShell({ children, user }: { children: React.ReactNode; user: string }) {
+  return <HealthProvider><Shell user={user}>{children}</Shell></HealthProvider>;
+}
+
+function Shell({ children, user }: { children: React.ReactNode; user: string }) {
   const path = usePathname();
   const params = useSearchParams();
   const year = selectedYear(params.get("year") || undefined);
   const [chatOpen, setChatOpen] = useState(false);
-  const [hydrated,setHydrated]=useState(false);
-  useEffect(()=>setHydrated(true),[]);
   const chatButton = useRef<HTMLButtonElement>(null);
-  const active = NAV.find(item => item.href === "/" ? path === "/" || path === "/enterprises" : path.startsWith(item.href.startsWith("/admin") ? "/admin" : item.href));
+  const active = NAV.find((item) => item.match(path));
   useEffect(() => {
     const close = (event: KeyboardEvent) => { if (event.key === "Escape" && chatOpen) { setChatOpen(false); chatButton.current?.focus(); } };
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [chatOpen]);
   const yearHref = (value: number) => { const query = new URLSearchParams(params.toString()); query.set("year", String(value)); return `${path}?${query}`; };
-  return <div className="platform-shell" data-chat-open={chatOpen} data-hydrated={hydrated}>
+
+  return <div className="app" data-chat-open={chatOpen}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
-    <aside className="platform-rail">
-      <Link className={styles.brand} href={`/?year=${year}`} aria-label="信阳经开区能碳管理平台，返回园区总览">
-        <Image className={styles.logo} src="/brand/logo-horizontal-on-dark.svg" alt="" width={900} height={196} priority unoptimized />
+    <aside className="rail" aria-label="主导航">
+      <Link className="rail-logo" href={`/?year=${year}`} aria-label="返回园区总览">
+        <Image src="/brand/logo-symbol-on-dark.svg" alt="" width={40} height={40} priority unoptimized />
       </Link>
-      <div className="rail-caption">园区运营工作台</div>
-      <nav aria-label="主导航">{NAV.map(item => {
-        const on = item.href === active?.href;
-        return <Link key={item.href} href={`${item.href}?year=${year}`} className={on ? "active" : ""} aria-current={on ? "page" : undefined}><span className="nav-symbol" aria-hidden="true">{item.icon}</span><span>{item.label}<small>{item.detail}</small></span></Link>;
-      })}<Link className={`rail-sub-link ${path==="/enterprises"?"active":""}`} href={`/enterprises?year=${year}`}>企业与项目名录 ↗</Link></nav>
-      <div className="rail-foot"><i /> GIP_2026<small>能源与碳排放协同管理</small></div>
+      <nav className="rail-nav">
+        {NAV.map(({ href, label, title, Icon }) => {
+          const on = active?.href === href;
+          return <Link key={href} href={`${href}?year=${year}`} className={`rail-item ${on ? "on" : ""}`} aria-current={on ? "page" : undefined} title={title}>
+            {on && <motion.span layoutId="rail-active" className="rail-active" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+            <Icon size={21} /><span>{label}</span>
+          </Link>;
+        })}
+      </nav>
+      <div className="rail-bottom">
+        <button type="button" ref={chatButton} className={`rail-item ${chatOpen ? "on" : ""}`} aria-expanded={chatOpen} onClick={() => setChatOpen((open) => !open)} title="小云数据助手">
+          <IconChat size={21} /><span>助手</span>
+        </button>
+      </div>
     </aside>
-    <div className="platform-body">
-      <header className="platform-topbar"><div><span className="topbar-location">信阳经济技术开发区</span><span className="topbar-divider">/</span><span>{active?.label || "园区工作台"}</span></div>
-        <nav className="years" aria-label="统计年份">{YEARS.map(value => <Link key={value} href={yearHref(value)} className={value === year ? "on" : ""} aria-current={value === year ? "true" : undefined}>{value} 年</Link>)}</nav>
+
+    <div className="app-main">
+      <header className="topbar">
+        <div className="topbar-title">
+          <Image className="topbar-logo" src="/brand/logo-horizontal-on-dark.svg" alt="信阳经开区能碳管理平台" width={900} height={196} priority unoptimized />
+          <span className="topbar-sep" aria-hidden="true" />
+          <span className="topbar-page">{active?.title || "园区工作台"}</span>
+        </div>
+        <div className="topbar-right">
+          <StatusPill />
+          <nav className="segmented" aria-label="统计年份">
+            {YEARS.map((value) => <Link key={value} href={yearHref(value)} className={value === year ? "on" : ""} aria-current={value === year ? "true" : undefined}>
+              {value === year && <motion.span layoutId="year-pill" className="segmented-pill" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
+              <span>{value}</span>
+            </Link>)}
+          </nav>
+          <Clock />
+          <UserMenu user={user} />
+        </div>
       </header>
-      <main id="workspace-content" className="workspace-content">{children}</main>
+      <main id="workspace-content" className="page">{children}</main>
     </div>
-    <section className="assistant-panel" aria-label="小云数据助手" hidden={!chatOpen}><div className="assistant-panel-bar"><span>小云 · 数据助手</span><button type="button" aria-label="关闭数据助手" onClick={() => { setChatOpen(false); chatButton.current?.focus(); }}>×</button></div><ChatPanel /></section>
-    <button type="button" ref={chatButton} className="assistant-toggle" aria-expanded={chatOpen} onClick={() => setChatOpen(open => !open)}>{chatOpen ? "收起对话" : "小云助手"}<span aria-hidden="true">↗</span></button>
+
+    <AnimatePresence>
+      {chatOpen && <motion.section className="assistant-drawer" aria-label="小云数据助手"
+        initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 40 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+        <div className="assistant-bar"><div><b>小云 · 数据助手</b><small>查询数据库后回答，可追问</small></div>
+          <button type="button" className="icon-btn" aria-label="关闭数据助手" onClick={() => { setChatOpen(false); chatButton.current?.focus(); }}><IconClose /></button></div>
+        <ChatPanel />
+      </motion.section>}
+    </AnimatePresence>
     <VoiceAssistant year={year} overview={null} page={path} />
   </div>;
+}
+
+function StatusPill() {
+  const { health, refresh } = useHealth();
+  const [open, setOpen] = useState(false);
+  const host = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const away = (event: MouseEvent) => { if (!host.current?.contains(event.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", away);
+    return () => document.removeEventListener("mousedown", away);
+  }, []);
+  const level = health.loading && !health.checkedAt ? "pending" : !health.db.ok ? "down" : health.agent.ok && health.voice.ok ? "ok" : "partial";
+  const text = { pending: "检测连接…", down: "数据未连接", partial: "数据已连接", ok: "全部在线" }[level];
+  const rows = [
+    { name: "园区数据库", ok: health.db.ok, detail: health.db.ok ? `PostgreSQL · ${health.db.ms} ms` : health.db.error || "未检测" },
+    { name: "AI 数据助手", ok: health.agent.ok, detail: health.agent.ok ? "DeepSeek 模型密钥已配置" : "未配置 DEEPSEEK_API_KEY，文字助手暂不可用" },
+    { name: "小云语音", ok: health.voice.ok, detail: health.voice.ok ? "语音后台在线" : "语音后台未启动（npm run voice）" },
+  ];
+  return <div className="status" ref={host}>
+    <button type="button" className={`status-pill ${level}`} onClick={() => setOpen((value) => !value)} aria-expanded={open}>
+      <i aria-hidden="true" />{text}
+    </button>
+    <AnimatePresence>{open && <motion.div className="status-pop" role="dialog" aria-label="连接状态"
+      initial={{ opacity: 0, y: -6, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.18 }}>
+      <b>连接状态</b>
+      {rows.map((row) => <div key={row.name} className={`status-row ${row.ok ? "ok" : "down"}`}><i aria-hidden="true" /><div><span>{row.name}</span><small>{row.detail}</small></div></div>)}
+      <button type="button" className="btn-ghost small" onClick={() => refresh(true)} disabled={health.loading}>{health.loading ? "检测中…" : "重新检测"}</button>
+    </motion.div>}</AnimatePresence>
+  </div>;
+}
+
+function Clock() {
+  const [now, setNow] = useState<Date | null>(null);
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    const first = window.setTimeout(tick, 0);
+    const timer = window.setInterval(tick, 15_000);
+    return () => { window.clearTimeout(first); window.clearInterval(timer); };
+  }, []);
+  if (!now) return <div className="clock" aria-hidden="true" />;
+  return <div className="clock" aria-label="当前时间">
+    <small>{now.toLocaleDateString("zh-CN", { weekday: "short" })}<br />{now.toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit" })}</small>
+    <b>{now.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", hour12: false })}</b>
+  </div>;
+}
+
+function UserMenu({ user }: { user: string }) {
+  return <form action={logout} className="user-menu">
+    <span className="avatar" aria-hidden="true">{(user || "访").slice(0, 1).toUpperCase()}</span>
+    <span className="user-name">{user || "访客"}</span>
+    <button type="submit" className="icon-btn" title="退出登录" aria-label="退出登录"><IconLogout /></button>
+  </form>;
 }

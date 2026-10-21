@@ -1,6 +1,6 @@
 # 网站与小云语音接入说明
 
-文档版本：v1.1（2026-10-20）
+文档版本：v1.2（2026-10-21）
 
 本文说明数据库 Agent 如何接入 Next.js 网站 `apps/web`，以及如何通过小云语音助手（`@xiaoyun/voice`）用语音查询同一个数据库。
 
@@ -52,7 +52,20 @@
    Key 不要加 `NEXT_PUBLIC_` 前缀，否则会被打包进浏览器代码。
 3. 网页文字对话读取仓库根目录 `.env` 的 `DEEPSEEK_API_KEY`（或启动时的环境变量），请在根目录 `.env` 中补上这一行。
 4. 启动小云后台：在 `apps/web` 运行 `npm run voice`（等于 `xiaoyun start --env .env.xiaoyun`）。
-5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先自动构建 `packages/db-agent`），打开 http://localhost:3001 。
+5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先自动构建 `packages/db-agent`），打开 http://localhost:3001 。未登录访问任何页面都会跳转到 `/login`。
+6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
+
+### 3.2 连接状态与常见“数据连接异常”（2026-10-21）
+
+顶栏右侧的状态胶囊每分钟调用 `GET /api/health`，点击可查看三项：
+
+| 项 | 判断方式 | 不可用时的处理 |
+| --- | --- | --- |
+| 园区数据库 | 服务端执行一次只读 `SELECT 1`（`packages/db-agent` 的 `ping()`），6 秒超时 | 打开 SSH 隧道 `scripts/start-db-tunnel.ps1`；账号错误时检查根目录 `.env` 的 `DATABASE_URL` |
+| AI 数据助手 | 服务端是否读取到 `DEEPSEEK_API_KEY`（只返回是否配置，不返回 Key） | 在根目录 `.env` 加 `DEEPSEEK_API_KEY=sk-…` 后重启网站；页面数据不受影响 |
+| 小云语音 | 浏览器探测 `127.0.0.1:8766`（页面加载和手动重新检测时） | 在 `apps/web` 运行 `npm run voice`，并在 `.env.xiaoyun` 填写两个 Key |
+
+2026-10-21 排查结论：隧道与数据库正常（应用查询约 0.2–0.4 秒）；文字助手报错是因为正在运行的网站进程没有 `DEEPSEEK_API_KEY`（根目录 `.env` 与 `.env.xiaoyun` 中都没有保存 Key）；语音 WebSocket 报错是因为小云后台未启动。小云组件现在先探测后台，离线时不挂载，避免浏览器反复重连报错。
 
 端口说明：本机 3000 和 8765 已被另一个项目（另一套小云后台和网站）占用，因此本项目用 3001 / 8766，两套互不影响。改端口时要同时改 `.env.xiaoyun` 的 `PORT`、`ALLOWED_ORIGINS`，`components/VoiceAssistant.tsx` 的 `BACKEND_URL`，以及 `package.json` 的 `--port`。
 

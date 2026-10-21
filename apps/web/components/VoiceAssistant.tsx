@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { probeVoice, voiceBackendUrl } from "@/lib/voice";
 
 type Overview = { tce: number | null; co2_t: number | null; achieved: number; total: number } | null;
 
 const PROJECT_ID = "xinyang-park";
-const CONFIGURED_BACKEND_URL = process.env.NEXT_PUBLIC_XIAOYUN_BACKEND_URL;
 const YEARS = [2023, 2024, 2025];
 
 /**
@@ -19,7 +19,7 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
   const mount = useRef<HTMLDivElement>(null);
   const voiceRef = useRef<any>(null);
   const pendingYear = useRef<{ year: number; resolve: (v: unknown) => void } | null>(null);
-  const [status, setStatus] = useState("小云加载中…");
+  const [status, setStatus] = useState("");
 
   const currentPage = useRef(page);
   currentPage.current = page;
@@ -30,12 +30,13 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
     (async () => {
       try {
         if (!window.isSecureContext) throw new Error("当前地址不能使用麦克风：请通过可信任的 HTTPS 地址访问网站");
-        const localBrowser = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
-        const backendUrl = CONFIGURED_BACKEND_URL ||
-          (localBrowser && window.location.protocol === "http:" ? "http://127.0.0.1:8766" : window.location.origin);
+        const backendUrl = voiceBackendUrl();
         if (window.location.protocol === "https:" && new URL(backendUrl).protocol !== "https:") {
           throw new Error("HTTPS 网站需要使用 HTTPS/WSS 小云后台地址");
         }
+        // Without a running backend the SDK would retry its WebSocket and flood the console;
+        // the top-bar status pill already explains how to start it.
+        if (!(await probeVoice())) { if (!disposed) setStatus(""); return; }
         const { createVoiceAssistant } = await import("@xiaoyun/voice");
         if (disposed) return;
         voiceRef.current = createVoiceAssistant({
@@ -44,7 +45,7 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
           backendUrl,
           assetBaseUrl: "/xiaoyun/",
           mode: "live",
-          ui: { position: { right: 24, bottom: 70 } },
+          ui: { position: { right: 22, bottom: 22 } },
           context: context(),
           actions: [
             {
@@ -88,8 +89,8 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
             }
             .xy-character-button::after { display:none; }
             .xy-character-svg { opacity:0; }
-            .xy-character-halo { inset:18px; border-radius:50%; box-shadow:0 0 22px #3ddc9725; }
-            .xy-character-button:focus-visible { outline:2px solid #3ddc97; outline-offset:3px; }
+            .xy-character-halo { inset:18px; border-radius:50%; box-shadow:0 0 26px #c5f05c22; }
+            .xy-character-button:focus-visible { outline:2px solid #c5f05c; outline-offset:3px; }
             @media (max-width:900px) {
               .xy-widget { right:14px!important; --xy-size:76px; }
               .xy-widget[data-state=mic_off] .xy-status[data-error=false] { display:none; }

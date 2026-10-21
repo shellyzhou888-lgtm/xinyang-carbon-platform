@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { adminApi } from "@/lib/server";
-import { AdminNavigation } from "@/components/WorkspaceParts";
+import { AdminNavigation, PageHeading } from "@/components/WorkspaceParts";
 import { selectedYear } from "@/lib/workspace";
 import { approveAllColumns, decideIssue, reviewColumn, reviewEdge, reviewFootprint, reviewQa, reviewTable, runGovernanceNow } from "./actions";
 
@@ -27,12 +27,9 @@ export default async function Admin({ searchParams }: { searchParams: Promise<Se
   } catch (err) {
     return (
       <div className="admin">
-        <h1>数据治理 · 语义目录</h1>
-        <div className="section error">
-          无法读取语义目录：{err instanceof Error ? err.message : String(err)}。
-          如果提示 semantic 不存在，请先执行数据库迁移 0021、0022（scripts/apply-migrations.ps1），并确认 SSH 隧道已打开。
-        </div>
-        <Link href="/">← 返回总览</Link>
+        <PageHeading eyebrow="DATA GOVERNANCE" title="数据治理 · 语义目录" />
+        <AdminNavigation active="governance" year={selectedYear(sp.year)} />
+        <div className="notice danger"><i aria-hidden="true" /><div><b>无法读取语义目录</b>：{err instanceof Error ? err.message : String(err)}。如果提示 semantic 不存在，请先执行数据库迁移 0021、0022（scripts/apply-migrations.ps1），并确认 SSH 隧道已打开。</div></div>
       </div>
     );
   }
@@ -41,14 +38,10 @@ export default async function Admin({ searchParams }: { searchParams: Promise<Se
 
   return (
     <div className="admin">
-      <AdminNavigation active="governance" year={selectedYear(sp.year)} />
-      <div className="header">
-        <div>
-          <h1>数据治理 · 语义目录</h1>
-          <div className="sub">AI 在提问之前理解数据库、发现数据问题；所有说明、关联和工单由管理员在这里审核。<Link href="/">← 返回总览</Link></div>
-        </div>
+      <PageHeading eyebrow="DATA GOVERNANCE" title="数据治理 · 语义目录" description="AI 在提问之前理解数据库、发现数据问题；所有说明、关联和工单由管理员在这里审核。">
         <form action={runGovernanceNow}><button className="btn">立即运行治理检测</button></form>
-      </div>
+      </PageHeading>
+      <AdminNavigation active="governance" year={selectedYear(sp.year)} />
 
       <div className="kpis">
         <div className="kpi"><div className="label">待处理工单（高 / 中 / 低）</div>
@@ -63,7 +56,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<Se
           <div className="label">未检测的发布事件 {summary.pending_events} 个</div></div>
       </div>
 
-      <nav className="tabs">
+      <nav className="filters" aria-label="治理模块" style={{ marginBottom: 18 }}>
         {TABS.map(([k, label]) => <Link key={k} href={`/admin?tab=${k}`} className={k === tab ? "on" : ""}>{label}</Link>)}
       </nav>
 
@@ -275,7 +268,7 @@ async function Footprints({ status }: { status: string }) {
           {r.note && <p className="muted">备注：{r.note}</p>}
           {r.reviewed_by && <p className="muted">审核：{r.reviewed_by} {r.reviewed_at ? new Date(r.reviewed_at).toLocaleString("zh-CN") : ""}</p>}
           <div className="decide">
-            <select name="boundary" defaultValue={r.boundary ?? ""} style={{ background: "var(--bg)", color: "var(--text)", border: "1px solid var(--line)", borderRadius: 6, padding: "5px 8px", fontSize: 13 }}>
+            <select name="boundary" defaultValue={r.boundary ?? ""}>
               <option value="">系统边界{r.boundary ? "" : "（未标注）"}</option>
               {Object.entries(BOUNDARY).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>

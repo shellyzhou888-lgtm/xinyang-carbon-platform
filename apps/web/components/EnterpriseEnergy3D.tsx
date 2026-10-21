@@ -37,19 +37,19 @@ export default function EnterpriseEnergy3D({ ranking, year, selected, onSelect }
           const item = value as { data: { value: number[] }; name: string };
           return `${item.name}\n综合能耗：${item.data.value[2].toLocaleString("zh-CN")} tce\n${year} 年 · 当前数据库口径`;
         } },
-        xAxis3D: { type: "category", data: names, axisLabel: { color: "#9cbab3", interval: 0, fontSize: 10 }, name: "企业", nameTextStyle: { color: "#9cbab3" } },
+        xAxis3D: { type: "category", data: names, axisLabel: { color: "#8fa29b", interval: 0, fontSize: 10 }, name: "企业", nameTextStyle: { color: "#8fa29b" } },
         yAxis3D: { type: "category", data: ["综合能耗"], name: "", axisLabel: { show: false } },
-        zAxis3D: { type: "value", name: "tce", axisLabel: { color: "#9cbab3", fontSize: 10 }, nameTextStyle: { color: "#9cbab3" } },
+        zAxis3D: { type: "value", name: "tce", axisLabel: { color: "#8fa29b", fontSize: 10 }, nameTextStyle: { color: "#8fa29b" } },
         grid3D: {
           boxWidth: 160, boxDepth: 26, boxHeight: 65,
-          axisLine: { lineStyle: { color: "#37675e" } }, splitLine: { lineStyle: { color: "#204239" } },
+          axisLine: { lineStyle: { color: "rgba(255,255,255,0.12)" } }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.05)" } },
           viewControl: { distance: 190, alpha: 22, beta: 12, autoRotate: false },
           light: { main: { intensity: 1.1, shadow: false }, ambient: { intensity: 0.7 } },
-          environment: "#0b1d1a",
+          environment: "transparent",
         },
         series: [{ type: "bar3D", shading: "lambert", bevelSize: 0.05, barSize: 8,
           data: rows.map((row, index) => ({ name: names[index], code: row.code, value: [index, 0, row.tce],
-            itemStyle: { color: row.code === selected ? "#f2b84b" : enterprises.find((feature) => feature.properties.code === row.code)?.properties.color || "#3ddc97" } })),
+            itemStyle: { color: row.code === selected ? "#c5f05c" : enterprises.find((feature) => feature.properties.code === row.code)?.properties.color || "#3ee0a1" } })),
           emphasis: { label: { show: true, formatter: "{b}", color: "#ffffff", fontSize: 12 } },
         }],
       } as unknown as EChartsOption);
@@ -68,13 +68,13 @@ export default function EnterpriseEnergy3D({ ranking, year, selected, onSelect }
   useEffect(() => {
     chart.current?.setOption({ series: [{ data: rows.map((row, index) => ({
       name: enterprises.find((feature) => feature.properties.code === row.code)?.properties.name || row.name,
-      code: row.code, value: [index, 0, row.tce], itemStyle: { color: row.code === selected ? "#f2b84b" : enterprises.find((feature) => feature.properties.code === row.code)?.properties.color || "#3ddc97" },
+      code: row.code, value: [index, 0, row.tce], itemStyle: { color: row.code === selected ? "#c5f05c" : enterprises.find((feature) => feature.properties.code === row.code)?.properties.color || "#3ee0a1" },
     })) }] });
   }, [selected, ranking]);
 
-  if (!rows.length) return <div className="map-empty">暂无企业能耗数据，地图点位仍可查看。连接数据库后可显示企业 3D 能耗对比。</div>;
+  if (!rows.length) return <div className="empty">暂无企业能耗数据，地图点位仍可查看。连接数据库后可显示企业 3D 能耗对比。</div>;
   return <div className="energy-3d-wrap">
     <div ref={container} className="energy-3d" role="img" aria-label={`${year}年企业综合能耗3D柱状图`} />
-    {error ? <div className="map-message" role="status">{error}</div> : <div className="chart-3d-help">拖动旋转 · 滚轮缩放 · 点击柱体查看企业</div>}
+    {error ? <div className="notice danger" role="status">{error}</div> : <div className="chart-help">拖动旋转 · 滚轮缩放 · 点击柱体查看企业</div>}
   </div>;
 }

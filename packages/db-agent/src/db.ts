@@ -22,6 +22,13 @@ function getPool(): pg.Pool {
   return pool;
 }
 
+/** Health check for the web status indicator: one trivial read-only round trip, with its latency. */
+export async function ping(): Promise<{ ok: true; ms: number }> {
+  const started = Date.now();
+  await readOnly((c) => c.query("SELECT 1"));
+  return { ok: true, ms: Date.now() - started };
+}
+
 export async function closePool() {
   await pool?.end();
   pool = undefined;
