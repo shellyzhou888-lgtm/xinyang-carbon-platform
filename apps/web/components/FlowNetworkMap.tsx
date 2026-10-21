@@ -13,6 +13,15 @@ const STYLE: Record<Mode, { label: string; unit: string; line: string; glow: str
 };
 const ALERT = "#ff4d5e";
 
+/** White chevron used as a moving line texture (tinted by the layer colour via textureBlend "replace"). */
+function arrowIcon() {
+  const c = document.createElement("canvas"); c.width = 64; c.height = 64;
+  const ctx = c.getContext("2d")!;
+  ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.beginPath(); ctx.moveTo(20, 14); ctx.lineTo(42, 32); ctx.lineTo(20, 50); ctx.stroke();
+  return c.toDataURL("image/png");
+}
+
 /**
  * Interactive flow network on a 3D dark map: dotted links follow the accounting hierarchy park ↔ zone ↔ enterprise,
  * with cone pins, equipment-style info cards and a red dome over enterprises that have open alerts.
@@ -51,35 +60,46 @@ export default function FlowNetworkMap({ mode, year, nodes, parkTotal, alerts = 
     frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 220], boost: 0.7 });
   }, [ready, handle]);
 
-  // Dotted links (static dots + a moving highlight), hub glows and alert domes.
+  // Curved flow links: a faint base arc, comet particles streaming from source to target and moving direction
+  // arrows on the same curve; hub glows and alert domes on top.
   useEffect(() => {
     const scene = handle.current?.scene;
     if (!l7Ready || !scene) return;
     let disposed = false;
     for (const layer of flowLayers.current) scene.removeLayer(layer);
     flowLayers.current = [];
-    import("@antv/l7-layers").then(({ LineLayer, PointLayer }) => {
+    Promise.all([import("@antv/l7-layers"), scene.addImage("flow-arrow", arrowIcon())]).then(([{ LineLayer, PointLayer }]) => {
       if (disposed || handle.current?.scene !== scene) return;
       const parser = { type: "json", x: "fromLng", y: "fromLat", x1: "toLng", y1: "toLat" };
       const max = Math.max(...network.links.map((l) => l.value));
-      const width = (v: number) => 1.2 + 2.2 * Math.sqrt(v / max);
-      const dots = new LineLayer({ name: "flow-dots", zIndex: 4 }).source(network.links, { parser })
-        .shape("line").size("value", width).color("alert", (a: number) => a ? ALERT : style.line)
-        .style({ opacity: 0.95, lineType: "dash", dashArray: [0.5, 1.6] });
-      const moving = new LineLayer({ name: "flow-moving", zIndex: 5, blend: "additive" }).source(network.links, { parser })
-        .shape("line").size("value", (v: number) => width(v) + 1.4).color("alert", (a: number) => a ? ALERT : style.glow)
-        .animate({ duration: 2.4, interval: 0.6, trailLength: 0.35 }).style({ opacity: 0.9 });
+      const width = (v: number) => 1.6 + 3 * Math.sqrt(v / max);
+      const colour = (a: number) => a ? ALERT : style.glow;
+      const curve = { thetaOffset: 0.32 };
+      const base = new LineLayer({ name: "flow-base", zIndex: 4 }).source(network.links, { parser })
+        .shape("arc").size("value", width).color("alert", (a: number) => a ? ALERT : style.line)
+        .style({ ...curve, opacity: 0.28, segmentNumber: 48 });
+      // Several short comets per link (interval) give a continuous stream rather than a single blink.
+      const stream = new LineLayer({ name: "flow-stream", zIndex: 5, blend: "additive" }).source(network.links, { parser })
+        .shape("arc").size("value", (v: number) => width(v) + 1.2).color("alert", colour)
+        .style({ ...curve, opacity: 1, segmentNumber: 48, sourceColor: style.line, targetColor: style.glow })
+        .animate({ duration: 2.2, interval: 0.28, trailLength: 0.22 });
+      const arrows = new LineLayer({ name: "flow-arrows", zIndex: 6 }).source(network.links, { parser })
+        .shape("arc").size(12).texture("flow-arrow").color("alert", colour)
+        .animate({ duration: 1.4, interval: 1, trailLength: 2 })
+        .style({ ...curve, opacity: 0.95, lineTexture: true, iconStep: 46, textureBlend: "replace", segmentNumber: 48 });
       const hubs = [{ lng: network.park[0], lat: network.park[1], size: 70 }, ...network.zones.map((z) => ({ lng: z.at[0], lat: z.at[1], size: 46 }))];
-      const glow = new PointLayer({ name: "flow-hub-glow", zIndex: 6, blend: "additive" }).source(hubs, { parser: { type: "json", x: "lng", y: "lat" } })
+      const glow = new PointLayer({ name: "flow-hub-glow", zIndex: 7, blend: "additive" }).source(hubs, { parser: { type: "json", x: "lng", y: "lat" } })
         .shape("circle").size("size", (s: number) => s).color(style.glow).animate(true).style({ opacity: 0.9 });
+      const sites = new PointLayer({ name: "flow-sites", zIndex: 7, blend: "additive" }).source(network.sites.map((s) => ({ lng: s.at[0], lat: s.at[1], alert: s.alert ? 1 : 0 })), { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(22).color("alert", colour).animate({ enable: true, speed: 0.7, rings: 2 }).style({ opacity: 0.85 });
       const alertSites = network.sites.filter((s) => s.alert).map((s) => ({ lng: s.at[0], lat: s.at[1] }));
-      flowLayers.current = [dots, moving, glow];
+      flowLayers.current = [base, stream, arrows, glow, sites];
       if (alertSites.length) {
-        flowLayers.current.push(new PointLayer({ name: "flow-alert-dome", zIndex: 7, blend: "additive" }).source(alertSites, { parser: { type: "json", x: "lng", y: "lat" } })
+        flowLayers.current.push(new PointLayer({ name: "flow-alert-dome", zIndex: 8, blend: "additive" }).source(alertSites, { parser: { type: "json", x: "lng", y: "lat" } })
           .shape("circle").size(90).color(ALERT).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 }));
       }
       for (const layer of flowLayers.current) scene.addLayer(layer);
-    });
+    }).catch((reason) => console.warn("[flow-map] flow layers unavailable", reason));
     return () => { disposed = true; };
   }, [l7Ready, handle, network, style]);
 

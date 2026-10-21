@@ -895,3 +895,67 @@ h1, h2, h3, h4 { line-height: 1.25; }
 p, li, td, th { line-height: 1.55; }
 .page { padding-left: 20px; padding-right: 20px; }
 .topbar { padding-left: 20px; padding-right: 20px; }
+
+/* ---------- Honour icons, emitter ranking, zone card ---------- */
+.honor-icon-tile { --honor-tile: color-mix(in srgb, var(--honor) 16%, var(--surface-solid)); display: inline-grid; place-items: center; flex: none; border-radius: 10px; background: var(--honor-tile); color: var(--honor); box-shadow: 0 0 0 1px color-mix(in srgb, var(--honor) 22%, transparent) inset; }
+.trophy-list li { align-items: center; }
+.emitter-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.emitter-list button { width: 100%; display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 8px; border: 0; border-radius: 12px; background: transparent; text-align: left; transition: background 0.15s; }
+.emitter-list button:hover { background: var(--surface-2); }
+.rank-medal { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-family: var(--font-num); font-size: 14px; font-weight: 600; background: var(--surface-3); color: var(--text-2); }
+.rank-medal.r1 { background: linear-gradient(135deg, #ffe08a, #f2b53c); color: #3a2600; }
+.rank-medal.r2 { background: linear-gradient(135deg, #f1f3f5, #b8c0c8); color: #23282d; }
+.rank-medal.r3 { background: linear-gradient(135deg, #f3c39a, #c9814e); color: #34190a; }
+.emitter-main { display: grid; gap: 4px; min-width: 0; }
+.emitter-title { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.emitter-title b { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.emitter-title em { font-style: normal; font-size: 12px; padding: 0 8px; border-radius: 8px; background: var(--surface-3); color: var(--text-3); white-space: nowrap; }
+.emitter-meta { display: flex; align-items: center; gap: 8px; }
+.mini-trend { width: 72px; height: 20px; flex: none; }
+.emitter-share { flex: 1; height: 4px; border-radius: 2px; background: var(--surface-3); overflow: hidden; }
+.emitter-share em { display: block; height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--carbon), color-mix(in srgb, var(--carbon) 40%, transparent)); }
+.emitter-meta small { font-family: var(--font-num); font-size: 12px; white-space: nowrap; }
+.emitter-meta small.good { color: var(--energy); }
+.emitter-meta small.bad { color: var(--carbon); }
+.emitter-figure { display: grid; justify-items: end; gap: 4px; }
+.emitter-figure strong { font-size: 16px; font-weight: 500; white-space: nowrap; }
+.emitter-figure strong small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin-left: 4px; font-weight: 400; }
+.emitter-figure > small { font-size: 12px; color: var(--text-3); white-space: nowrap; }
+
+.zone-card { position: absolute; z-index: 5; left: 16px; top: calc(var(--topbar) + 8px); width: 360px; max-height: calc(100% - var(--topbar) - 96px); overflow: auto; display: grid; gap: 16px; padding: 24px; border-radius: 16px; }
+.zone-card header { display: flex; align-items: center; gap: 16px; }
+.zone-card h3 { margin: 0; font-size: 18px; }
+.zone-card header small { color: var(--text-3); font-size: 12px; }
+.zone-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--zone); box-shadow: 0 0 0 4px color-mix(in srgb, var(--zone) 25%, transparent), 0 0 16px var(--zone); flex: none; }
+.zone-focus { margin: 0; font-size: 14px; color: var(--text-2); }
+.zone-focus small { display: block; margin-top: 4px; font-size: 12px; color: var(--text-3); }
+.zone-figures { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.zone-figures > div { display: grid; gap: 4px; padding: 8px; border-radius: 12px; background: var(--surface-2); }
+.zone-figures span { font-size: 12px; color: var(--text-3); }
+.zone-figures strong { font-size: 16px; font-weight: 500; white-space: nowrap; }
+.zone-figures strong small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin-left: 4px; }
+.zone-figures em { font-style: normal; font-size: 12px; color: var(--text-2); }
+.zone-members { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.zone-members button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 8px; border: 0; border-radius: 10px; background: transparent; text-align: left; font-size: 14px; }
+.zone-members button:hover { background: var(--surface-2); }
+.zone-members button > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zone-member-honors { display: inline-flex; gap: 4px; }
+.zone-members b { font-size: 14px; font-weight: 500; color: var(--text-2); }
+.zone-back { justify-self: start; }
+@media (max-width: 1180px) { .zone-card { position: relative; left: auto; top: auto; width: auto; margin-top: 16px; } }
+/* Overview honours as a two-column grid of compact tiles so every category fits. */
+.overview-screen .trophy-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.overview-screen .trophy-list li { flex-direction: column; align-items: flex-start; gap: 8px; padding: 8px; border-radius: 12px; background: var(--surface-2); }
+.overview-screen .trophy-list li > .honor-icon-tile { width: 28px !important; height: 28px !important; }
+.overview-screen .trophy-body { width: 100%; }
+.overview-screen .trophy-holders button { font-size: 12px; padding: 0 8px; }
+.overview-screen .trophy-holders small { display: none; }
+.emitter-meta small.muted { color: var(--text-3); }
+.emitter-figure .emitter-share { width: 88px; flex: none; }
+/* Emitter rows: rank · name · value on the first line, trend / share / YoY / intensity spanning the second. */
+.emitter-list button { grid-template-columns: 28px minmax(0, 1fr) auto; gap: 4px 8px; }
+.emitter-list .rank-medal { grid-row: 1 / span 2; align-self: center; }
+.emitter-value { font-size: 16px; font-weight: 500; white-space: nowrap; }
+.emitter-value small { font-family: var(--font); font-size: 12px; color: var(--text-3); margin-left: 4px; font-weight: 400; }
+.emitter-list .emitter-meta { grid-column: 2 / -1; justify-content: space-between; gap: 8px; }
+.emitter-meta small { color: var(--text-2); }

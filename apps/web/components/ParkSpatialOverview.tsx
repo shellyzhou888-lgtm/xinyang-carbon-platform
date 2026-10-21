@@ -6,7 +6,8 @@ import type { ChartData } from "@xinyang/db-agent";
 import { enterprises, geography, type EnterpriseFeature } from "@/lib/park-geography";
 import { enterpriseBadge, enterpriseBrands } from "@/lib/enterprise-branding";
 import { FOCUS_EVENT, HONOR_KINDS, honorLevel, type HonorKind } from "@/lib/honors";
-import { fmt, SECTOR_ZONE, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeatures, zoneFocus, zoneLabel, zonePoints, ZONES, type ZoneKey } from "@/lib/park-map";
+import { fmt, isLight, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeature, zoneFeatures, zoneLabel, zonePoints, zonePolygons, ZONES, type ZoneKey } from "@/lib/park-map";
+import { HonorIcon } from "./HonorIcons";
 import Link from "next/link";
 
 import { IconClose, IconExpand, IconLayers, IconSearch, IconTrophy } from "./icons";
@@ -18,8 +19,8 @@ const EMPTY_RANKING: ChartData["ranking"] = [];
 const EMPTY_HONORS: MapHonor[] = [];
 const EMPTY_ENTERPRISES: MapEnterprise[] = [];
 const pinIcon = (color: string) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"><circle cx="13" cy="13" r="11" fill="${color}" fill-opacity=".22"/><circle cx="13" cy="13" r="5.5" fill="${color}" stroke="#101114" stroke-width="2"/></svg>`);
-/** Building-scale zoom for a single zone (3D buildings visible). */
-const ZONE_ZOOM = 16.4;
+/** Upper zoom bound when fitting one zone; small zones open at building scale (3D buildings visible). */
+const ZONE_MAX_ZOOM = 17.6;
 
 /**
  * Full-screen park map: AMap satellite imagery, planning zones and enterprise POIs. Honoured enterprises carry a trophy
@@ -94,6 +95,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     for (const feature of enterprises) {
       const code = feature.properties.code;
       const on = code === selected;
+      if (inZone && SECTOR_ZONE[feature.properties.sector] !== zone && !on) continue;
       const titles = [...new Set(honors.filter((row) => row.code === code).map((row) => HONOR_KINDS.find((kind) => kind.kind === row.kind)!.label))];
       const zoneKey = SECTOR_ZONE[feature.properties.sector] as Exclude<ZoneKey, "all">;
       const color = on ? "#ffffff" : ZONE_COLOR[zoneKey] ?? "#d4f75c";
@@ -135,8 +137,11 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       map.setFitView(targets, true, wide ? [150, 110, 420, 420] : [70, 70, 30, 30], 15.2);
       if (pitched) { map.setPitch(45, true); map.setZoom(map.getZoom() - 0.25, true); }
     } else {
-      map.setZoomAndCenter(ZONE_ZOOM, zoneFocus(zone), false, 700);
-      map.setPitch(pitched ? 55 : 0);
+      // Side panels are hidden in zone mode, so the outline is fitted to almost the whole screen (avoid: top, bottom, left, right).
+      const targets = zonePoints(zone).map((point) => new AMap.Marker({ position: point }));
+      map.setPitch(0, true);
+      map.setFitView(targets, true, [130, 100, 60, 60], ZONE_MAX_ZOOM);
+      if (pitched) { map.setPitch(50, true); map.setZoom(map.getZoom() + 0.45, true); }
     }
     shell.current?.setAttribute("data-map-preset", zone);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,14 +158,27 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     area.clear();
     polygons.current.forEach((polygon) => polygon.setMap(null));
     polygons.current = [];
-    shell.current?.setAttribute("data-planning-area-count", String(areaNames ? zoneFeatures.length : 0));
+    shell.current?.setAttribute("data-planning-area-count", String(zone !== "all" ? 1 : areaNames ? zoneFeatures.length : 0));
+    if (zone !== "all") {
+      const rings = zonePolygons(zone);
+      const color = ZONE_COLOR[zone as Exclude<ZoneKey, "all">];
+      // Outside the zone is dimmed: one large polygon with the zone rings as holes.
+      const outer = [[113.85, 32.02], [114.35, 32.02], [114.35, 32.38], [113.85, 32.38]];
+      const mask = new AMap.Polygon({ path: [outer, ...rings], fillColor: isLight() ? "#f1f3ee" : "#0c0d10", fillOpacity: 0.62, strokeWeight: 0, zIndex: 55, bubble: true });
+      mask.setMap(map); polygons.current.push(mask);
+      for (const ring of rings) {
+        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: color, strokeOpacity: 0.28, strokeWeight: 10, zIndex: 61, bubble: true });
+        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: color, strokeOpacity: 1, strokeWeight: 3, zIndex: 62, bubble: true });
+        glow.setMap(map); line.setMap(map); polygons.current.push(glow, line);
+      }
+      return;
+    }
     if (!areaNames) return;
     for (const feature of zoneFeatures) {
       const key = feature.properties.id as Exclude<ZoneKey, "all">;
-      const focus = zone === "all" || key === zone;
       for (const rings of feature.geometry.coordinates) {
-        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: focus ? 0.12 : 0.04, strokeColor: ZONE_COLOR[key],
-          strokeOpacity: focus ? 0.9 : 0.3, strokeWeight: focus ? 2 : 1, zIndex: 60, cursor: "pointer" });
+        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: ZONE_COLOR[key],
+          strokeOpacity: 0.9, strokeWeight: 2, zIndex: 60, cursor: "pointer" });
         polygon.on("click", () => openZone(key));
         polygon.setMap(map);
         polygons.current.push(polygon);
@@ -219,8 +237,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       </div>
     </div>
 
-    {left && <div className="map-float left">{left}</div>}
-    {right && <div className="map-float right">{right}</div>}
+    {zone === "all" && left && <div className="map-float left">{left}</div>}
+    {zone === "all" && right && <div className="map-float right">{right}</div>}
+    <AnimatePresence>{zone !== "all" && <ZoneCard key={zone} zone={zone} metrics={metrics} honors={honors} onBack={() => openZone("all")} onPick={(code) => pick.current(code)} />}</AnimatePresence>
 
     <div className="map-bottom">
       <div className="map-tools glass" role="group" aria-label="地图工具">
@@ -265,5 +284,43 @@ function EnterpriseDetail({ feature, year, logo, metric, intensity, honors, onCl
     {honors.length > 0 && <ul className="trophy-list compact">{honors.map((honor, index) => <li key={index}><IconTrophy size={18} className="trophy" /><span>{honor.title}</span>{honorLevel(honor.title) && !honor.title.includes(honorLevel(honor.title)) && <em>{honorLevel(honor.title)}</em>}</li>)}</ul>}
     <p className="detail-address">{feature.properties.address}</p>
     <footer><Link className="more-link" href={`/enterprises?year=${year}`}>企业名录</Link><Link className="more-link" href={`/energy?year=${year}`}>能源管理</Link></footer>
+  </motion.aside>;
+}
+
+/** Industry focus of each zone, from the official master plan (产业布局规划图). */
+const ZONE_FOCUS: Record<Exclude<ZoneKey, "all">, string> = {
+  "green-home": "重点发展绿色制造、智能家居制造、绿色建材、装配式建筑等。",
+  electronics: "重点发展新型显示、智能终端、电子元器件、能源电子、半导体、5G 智能制造等领域。",
+  research: "以智慧岛建设为核心，重点发展科创研发、检验检测、创意设计、总部经济、电子商务、中介服务等业态。",
+  "innovation-community": "主要承载大型企业总部办公、研发设计等生产性科创服务功能。",
+};
+
+/** Zone mode card: zone facts, energy / carbon totals of its enterprises and their honours. */
+function ZoneCard({ zone, metrics, honors, onBack, onPick }: { zone: ZoneKey; metrics: MapEnterprise[]; honors: MapHonor[]; onBack: () => void; onPick: (code: string) => void }) {
+  const key = zone as Exclude<ZoneKey, "all">;
+  const feature = zoneFeature(zone);
+  const members = enterprises.filter((item) => SECTOR_ZONE[item.properties.sector] === zone);
+  const rows = members.map((item) => ({ code: item.properties.code, name: item.properties.name, metric: metrics.find((m) => m.code === item.properties.code) }));
+  const sum = (pick: (m: MapEnterprise) => number | null) => rows.reduce((a, r) => a + (r.metric ? pick(r.metric) ?? 0 : 0), 0);
+  const park = (pick: (m: MapEnterprise) => number | null) => metrics.reduce((a, m) => a + (pick(m) ?? 0), 0);
+  const tce = sum((m) => m.tce), co2 = sum((m) => m.co2_t);
+  return <motion.aside className="zone-card glass" style={{ ["--zone" as string]: ZONE_COLOR[key] }} aria-label="片区概况"
+    initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}>
+    <header><span className="zone-dot" /><div><h3>{feature?.properties.name}</h3><small>规划面积 {feature?.properties.areaKm2.toFixed(2)} km²</small></div></header>
+    <p className="zone-focus">{ZONE_FOCUS[key]}<small>《信阳经济技术开发区总体发展规划（2022—2035年）》产业布局</small></p>
+    {rows.length > 0 && <div className="zone-figures">
+      <div><span>重点企业</span><strong className="num">{rows.length}<small>家</small></strong></div>
+      <div><span>综合能耗</span><strong className="num">{fmt(tce, 0)}<small>tce</small></strong><em>占园区 {fmt(tce / (park((m) => m.tce) || 1) * 100, 1)}%</em></div>
+      <div><span>碳排放</span><strong className="num">{fmt(co2, 0)}<small>tCO₂</small></strong><em>占园区 {fmt(co2 / (park((m) => m.co2_t) || 1) * 100, 1)}%</em></div>
+    </div>}
+    {rows.length > 0 && <ul className="zone-members">{rows.sort((a, b) => (b.metric?.co2_t ?? 0) - (a.metric?.co2_t ?? 0)).map((row) => {
+      const kinds = [...new Set(honors.filter((h) => h.code === row.code).map((h) => h.kind))];
+      return <li key={row.code}><button type="button" onClick={() => onPick(row.code)}>
+        <span>{shortName(row.name)}</span>
+        <span className="zone-member-honors">{kinds.map((kind) => <HonorIcon key={kind} kind={kind} size={22} />)}</span>
+        <b className="num">{row.metric?.tce != null ? `${fmt(row.metric.tce, 0)} tce` : ""}</b>
+      </button></li>;
+    })}</ul>}
+    <button type="button" className="btn-ghost small zone-back" onClick={onBack}>返回园区全景</button>
   </motion.aside>;
 }
