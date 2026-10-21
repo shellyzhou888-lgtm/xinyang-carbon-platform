@@ -1,0 +1,55 @@
+{
+  "reviewedAt": "2026-10-20",
+  "decision": "do_not_display_dem_on_overview",
+  "reason": "Overview serves park/enterprise location and energy/carbon monitoring; relief exaggeration adds no required business function and can overstate terrain variation.",
+  "dataSource": "ASTER GDEM V3 N32E114 from gscloud.cn",
+  "gridSampling": "Every 3 original source cells, approximately 90m display spacing",
+  "sourceGridSha256": "6c985588fd8d2c43d0df3e49be9583c3d566ec6c58727bf42c24713d2336f93c",
+  "planningBoundaryStatus": "Preliminary planning illustration, not surveyed property or legal boundary",
+  "method": "Sample grid cell centers inside the approximate GCJ-02 planning polygons; P05/P95 describe the central approximately 90% of included cell elevations, not survey accuracy.",
+  "areas": [
+    {
+      "area": "绿色家居产业园区",
+      "cells": 1175,
+      "minimumM": 65,
+      "maximumM": 139,
+      "p05M": 76,
+      "medianM": 90,
+      "p95M": 111
+    },
+    {
+      "area": "电子信息产业园区",
+      "cells": 694,
+      "minimumM": 84,
+      "maximumM": 149,
+      "p05M": 97,
+      "medianM": 112.0,
+      "p95M": 132
+    },
+    {
+      "area": "科创部落",
+      "cells": 56,
+      "minimumM": 94,
+      "maximumM": 122,
+      "p05M": 95,
+      "medianM": 106.0,
+      "p95M": 118
+    },
+    {
+      "area": "科创研发片区",
+      "cells": 337,
+      "minimumM": 79,
+      "maximumM": 134,
+      "p05M": 85,
+      "medianM": 103,
+      "p95M": 120
+    }
+  ],
+  "limitations": [
+    "Planning positioning is approximate and may shift sampled cells",
+    "Elevation ranges are not slopes; real-world terrain variation cannot be inferred from one exaggerated view",
+    "ASTER GDEM can contain anomalies and artifacts; no local ground-height validation was performed"
+  ],
+  "sourceCaveats": "https://asterweb.jpl.nasa.gov/GDEM.asp",
+  "retained": "Original archive and cropped GeoTIFF remain in local ignored storage; WGS84 preview grid and provenance remain available in data management."
+}

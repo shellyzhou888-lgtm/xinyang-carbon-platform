@@ -278,7 +278,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
           {error && <div className="map-message" role="status">{error} <button type="button" onClick={() => { setError(""); setRetry((n) => n + 1); }}>重试</button></div>}
           <div className="map-tools" role="group" aria-label="地图工具">
             <button type="button" aria-pressed={satellite} onClick={() => setSatellite((current) => !current)}>{satellite ? "标准底图" : "卫星影像"}</button>
-            <button type="button" aria-pressed={pitched} onClick={() => setPitched((current) => !current)}>{pitched ? "俯视 2D" : "倾斜 3D"}</button>
+            <button type="button" aria-pressed={pitched} onClick={() => setPitched((current) => !current)}>{pitched ? "俯视视角" : "倾斜视角"}</button>
             <button type="button" aria-pressed={labels} onClick={() => setLabels((current) => !current)}>企业标识</button>
             <button type="button" aria-pressed={areaNames} onClick={()=>setAreaNames(current=>!current)}>规划分区</button>
           </div>
@@ -317,7 +317,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, com
         <div><h3>边界依据</h3><p>2023年26号文：围合26.3429 km²，规划建设用地15.5630 km²，共3个四至片区。2020年设立时11.7 km²单独保留为历史口径。</p>
           <p>上传PDF第152页为4个规划功能片区示意，仅作辅助参考。现有四至文字未附界址坐标，尚未绘制法定边界。</p>
           <a href={geography.boundaryReference.primary.url} target="_blank" rel="noreferrer">查看26号文原文 ↗</a></div>
-        <div><h3>地形基底</h3><p>ASTER GDEM V3 30米DEM已从地理空间数据云免费下载。当前地图未挂载三维地形网格。</p><a href="/geography/dem-manifest.json" download>查看地形来源与处理记录</a></div>
+        <div><h3>备用地形资料</h3><p>ASTER GDEM V3 30米DEM已免费下载并保留。当前总览不显示地形起伏，使用卫星影像叠加规划分区与企业标识。</p><a href="/geography/dem-manifest.json" download>查看地形来源与处理记录</a></div>
       </div>
     </details>}
 
