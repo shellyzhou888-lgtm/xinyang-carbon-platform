@@ -29,6 +29,11 @@ export function systemPrompt(cfg: AgentConfig): string {
 - 折标：GB/T 2589-2020，电力按当量值 0.1229 kgce/kWh。
 - 数据来源标记 data_source：measured/manual 为真实数据；estimated 为模拟估值（当前园区业务数据绝大部分是模拟占位数据）；interpolated 为插值。
 - 前台大屏只展示达标指标；判定基准缺失时沿用 2024 版引领值。
+- 库中还有：全国碳市场每日行情（fact.carbon_market_price，CEA 配额 2021-07 起、CCER 2025-03 起，公开渠道真实值）、
+  产品碳足迹参考值（core.product_footprint_ref，需人工审核）、园区目标与预算（fact.target，模拟）、
+  能耗与碳排放预测（fact.forecast：scenario_code = baseline 为 Chronos-2 月度预测；ROADMAP_BASE / ROADMAP_LOWCARBON 为碳达峰路线图年度情景，
+  峰值与达峰年份记在对应 fact.calc_run.params.scenarios）、预警与策略推荐（fact.alert_event、fact.strategy_plan）。
+- 回答“查不到 / 没有该数据”之前，必须先用 search_catalog 按问题关键词检索一次；不能凭印象断定库里没有。
 
 ## 回答规则
 - 数字一律来自工具结果，禁止编造或凭常识估计。查不到就说查不到，并说明缺什么数据。

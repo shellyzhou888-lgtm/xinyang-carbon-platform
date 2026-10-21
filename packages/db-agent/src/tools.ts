@@ -155,7 +155,7 @@ const energyGroup = { year: "extract(year from a.period_month)::int", month: "to
 const getEnergySummary = tool({
   name: "get_energy_summary",
   label: "能耗汇总",
-  description: "按年/月/能源品种/企业汇总某对象（园区则汇总全部企业和公共区域）的能源消费：实物量与折标准煤（tce）。"
+  description: "按年/月/能源品种/企业汇总某对象（园区则汇总全部企业和公共区域）的能源消费：实物量与折标准煤（tce）。按品种或企业分组时结果按年份分开列出。"
     + "只统计当前有效数据，并给出估值（模拟）数据占比。",
   parameters: Type.Object({
     node_code: NodeCode,
@@ -165,9 +165,11 @@ const getEnergySummary = tool({
   }),
   execute: async ({ node_code, year_from, year_to, group_by }) => readOnly(async (c) => {
     const g = pick(energyGroup, group_by);
+    // Non-time groupings are always split by year, so a multi-year range never comes back as an unlabelled total.
+    const perYear = group_by !== "year" && group_by !== "month";
     const { rows } = await c.query(`
       with nodes as (select engine.accounting_nodes(node_id) as node_id from core.org_node where code = $1)
-      select ${g} as grp,
+      select ${perYear ? "extract(year from a.period_month)::int as year, " : ""}${g} as grp,
              round(sum(case a.flow when 'send_out' then -a.tce when 'consumption' then a.tce when 'receive' then a.tce else 0 end), 3) as tce,
              ${group_by === "energy_type" ? "round(sum(a.quantity_std) filter (where a.flow = 'consumption'), 3) as consumption_qty, max(t.default_unit) as unit," : ""}
              round(coalesce(sum(a.tce) filter (where a.data_source in ('estimated','interpolated')), 0) / nullif(sum(a.tce), 0), 3) as estimated_share
@@ -176,7 +178,7 @@ const getEnergySummary = tool({
         join core.org_node n on n.node_id = a.node_id
        where a.is_current and a.node_id in (select node_id from nodes)
          and a.period_month between make_date($2, 1, 1) and make_date($3, 12, 1)
-       group by 1 order by 1`, [node_code, year_from, year_to]);
+       group by ${perYear ? "1, 2 order by 1, 3 desc" : "1 order by 1"}`, [node_code, year_from, year_to]);
     return result(rows, { unit_tce: "吨标准煤" });
   }),
 });
@@ -197,14 +199,15 @@ const getCarbonSummary = tool({
     group_by: StringEnum(["year", "month", "category", "energy_type", "enterprise"], { description: "分组维度" }),
   }),
   execute: async ({ node_code, profile, year_from, year_to, group_by }) => readOnly(async (c) => {
+    const perYear = group_by !== "year" && group_by !== "month";
     const { rows } = await c.query(`
       with nodes as (select engine.accounting_nodes(node_id) as node_id from core.org_node where code = $1)
-      select ${pick(carbonGroup, group_by)} as grp, round(sum(e.co2_t), 3) as co2_t,
+      select ${perYear ? "extract(year from e.period_month)::int as year, " : ""}${pick(carbonGroup, group_by)} as grp, round(sum(e.co2_t), 3) as co2_t,
              round(sum(e.co2_t * e.estimated_share) / nullif(sum(e.co2_t), 0), 3) as estimated_share
         from fact.carbon_emission e join core.org_node n on n.node_id = e.node_id
        where e.is_current and e.profile_code = $2 and e.node_id in (select node_id from nodes)
          and e.period_month between make_date($3, 1, 1) and make_date($4, 12, 1)
-       group by 1 order by 1`, [node_code, profile, year_from, year_to]);
+       group by ${perYear ? "1, 2 order by 1, 3 desc" : "1 order by 1"}`, [node_code, profile, year_from, year_to]);
     const runs = await c.query(`
       select r.run_id, r.finished_at, r.warnings from fact.calc_run r join core.standard_version v using (version_id)
        where r.run_type = 'carbon' and v.code = $1 order by r.run_id desc limit 1`, [profile]);
