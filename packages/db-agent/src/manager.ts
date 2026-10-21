@@ -1,5 +1,5 @@
 import { Agent } from "@earendil-works/pi-agent-core";
-import { createModels, Type } from "@earendil-works/pi-ai";
+import { createModels } from "@earendil-works/pi-ai";
 import { deepseekProvider } from "@earendil-works/pi-ai/providers/deepseek";
 import { logToolCall, startSession } from "./audit.js";
 import type { AgentConfig } from "./config.js";
@@ -58,98 +58,61 @@ function modelFor(cfg: AgentConfig) {
   return { models, model: { ...found, baseUrl: cfg.deepseekBaseUrl } };
 }
 
-/** One shared Pi supervisor for both entrances. Specialist agents are created only when delegated to. */
+/** One Pi agent for each web/voice conversation; it selects and executes board tools itself. */
 export async function createManagerAgent(cfg: AgentConfig, opts: ManagerOptions) {
   initPool(cfg.databaseUrl);
   const { models, model } = modelFor(cfg);
   const sessionId = await startSession(cfg.model, opts.userRef, opts.channel, "platform_manager");
   const getApiKey = async (provider: string) => provider === "deepseek" ? cfg.deepseekApiKey : undefined;
-  let managerCalls = 0;
-  const managerStarted = new Map<string, number>();
-
-  async function consult(board: Board, question: string) {
-    const spec = BOARDS[board];
-    const toolCtx: ToolContext = { getQuestion: () => question, sqlFailures: 0, sessionId };
-    const allowed = new Set(spec.tools);
-    const tools = buildTools({ ...cfg, writeMode: "off" }, toolCtx).filter((tool) => allowed.has(tool.name));
-    let calls = 0;
-    const started = new Map<string, number>();
-    const expert = new Agent({
-      initialState: {
-        model, thinkingLevel: cfg.thinking, tools,
-        systemPrompt: `你是信阳经开区能碳平台的「${spec.label}」板块专家。职责：${spec.purpose}。\n`
-          + "只使用已提供的只读工具查询真实数据。数字不得编造；标注年份、单位、评价口径及模拟数据占比。没有查询可比年份时不得声称增长或下降。"
-          + "能用标准工具时优先使用；写 SQL 前先检索语义目录，多表连接先规划。"
-          + "查不到时先检索目录，再说明缺失。不要执行数据库写入，也不要假称已修改页面。"
-          + "只回答交给你的板块问题，跨板块结论交给总管汇总。",
-      },
-      streamFn: models.streamSimple.bind(models), getApiKey, toolExecution: "sequential",
-      beforeToolCall: async ({ toolCall, args }) => {
-        calls++;
-        if (calls > Math.min(cfg.maxToolCallsPerPrompt, 12)) {
-          await logToolCall(sessionId, { name: `${board}.${toolCall.name}`, args, durationMs: 0, status: "denied", error: "板块工具调用达到上限" });
-          return { block: true, reason: "本板块工具调用已达上限，请根据已有查询结果作答", terminate: true };
-        }
-        started.set(toolCall.id, performance.now());
-        return undefined;
-      },
-      afterToolCall: async ({ toolCall, args, result, isError }) => {
-        const durationMs = performance.now() - (started.get(toolCall.id) ?? performance.now());
-        started.delete(toolCall.id);
-        await logToolCall(sessionId, { name: `${board}.${toolCall.name}`, args, durationMs, status: isError ? "error" : "ok",
-          error: isError ? result.content.map((part: any) => part.text ?? "").join(" ").slice(0, 2000) : undefined });
-        return undefined;
-      },
-    });
-    await expert.prompt(question);
-    const last = expert.state.messages.at(-1) as any;
-    if (last?.errorMessage) throw new Error(last.errorMessage);
-    return textOf(last).trim() || `${spec.label}未获得可用结果`;
-  }
-
-  const delegates = (Object.keys(BOARDS) as Board[]).map((board) => ({
-    name: `consult_${board}`,
-    label: `咨询${BOARDS[board].label}`,
-    description: `将问题交给「${BOARDS[board].label}」板块 Pi Agent。适用：${BOARDS[board].purpose}。它会自行选择并调用该板块只读工具，返回有依据的结论。`,
-    parameters: Type.Object({ question: Type.String({ minLength: 2, description: "完整的板块问题，保留用户指定的年份、对象和口径" }) }),
-    execute: async (_id: string, params: unknown) => {
-      const { question } = params as { question: string };
-      const answer = await consult(board, question);
-      return { content: [{ type: "text" as const, text: answer }], details: { board, answer } };
+  let calls = 0;
+  const started = new Map<string, number>();
+  let managerRef: Agent | undefined;
+  const toolCtx: ToolContext = {
+    sessionId, sqlFailures: 0,
+    getQuestion: () => {
+      const last = [...(managerRef?.state.messages ?? [])].reverse().find((m: any) => m.role === "user") as any;
+      return last ? textOf(last) : undefined;
     },
-  }));
+  };
+  const tools = buildTools({ ...cfg, writeMode: "off" }, toolCtx);
+  const boardGuide = Object.values(BOARDS)
+    .map(({ label, purpose, tools }) => `${label}（${purpose}）：${tools.join("、")}`)
+    .join("\n");
 
   const manager = new Agent({
     initialState: {
-      model, thinkingLevel: cfg.thinking, tools: delegates,
-      systemPrompt: "你是信阳经开区绿色园区能碳平台的总管 Agent，负责网页文字和小云语音的统一调度。"
-        + "判断用户问题属于总览、能源、碳管理、综合诊断、企业名录或数据治理哪几个板块；"
-        + "必须调用相应 consult_* 工具取证，跨板块问题可调用多个工具并综合回答。"
+      model, thinkingLevel: cfg.thinking, tools,
+      systemPrompt: "你是信阳经开区绿色园区能碳平台的总管 Agent，负责网页文字和小云语音的统一业务处理。"
+        + "先判断用户任务属于哪些板块，再亲自选择并调用相应的数据库工具完成任务；不要转交其他 Agent。"
+        + `板块及工具指引：\n${boardGuide}\n`
+        + "跨板块问题由你直接调用多个板块相关工具并汇总。工具可能被多个板块共用，按问题所需选择。"
+        + "业务数据回答前实际调用工具取证；能用标准工具时优先使用。写 SQL 前先检索语义目录，多表连接先规划。"
         + "不要把问题简单转述成未经核实的答案；不要编造工具结果。"
         + "用户要求改数据、导入、批准或重新计算时，说明当前总管只读，需走有权限的管理流程。"
-        + "回答先给结论，再列必要数字及口径；数据为模拟值时明确提示。"
+        + "回答先给结论，再列必要数字、年份、单位及口径；数据为模拟值时明确提示。"
         + "没有查询可比年份时不得声称增长或下降，不能把单年数值当作趋势。"
-        + "除简短无法查询的说明外，回答业务数据前须实际咨询板块 Agent。全部使用中文。",
+        + "查不到时先检索目录，再说明缺失。不要假称已修改页面。全部使用中文。",
     },
     streamFn: models.streamSimple.bind(models), getApiKey, toolExecution: "sequential",
     beforeToolCall: async ({ toolCall, args }) => {
-      managerCalls++;
-      if (managerCalls > 6) {
-        await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "板块咨询达到上限" });
-        return { block: true, reason: "板块咨询已达上限，请根据已有结果回答", terminate: true };
+      calls++;
+      if (calls > cfg.maxToolCallsPerPrompt) {
+        await logToolCall(sessionId, { name: toolCall.name, args, durationMs: 0, status: "denied", error: "工具调用达到上限" });
+        return { block: true, reason: "工具调用已达上限，请根据已有结果回答", terminate: true };
       }
-      managerStarted.set(toolCall.id, performance.now());
+      started.set(toolCall.id, performance.now());
       return undefined;
     },
     afterToolCall: async ({ toolCall, args, result, isError }) => {
-      const durationMs = performance.now() - (managerStarted.get(toolCall.id) ?? performance.now());
-      managerStarted.delete(toolCall.id);
+      const durationMs = performance.now() - (started.get(toolCall.id) ?? performance.now());
+      started.delete(toolCall.id);
       await logToolCall(sessionId, { name: toolCall.name, args, durationMs, status: isError ? "error" : "ok",
         error: isError ? result.content.map((part: any) => part.text ?? "").join(" ").slice(0, 2000) : undefined });
       return undefined;
     },
   });
-  manager.subscribe((event) => { if (event.type === "agent_start") managerCalls = 0; });
+  managerRef = manager;
+  manager.subscribe((event) => { if (event.type === "agent_start") { calls = 0; toolCtx.sqlFailures = 0; } });
   return { agent: manager, sessionId };
 }
 

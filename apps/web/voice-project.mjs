@@ -7,7 +7,7 @@ import { createManagerVoiceTools } from "@xinyang/db-agent/voice";
 export default defineProject({
   id: "xinyang-park",
   description: [
-    "信阳经济技术开发区绿色园区能碳管理平台。业务问题统一调用项目直达工具 ask_platform_manager；它会使用 Pi 总管调度各板块 Agent，不要自行调用 SQLite 的 query_sql。",
+    "信阳经济技术开发区绿色园区能碳管理平台。业务问题统一调用项目直达工具 ask_platform_manager；单个 Pi 总管会判断板块并直接调用相关数据库工具，不要自行调用 SQLite 的 query_sql。",
     "单位：综合能耗 tce（吨标准煤）；碳排放 tCO2；产值、增加值 万元；单位增加值能耗 tce/万元。",
     "评价口径默认 GIP_2026（2026 年度国家级绿色工业园区）；园区 2024 年已是河南省级绿色工业园区。",
     "当前很多能耗与统计数据是模拟估算值（estimated），回答数字时要说明含模拟数据、不能作为申报依据。",

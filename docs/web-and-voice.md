@@ -1,8 +1,8 @@
 # 网站与小云语音接入说明
 
-文档版本：v1.3（2026-10-21）
+文档版本：v1.4（2026-10-21）
 
-本文说明 Pi 总管 Agent 如何接入 Next.js 网站 `apps/web` 和小云语音助手（`@xiaoyun/voice`），统一调度各业务板块查询同一个数据库。
+本文说明单个 Pi 总管 Agent 如何接入 Next.js 网站 `apps/web` 和小云语音助手（`@xiaoyun/voice`），识别业务板块并直接使用相关工具查询同一个数据库。
 
 总览已加入高德/L7地图与ECharts-GL企业3D能耗视图；小云形象改为吸碳云朵动图。高德本机环境变量、企业坐标来源与红线缺口见[地图与来源说明](park-map-and-sources.md)。
 
@@ -15,14 +15,14 @@
  └─ 小云组件 ── WebSocket ── 小云后台 :8766 ────┤
                     千问实时语音 ── ask_platform_manager ┤
                                                    ▼
-                                 Pi 总管（DeepSeek）→ 板块 Pi 专家
+                                 单个 Pi 总管（DeepSeek）
                                                    ↓
-                                  板块只读工具 → PostgreSQL greensystem
+                              按任务选择只读数据库工具 → PostgreSQL greensystem
 ```
 
-- **网站对话**（文字）：每个浏览器会话在服务器内存里保存一个 Pi 总管；总管按问题调用总览、能源、碳管理、综合诊断、企业名录、数据治理专家；审计记录 `channel='web'`、`agent_name='platform_manager'`。
+- **网站对话**（文字）：每个浏览器会话在服务器内存里保存一个 Pi 总管；它判断问题所属板块，并直接调用总览、能源、碳管理、综合诊断、企业名录或数据治理相关数据库工具；审计记录 `channel='web'`、`agent_name='platform_manager'`。
 - **语音**：千问负责听说与页面动作，园区业务问题通过 `ask_platform_manager` 调用同一个 Pi 总管；审计记录 `channel='voice'`、`agent_name='platform_manager'`。
-- 六个板块专家只加载各自相关的只读数据库工具；跨板块问题由总管咨询多个专家后汇总。网页与语音共用 `packages/db-agent/src/manager.ts` 的路由与工具定义。
+- 总管只有一个 Agent 实例，不创建板块专家，也不调用已部署的板块 Agent。板块清单用于指导工具选择；跨板块问题由同一个总管直接调用多个相关工具并汇总。网页与语音共用 `packages/db-agent/src/manager.ts` 的工具选择规则。
 
 ## 2. 为什么这样拆
 
@@ -30,7 +30,7 @@
 | --- | --- |
 | Agent 跑在服务端（Route Handler），浏览器只收文字流 | 数据库密码和 DeepSeek Key 只在服务器读取；浏览器拿不到。 |
 | SSE 流式返回 | Pi 的 `message_update` 事件逐字转发，用户不用等整段答案。 |
-| 总管及板块专家只读 | 语音误识别和未实现确认弹窗都不能触发导入、重算、审核或写 SQL；管理操作走现有有权限流程。 |
+| 总管工具只读 | 语音误识别和未实现确认弹窗都不能触发导入、重算、审核或写 SQL；管理操作走现有有权限流程。 |
 | `ask_platform_manager` 设为直达工具（voiceDirect） | 千问将完整园区业务问题交给共享总管，不需要在语音层复制板块工具选择规则。 |
 | 页面动作只注册 `switch_year` | 只注册网页上真实存在的按钮功能；语音切年份与点击顶部年份按钮效果相同。 |
 
@@ -83,7 +83,7 @@
 | 网页文字对话 | 原有数据库 Agent 测试记录；共享总管上线后的端到端记录见本次版本日志 |
 | 小云直达工具 | 原有 `park_overview` 测试记录；当前入口已改为 `ask_platform_manager` |
 | 小云页面动作 | “把页面切换到2024年”→ 执行 switch_year，网页切到 2024 |
-| 小云后台分析（DeepSeek/Pi） | 原有单数据库 Agent 测试记录；当前业务分析由共享总管转交板块专家 |
+| 小云后台分析（DeepSeek/Pi） | 原有单数据库 Agent 测试记录；当前业务分析由共享总管直接调用数据库工具 |
 
 文字测试用小云公开的 `submitText`，与语音走同一条会话；麦克风需要在浏览器里实际说话验证。
 
@@ -93,7 +93,7 @@
 | --- | --- |
 | `apps/web/app/page.tsx` | 总览：综合能耗、碳排放、增加值、已达标指标、荣誉；含模拟数据时显示提示条 |
 | `apps/web/app/api/agent/route.ts` | 总管文字对话接口，SSE 事件：start / text / tool_start / tool_end / done / error |
-| `packages/db-agent/src/manager.ts` | Pi 总管、六个板块专家、工具白名单和双入口共用调用函数 |
+| `packages/db-agent/src/manager.ts` | 单个 Pi 总管、板块工具指引和双入口共用调用函数 |
 | `apps/web/lib/server.ts` | 服务端单例：连接池、按会话缓存 Agent |
 | `apps/web/components/ChatPanel.tsx` | 右侧对话框 |
 | `apps/web/components/VoiceAssistant.tsx` | 挂载小云，注册 `switch_year`，年份变化时 `updateContext` |

@@ -108,12 +108,12 @@ export function createVoiceTools() {
   return projectTools;
 }
 
-/** The voice entrance delegates all platform questions to the same Pi supervisor used by web text. */
+/** Voice sends each platform question to the same single Pi agent used by web text. */
 export function createManagerVoiceTools() {
   const cfg = loadConfig();
   return [{
     name: "ask_platform_manager",
-    description: "信阳经开区能碳平台所有业务问题的统一入口。把用户原话交给 Pi 总管，由总管判断总览、能源、碳、综合诊断、企业或数据治理板块，并调用对应板块专家及其数据库工具。页面切换等纯页面动作仍用页面工具。",
+    description: "信阳经开区能碳平台所有业务问题的统一入口。把用户原话交给单个 Pi 总管，由它判断总览、能源、碳、综合诊断、企业或数据治理板块，并直接调用相关数据库工具完成查询。页面切换等纯页面动作仍用页面工具。",
     parameters: {
       type: "object",
       properties: {
