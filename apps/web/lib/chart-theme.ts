@@ -41,7 +41,7 @@ export const tooltip = (trigger: "axis" | "item" = "axis") => ({
   backgroundColor: hexA(C.surface, 0.95),
   borderWidth: 0,
   padding: [10, 12],
-  textStyle: { color: C.text, fontSize: 13 },
+  textStyle: { color: C.text, fontSize: 14 },
   extraCssText: "border-radius:14px;box-shadow:0 18px 40px -12px rgba(0,0,0,.45);backdrop-filter:blur(12px);",
   axisPointer: { type: "line" as const, lineStyle: { color: hexA(C.accent, 0.5), type: "dashed" as const } },
 });

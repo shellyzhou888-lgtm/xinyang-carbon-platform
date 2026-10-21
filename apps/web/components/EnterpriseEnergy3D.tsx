@@ -37,9 +37,9 @@ export default function EnterpriseEnergy3D({ ranking, year, selected, onSelect }
           const item = value as { data: { value: number[] }; name: string };
           return `${item.name}\n综合能耗：${item.data.value[2].toLocaleString("zh-CN")} tce\n${year} 年 · 当前数据库口径`;
         } },
-        xAxis3D: { type: "category", data: names, axisLabel: { color: "#8fa29b", interval: 0, fontSize: 10 }, name: "企业", nameTextStyle: { color: "#8fa29b" } },
+        xAxis3D: { type: "category", data: names, axisLabel: { color: "#8fa29b", interval: 0, fontSize: 12 }, name: "企业", nameTextStyle: { color: "#8fa29b" } },
         yAxis3D: { type: "category", data: ["综合能耗"], name: "", axisLabel: { show: false } },
-        zAxis3D: { type: "value", name: "tce", axisLabel: { color: "#8fa29b", fontSize: 10 }, nameTextStyle: { color: "#8fa29b" } },
+        zAxis3D: { type: "value", name: "tce", axisLabel: { color: "#8fa29b", fontSize: 12 }, nameTextStyle: { color: "#8fa29b" } },
         grid3D: {
           boxWidth: 160, boxDepth: 26, boxHeight: 65,
           axisLine: { lineStyle: { color: "rgba(255,255,255,0.12)" } }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.05)" } },

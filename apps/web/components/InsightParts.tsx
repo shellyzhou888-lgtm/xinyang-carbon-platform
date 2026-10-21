@@ -120,10 +120,10 @@ export function AnnualComboChart({ years, totals, intensity, totalName, totalUni
             { type: "value", name: intensityUnit, nameTextStyle: { color: C.muted, align: "right" }, ...axis, splitLine: { show: false }, min: 0, max: peak ? Number((peak * 2.4).toPrecision(2)) : undefined }],
     series: [
       { name: totalName, type: "bar", data: totals, barMaxWidth: 46, itemStyle: { color: barFade(color), borderRadius: [8, 8, 0, 0] },
-        label: { show: true, position: "insideTop", distance: 10, color: "#1a1408", fontWeight: 600, fontSize: 11, formatter: ({ value }: { value: number }) => fmt(value, 0) } },
+        label: { show: true, position: "insideTop", distance: 10, color: "#1a1408", fontWeight: 600, fontSize: 12, formatter: ({ value }: { value: number }) => fmt(value, 0) } },
       { name: intensityName, type: "line", yAxisIndex: 1, data: intensity, smooth: 0.3, symbol: "circle", symbolSize: 8,
         lineStyle: { color: C.accent, width: 2.2 }, itemStyle: { color: C.accent, borderColor: "#0b100f", borderWidth: 2 },
-        label: { show: true, position: "top", distance: 8, color: C.accent, fontSize: 11, backgroundColor: "rgba(8,13,12,.82)", padding: [2, 6], borderRadius: 4, formatter: ({ value }: { value: number }) => fmt(value, 3) } },
+        label: { show: true, position: "top", distance: 8, color: C.accent, fontSize: 12, backgroundColor: "rgba(8,13,12,.82)", padding: [2, 6], borderRadius: 4, formatter: ({ value }: { value: number }) => fmt(value, 3) } },
     ],
   }), [years, totals, intensity, totalName, totalUnit, intensityName, intensityUnit, color, peak]);
   const ref = useChart(option);

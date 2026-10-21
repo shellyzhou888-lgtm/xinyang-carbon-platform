@@ -35,7 +35,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const leader = chart?.ranking[0];
 
   return <>
-    <PageHeading eyebrow="ENERGY MANAGEMENT" title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
+    <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
     <DataError error={error} />
     <div className="kpi-grid">
       <KpiCard featured label={`${year} 年综合能耗`} value={data?.tce} unit="tce" digits={0} tone="energy" previous={annual(year - 1)?.tce} spark={monthly.map((row) => row.tce)} foot="同比上年 · 月度走势" />

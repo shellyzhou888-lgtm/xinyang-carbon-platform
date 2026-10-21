@@ -66,12 +66,12 @@ const plate = () => isLight() ? { bg: "rgba(255,255,255,.92)", text: "#14181a", 
 /** Zone name plate: name and planned area, no colour bar. */
 export function zoneLabel(name: string, area: number) {
   const { bg, text, muted } = plate();
-  const probe = canvas(1, 1).ctx; probe.font = `600 13px ${FONT}`;
+  const probe = canvas(1, 1).ctx; probe.font = `600 14px ${FONT}`;
   const w = Math.max(132, Math.ceil(probe.measureText(name).width) + 28), h = 46;
   const { element, ctx } = canvas(w, h);
   ctx.fillStyle = bg; roundRect(ctx, 0, 0, w, h, 12); ctx.fill();
-  ctx.font = `600 13px ${FONT}`; ctx.fillStyle = text; ctx.fillText(name, 14, 20);
-  ctx.font = `11px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(`规划面积 ${area.toFixed(2)} km²`, 14, 36);
+  ctx.font = `600 14px ${FONT}`; ctx.fillStyle = text; ctx.fillText(name, 14, 20);
+  ctx.font = `12px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(`规划面积 ${area.toFixed(2)} km²`, 14, 36);
   return { image: element.toDataURL("image/png"), size: [w, h] as [number, number] };
 }
 
@@ -96,13 +96,13 @@ export function trophyMarker(size = 30) {
 /** Honour plate under an enterprise in zone view: trophy + honour names. */
 export function trophyPlate(titles: string[]) {
   const { bg, text } = plate();
-  const probe = canvas(1, 1).ctx; probe.font = `600 11.5px ${FONT}`;
+  const probe = canvas(1, 1).ctx; probe.font = `600 12px ${FONT}`;
   const line = titles.join(" · ");
   const w = Math.ceil(probe.measureText(line).width) + 40, h = 24;
   const { element, ctx } = canvas(w, h);
   ctx.fillStyle = bg; roundRect(ctx, 0, 0, w, h, 12); ctx.fill();
   drawTrophy(ctx, 8, 4, 16);
-  ctx.font = `600 11.5px ${FONT}`; ctx.fillStyle = text; ctx.fillText(line, 30, 16.5);
+  ctx.font = `600 12px ${FONT}`; ctx.fillStyle = text; ctx.fillText(line, 30, 16.5);
   return { image: element.toDataURL("image/png"), size: [w, h] as [number, number] };
 }
 /** Info card in the style of an equipment callout: title row and up to three label / value rows. */
@@ -112,12 +112,12 @@ export function infoCard(title: string, rows: [string, string][], accent: string
   const { element, ctx } = canvas(w, h);
   ctx.fillStyle = bg; roundRect(ctx, 0, 0, w, h, 10); ctx.fill();
   ctx.fillStyle = accent; roundRect(ctx, 10, 9, 14, 14, 4); ctx.fill();
-  ctx.fillStyle = "#11160a"; ctx.font = `700 10px ${FONT}`; ctx.fillText(alert ? "!" : "⚡", alert ? 15 : 12.5, 20);
+  ctx.fillStyle = "#11160a"; ctx.font = `700 12px ${FONT}`; ctx.fillText(alert ? "!" : "⚡", alert ? 15 : 12.5, 20);
   ctx.font = `700 12px ${FONT}`; ctx.fillStyle = text; ctx.fillText(title, 30, 21);
   rows.forEach(([label, value], index) => {
     const y = 44 + index * 20;
-    ctx.font = `11px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(label, 12, y);
-    ctx.font = `600 12.5px ${NUM}`; ctx.fillStyle = index === 0 ? accent : text; ctx.textAlign = "right"; ctx.fillText(value, w - 12, y); ctx.textAlign = "left";
+    ctx.font = `12px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(label, 12, y);
+    ctx.font = `600 12px ${NUM}`; ctx.fillStyle = index === 0 ? accent : text; ctx.textAlign = "right"; ctx.fillText(value, w - 12, y); ctx.textAlign = "left";
   });
   return { image: element.toDataURL("image/png"), size: [w, h] as [number, number] };
 }

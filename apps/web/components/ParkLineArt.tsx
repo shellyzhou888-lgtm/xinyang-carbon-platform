@@ -27,7 +27,7 @@ const path = (ring: Point[]) => ring.map((p, i) => `${i ? "L" : "M"}${project(p)
 export default function ParkLineArt() {
   const reduce = useReducedMotion();
   return (
-    <svg className="park-line-art" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="信阳经开区四个规划功能片区与公开企业点位示意">
+    <svg className="park-line-art" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="信阳经开区四个规划功能片区与企业点位">
       <defs>
         <pattern id="dot-grid" width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="rgba(197,240,92,.12)" /></pattern>
         <radialGradient id="art-glow" cx="50%" cy="50%" r="55%"><stop offset="0" stopColor="rgba(62,224,161,.16)" /><stop offset="1" stopColor="rgba(62,224,161,0)" /></radialGradient>

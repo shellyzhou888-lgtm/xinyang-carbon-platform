@@ -50,7 +50,7 @@ export function TrendChart({ data: original, forecast = true, recentYears = fals
             { type: "value", name: "tCO₂", nameTextStyle: { color: C.muted, align: "right" }, ...axis, splitLine: { show: false } }],
     series: [
       { name: "综合能耗", type: "line", data: data.monthly.map((m) => m.tce), smooth: 0.35, symbol: "none", lineStyle: { color: C.energy, width: 2.2 }, itemStyle: { color: C.energy }, areaStyle: { color: fade(C.energy, 0.28) },
-        markArea: fe ? { silent: true, itemStyle: { color: "rgba(255,255,255,0.025)" }, label: { color: C.muted, position: "insideTop", fontSize: 11 },
+        markArea: fe ? { silent: true, itemStyle: { color: "rgba(255,255,255,0.025)" }, label: { color: C.muted, position: "insideTop", fontSize: 12 },
                          data: [[{ name: "预测区间", xAxis: fe.points[0].month }, { xAxis: fe.points.at(-1)!.month }]] } : undefined },
       { name: "碳排放", type: "line", yAxisIndex: 1, data: data.monthly.map((m) => m.co2_t), smooth: 0.35, symbol: "none", lineStyle: { color: C.carbon, width: 2.2 }, itemStyle: { color: C.carbon }, areaStyle: { color: fade(C.carbon, 0.16) } },
       { name: "能耗区间下沿", type: "line", data: lower(fe), stack: "e-band", symbol: "none", lineStyle: { opacity: 0 }, tooltip: { show: false } },
@@ -85,7 +85,7 @@ export function StructureChart({ data }: { data: ChartData }) {
     tooltip: { ...tooltip("item"), formatter: "{b}<br/><b>{c}</b> tce（{d}%）" },
     legend: legend({ orient: "vertical", right: 0, top: "middle", itemWidth: 8, itemHeight: 8, icon: "circle" }),
     series: [{ type: "pie", radius: ["58%", "80%"], center: ["32%", "50%"], padAngle: 2, itemStyle: { borderRadius: 6, borderWidth: 0 },
-               label: { show: true, position: "center", formatter: () => `{v|${Math.round(total).toLocaleString("zh-CN")}}\n{u|tce 合计}`, rich: { v: { color: C.text, fontSize: 22, fontWeight: 600, fontFamily: "Bahnschrift, DIN Alternate, sans-serif" }, u: { color: C.muted, fontSize: 11, padding: [6, 0, 0, 0] } } },
+               label: { show: true, position: "center", formatter: () => `{v|${Math.round(total).toLocaleString("zh-CN")}}\n{u|tce 合计}`, rich: { v: { color: C.text, fontSize: 24, fontWeight: 600, fontFamily: "Bahnschrift, DIN Alternate, sans-serif" }, u: { color: C.muted, fontSize: 12, padding: [6, 0, 0, 0] } } },
                emphasis: { scale: true, scaleSize: 4, label: { show: true } },
                data: data.structure.map((s) => ({ name: s.name, value: s.tce })) }],
   };

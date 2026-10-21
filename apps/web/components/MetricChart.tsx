@@ -21,7 +21,7 @@ export default function MetricChart({ rows, kind = "bar", unit, color = C.energy
     chart.setOption(kind === "pie" ? {
       ...common,
       legend: legend({ bottom: 0, icon: "circle", itemWidth: 8, itemHeight: 8 }),
-      series: [{ type: "pie", radius: ["50%", "74%"], center: ["50%", "44%"], padAngle: 2, itemStyle: { borderRadius: 6 }, label: { color: C.text, formatter: "{b}\n{d}%", fontSize: 11 }, labelLine: { lineStyle: { color: "rgba(255,255,255,.2)" } }, data: rows.map((row) => ({ name: row.name, value: row.value })) }],
+      series: [{ type: "pie", radius: ["50%", "74%"], center: ["50%", "44%"], padAngle: 2, itemStyle: { borderRadius: 6 }, label: { color: C.text, formatter: "{b}\n{d}%", fontSize: 12 }, labelLine: { lineStyle: { color: "rgba(255,255,255,.2)" } }, data: rows.map((row) => ({ name: row.name, value: row.value })) }],
     } : {
       ...common,
       grid: { left: 8, right: 12, top: 32, bottom: 8, containLabel: true },

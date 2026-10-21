@@ -8,6 +8,7 @@ import { TrendChart } from "@/components/EnergyCharts";
 import MetricChart from "@/components/MetricChart";
 import AlertEvidence from "@/components/AlertEvidence";
 import { Roadmap } from "@/components/CarbonDataSections";
+import { cleanSource } from "@/lib/source-text";
 import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,7 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
   const top = detail?.carbonRanking[0]?.co2_t || 1;
 
   return <>
-    <PageHeading eyebrow="ENERGY & CARBON DIAGNOSIS" title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。" />
+    <PageHeading eyebrow={`ENERGY & CARBON DIAGNOSIS · ${year} 年度`} title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。" />
     <DataError error={error} />
     <DiagnosisSteps year={year} active={tab} counts={{ alerts: openAlerts.length, causes: detail?.carbonRanking.length ?? 0, strategies: extended?.plans.length ?? 0, forecast: chart?.forecast.length ?? 0 }} />
 
@@ -58,12 +59,12 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
 
     {tab === "strategies" && <div className="stack">
       <Reveal><Panel title="预警关联策略推荐" subtitle="节能量与减碳量按策略参数测算；不同策略可能重叠，不直接求和。">
-        {extended?.plans.length ? <div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th className="num">预计节能 / tce</th><th className="num">预计减碳 / tCO₂</th><th>参数</th></tr></thead>
-          <tbody>{extended.plans.map((row, index) => <tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td className="num">{fmt(row.tce_saving)}</td><td className="num">{fmt(row.co2_reduction_t)}</td><td>{row.simulated ? <span className="tag est">模拟值</span> : "按已录参数"}</td></tr>)}</tbody></table></div>
+        {extended?.plans.length ? <div className="table-scroll"><table><thead><tr><th>企业 / 对象</th><th>策略与关联预警</th><th className="num">预计节能 / tce</th><th className="num">预计减碳 / tCO₂</th></tr></thead>
+          <tbody>{extended.plans.map((row, index) => <tr key={index}><td>{row.node}</td><td>{row.strategy}<small className="table-subtext">{row.alert}</small></td><td className="num">{fmt(row.tce_saving)}</td><td className="num">{fmt(row.co2_reduction_t)}</td></tr>)}</tbody></table></div>
           : <Empty title="本年度暂无预警关联策略" />}
       </Panel></Reveal>
       <Reveal><Panel title="减碳策略库" subtitle={`${detail?.strategies.length ?? 0} 项可选策略`}>
-        <div className="strategy-grid">{detail?.strategies.map((row) => <article className="strategy-item" key={row.code}><span className="strategy-category">{CATEGORIES[row.category] || row.category}</span><h3>{row.name}</h3><p>{row.description || "按企业工况和适用条件进一步核查。"}</p>{row.reference && <small>{row.reference}</small>}</article>)}</div>
+        <div className="strategy-grid">{detail?.strategies.map((row) => <article className="strategy-item" key={row.code}><span className="strategy-category">{CATEGORIES[row.category] || row.category}</span><h3>{row.name}</h3><p>{row.description || "按企业工况和适用条件进一步核查。"}</p>{cleanSource(row.reference) && <small>{cleanSource(row.reference)}</small>}</article>)}</div>
       </Panel></Reveal>
     </div>}
 

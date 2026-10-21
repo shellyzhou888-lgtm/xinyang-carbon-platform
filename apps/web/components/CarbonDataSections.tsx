@@ -2,6 +2,7 @@ import type { CarbonManagementData } from "@xinyang/db-agent";
 import { formatNumber as fmt } from "@/lib/workspace";
 import { C } from "@/lib/chart-theme";
 import ComparisonChart from "./ComparisonChart";
+import { cleanSource } from "@/lib/source-text";
 import { Empty, Panel } from "./WorkspaceParts";
 
 export function BudgetComparison({ data, kind }: { data: CarbonManagementData | null; kind: "energy" | "carbon" }) {
@@ -49,8 +50,8 @@ export function CarbonReferences({ data }: { data: CarbonManagementData | null }
     </Panel>
     <Panel title="产品碳足迹参考" subtitle="公开数据库与文献参考值，核对后在后台批准">
       {data?.footprint_refs.length ? <div className="list scroll-list">{data.footprint_refs.map((row, index) => <div className="list-row" key={index}>
-        <div><b>{row.product}</b><small>{row.boundary || "边界未标注"} · {row.source}</small></div>
-        <div className="list-figure"><span className="num">{fmt(row.value, 3)}</span><small>{row.unit} / {row.functional_unit}</small>{row.status === "draft" && <em className="chip-warn">待审核</em>}</div>
+        <div><b>{row.product}</b><small>{row.boundary || "边界未标注"} · {cleanSource(row.source)}</small></div>
+        <div className="list-figure"><span className="num">{fmt(row.value, 3)}</span><small>{row.unit} / {row.functional_unit}</small></div>
       </div>)}</div> : <Empty title="暂无参考数据">待补充产品功能单位、边界与来源</Empty>}
     </Panel>
   </div>;

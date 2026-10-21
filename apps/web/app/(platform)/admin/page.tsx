@@ -2,6 +2,7 @@ import Link from "next/link";
 import { adminApi } from "@/lib/server";
 import { AdminNavigation, PageHeading } from "@/components/WorkspaceParts";
 import { selectedYear } from "@/lib/workspace";
+import { cleanSource, documentTitle } from "@/lib/source-text";
 import { approveAllColumns, decideIssue, reviewColumn, reviewEdge, reviewFootprint, reviewQa, reviewTable, runGovernanceNow } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -264,8 +265,8 @@ async function Footprints({ status }: { status: string }) {
           </div>
           <p className="muted">适用企业：{r.applicable_nodes?.length ? r.applicable_nodes.join("、") : "通用"}
             {r.product_category ? ` · 类别 ${r.product_category}` : ""}{r.region ? ` · 地域 ${r.region}` : ""}{r.method_standard ? ` · ${r.method_standard}` : ""}</p>
-          <p className="muted">来源：{r.source_url ? <a href={r.source_url} target="_blank" rel="noreferrer">{r.source_title}</a> : r.source_title}{r.source_page ? `（${r.source_page}）` : ""}</p>
-          {r.note && <p className="muted">备注：{r.note}</p>}
+          <p className="muted">来源：{r.source_url ? <a href={r.source_url} target="_blank" rel="noreferrer">{documentTitle(r.source_title)}</a> : documentTitle(r.source_title)}</p>
+          {cleanSource(r.note) && <p className="muted">备注：{cleanSource(r.note)}</p>}
           {r.reviewed_by && <p className="muted">审核：{r.reviewed_by} {r.reviewed_at ? new Date(r.reviewed_at).toLocaleString("zh-CN") : ""}</p>}
           <div className="decide">
             <select name="boundary" defaultValue={r.boundary ?? ""}>

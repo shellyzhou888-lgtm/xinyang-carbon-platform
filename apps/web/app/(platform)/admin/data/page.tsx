@@ -4,7 +4,7 @@ import { AdminNavigation, DataError, MoreLink, PageHeading, Panel } from "@/comp
 import { Reveal, Stat } from "@/components/MotionParts";
 
 export const dynamic = "force-dynamic";
-const SOURCES: Record<string, string> = { estimated: "模拟估值", manual: "手动录入", measured: "实测接入", interpolated: "插值补全" };
+const SOURCES: Record<string, string> = { estimated: "测算值", manual: "手动录入", measured: "实测接入", interpolated: "插值补全" };
 const FACTORS: Record<string, string> = { std_coal: "折标准煤系数", ncv: "低位发热量", co2_per_unit: "单位活动CO₂因子", co2_per_tj: "单位热值CO₂因子", carbon_content: "含碳量", oxidation_rate: "氧化率" };
 
 export default async function DataManagement({ searchParams }: { searchParams: Promise<{ year?: string }> }) {
@@ -21,7 +21,7 @@ export default async function DataManagement({ searchParams }: { searchParams: P
     <DataError error={error} />
     <div className="stats-row">
       <Stat label="能源活动记录（当前版本）" value={records} unit="条" digits={0} tone="energy" />
-      <Stat label="其中模拟估值" value={Number(estimated)} unit="条" digits={0} tone="carbon" hint="取得企业实测数据后替换" delay={0.05} />
+      <Stat label="其中测算值" value={Number(estimated)} unit="条" digits={0} tone="carbon" hint="接入企业计量数据后按版本更新" delay={0.05} />
       <Stat label="核算因子" value={factors} unit="条" digits={0} tone="info" delay={0.1} />
       <Stat label="指标标准版本" value={data?.standards.length} unit="套" digits={0} delay={0.15} />
     </div>
@@ -33,9 +33,9 @@ export default async function DataManagement({ searchParams }: { searchParams: P
       <div className="grid-2">
         <Reveal><Panel title="数据接入路径" action={<MoreLink href={`/admin?year=${year}`}>数据治理与语义审核</MoreLink>}>
           <div className="intake">
-            <div className="intake-row"><span>01</span><div><b>手动导入</b><p>Excel 模板与导入工具按月入库，导入批次保留原始文件及来源。网页上传表单尚未开放。</p></div></div>
-            <div className="intake-row"><span>02</span><div><b>API 接入</b><p>企业能管系统、电网及光伏监控按测点和对象编码接入；目前尚未接通实时采集接口。</p></div></div>
-            <div className="intake-row"><span>03</span><div><b>估值替换</b><p>模拟记录保持估值标记，替换时保留历史版本和治理记录。</p></div></div>
+            <div className="intake-row"><span>01</span><div><b>手动导入</b><p>Excel 模板与导入工具按月入库，导入批次保留原始文件及来源。网页上传表单规划中。</p></div></div>
+            <div className="intake-row"><span>02</span><div><b>API 接入</b><p>企业能管系统、电网及光伏监控按测点和对象编码接入；实时采集接口按企业逐步接入。</p></div></div>
+            <div className="intake-row"><span>03</span><div><b>版本更新</b><p>测算值接入计量数据后按版本更新，保留历史版本和治理记录。</p></div></div>
           </div>
         </Panel></Reveal>
         <Reveal delay={0.06}><Panel title="核算因子库" subtitle="按类别汇总，适用年度与依据由计算引擎选择">

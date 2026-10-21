@@ -25,7 +25,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const shortName = (name: string) => name.replace(/（[^）]*）/g, "");
 
   return <>
-    <PageHeading eyebrow="CARBON MANAGEMENT" title="碳排管理" description="以统一核算口径查看排放结构、企业贡献和碳强度。">
+    <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description="以统一核算口径查看排放结构、企业贡献和碳强度。">
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>
         <p>采用 GIP_2026 口径，按发改环资〔2025〕910号附件4计算；电力、热力按净受入处理，燃料以活动量及对应因子核算，原料用途与燃料用途分别处理。</p>

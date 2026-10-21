@@ -9,7 +9,7 @@ import ChatPanel from "./ChatPanel";
 import VoiceAssistant from "./VoiceAssistant";
 import { HealthProvider, useHealth } from "./HealthContext";
 import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconMoon, IconOverview, IconSun } from "./icons";
-import { selectedYear, YEARS } from "@/lib/workspace";
+import { selectedYear } from "@/lib/workspace";
 import { logout } from "@/app/login/actions";
 
 const NAV = [
@@ -49,7 +49,6 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     window.addEventListener("keydown", close);
     return () => window.removeEventListener("keydown", close);
   }, [chatOpen]);
-  const yearHref = (value: number) => { const query = new URLSearchParams(params.toString()); query.set("year", String(value)); return `${path}?${query}`; };
 
   return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
@@ -83,13 +82,6 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
         </div>
         <div className="topbar-right">
           <StatusPill />
-          {/* The overview screen always shows the latest year, so it has no year switch. */}
-          {!screen && <nav className="segmented" aria-label="统计年份">
-            {YEARS.map((value) => <Link key={value} href={yearHref(value)} className={value === year ? "on" : ""} aria-current={value === year ? "true" : undefined}>
-              {value === year && <motion.span layoutId="year-pill" className="segmented-pill" transition={{ type: "spring", stiffness: 420, damping: 34 }} />}
-              <span>{value}</span>
-            </Link>)}
-          </nav>}
           <Clock />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />
           <UserMenu user={user} />
