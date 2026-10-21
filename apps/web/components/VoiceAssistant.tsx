@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 type Overview = { tce: number | null; co2_t: number | null; achieved: number; total: number } | null;
 
 const PROJECT_ID = "xinyang-park";
-const BACKEND_URL = process.env.NEXT_PUBLIC_XIAOYUN_BACKEND_URL ||
-  (process.env.NODE_ENV === "development" ? "http://127.0.0.1:8766" : "");
+const CONFIGURED_BACKEND_URL = process.env.NEXT_PUBLIC_XIAOYUN_BACKEND_URL;
 const YEARS = [2023, 2024, 2025];
 
 /**
@@ -30,13 +29,19 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
     let disposed = false;
     (async () => {
       try {
-        if (!BACKEND_URL) throw new Error("请在构建网站前设置 NEXT_PUBLIC_XIAOYUN_BACKEND_URL");
+        if (!window.isSecureContext) throw new Error("当前地址不能使用麦克风：请通过可信任的 HTTPS 地址访问网站");
+        const localBrowser = ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+        const backendUrl = CONFIGURED_BACKEND_URL ||
+          (localBrowser && window.location.protocol === "http:" ? "http://127.0.0.1:8766" : window.location.origin);
+        if (window.location.protocol === "https:" && new URL(backendUrl).protocol !== "https:") {
+          throw new Error("HTTPS 网站需要使用 HTTPS/WSS 小云后台地址");
+        }
         const { createVoiceAssistant } = await import("@xiaoyun/voice");
         if (disposed) return;
         voiceRef.current = createVoiceAssistant({
           container: mount.current || undefined,
           projectId: PROJECT_ID,
-          backendUrl: BACKEND_URL,
+          backendUrl,
           assetBaseUrl: "/xiaoyun/",
           mode: "live",
           ui: { position: { right: 24, bottom: 70 } },
