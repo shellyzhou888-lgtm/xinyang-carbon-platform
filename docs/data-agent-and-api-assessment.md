@@ -51,6 +51,19 @@ https://power.larc.nasa.gov/api/temporal/daily/point?parameters=ALLSKY_SFC_SW_DW
 - `longitude`、`latitude`：此处为园区附近的演示点，不是已经核准的园区中心 WGS84 坐标。正式接入前应选定园区或光伏站 WGS84 坐标；不要直接把高德地图 GCJ-02 坐标当作精确采样点。
 - `start`、`end`：历史日期，格式为 `YYYYMMDD`；`format=JSON` 便于程序解析。若用官方交互页面，依次填同样的值并按“Execute”，无需注册或填写 API Key。
 
+### 更多可用字段与时间范围（2026-10-21 验证）
+
+NASA 的[参数字典](https://power.larc.nasa.gov/docs/tutorials/parameters/)和 [Manager 参数目录](https://power.larc.nasa.gov/docs/services/api/system/manager/)按使用场景、日/小时尺度列出可用参数。在上述演示地点与日期，一次 Daily API 请求实测以下 **13 个参数均有返回**；[官方限制](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)为单点单次最多 20 个参数。
+
+| 用途 | 参数 | 返回单位 | 说明 |
+| --- | --- | --- | --- |
+| 光伏核心 | `ALLSKY_SFC_SW_DWN`、`ALLSKY_SFC_SW_DNI`、`ALLSKY_SFC_SW_DIFF` | kWh/m²/日 | 水平面总辐照（GHI）、法向直射（DNI）、散射辐照；估算组件面辐照需另有倾角/朝向 |
+| 光伏辅助 | `CLRSKY_SFC_SW_DWN`、`CLOUD_AMT` | kWh/m²/日、% | 晴空基准辐照和云量，用于解释实际辐照偏低的天气原因 |
+| 光伏及能耗 | `T2M`、`T2M_MAX`、`T2M_MIN`、`RH2M`、`WS10M` | °C、%、m/s | 平均/最高/最低气温、相对湿度、风速；气温与风速还影响组件温度 |
+| 能耗辅助 | `PRECTOTCORR`、`CDD18_3`、`HDD18_3` | mm/日、°C·日 | 降水、18.3°C 基准的制冷/采暖度日；度日主要解释空调和采暖负荷，不能直接解释工艺能耗 |
+
+**时间范围需要分开理解：**当前浏览器演示请求 `start=20251001&end=20251003`，只取 2025-10-01 至 2025-10-03 **3 天**，未导入项目数据库。另一次只读请求验证 13 个参数能同时返回 2021-01-01 至 2025-12-31 的 **1,826 天**；这是与项目现有月度能耗序列对齐的建议历史回填范围，也尚未落库。NASA [Daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)总体覆盖 1981 年至近实时，但[气象源](https://power.larc.nasa.gov/docs/methodology/communities/)可追溯至 1981 年、太阳辐照源一般从 1984 年开始，且具体字段可能更晚；[Hourly API](https://power.larc.nasa.gov/docs/services/api/temporal/hourly/)从 2001 年至近实时。以 2026-10-21 的现场查询为例，该地点最后有效的 `ALLSKY_SFC_SW_DWN` 为 2026-10-16，`T2M` 为 2026-10-18；近实时末日会随发布进度变化。正式接入宜先按年回填 2021–2025，再按可用日期增量更新，并保留源时间尺度与时区口径。NASA 的近实时数据不是未来预报。
+
 ## 建议的自动更新链路
 
 按优先级先做企业能源实测数据接入，再做气象与市场参考数据。每个连接器应执行：按计划拉取 → 保存原始响应及来源/发布时间/校验值 → 幂等解析并校验单位、时间和对象编码 → 写入导入批次与事实表（保留修订历史）→ 对受影响年份执行计算 → 运行治理检查 → 告警并在页面显示最近同步时间及数据质量。因子更新单独进入待审流程，批准后才重算。Pi Agent 可读取这些同步状态、解释异常和建议处理，但不应承担无人值守的抓取与写库调度。
