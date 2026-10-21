@@ -10,13 +10,16 @@ import s from "./DiagnosisAlerts.module.css";
 type Alert = ManagementData["alerts"][number];
 
 export default function DiagnosisAlerts({ alerts, openCount }: { alerts: Alert[]; openCount: number }) {
-  const [active, setActive] = useState<AlertGroupKey | null>(null);
+  const [active, setActive] = useState<AlertGroupKey | null>(() => ALERT_GROUPS.find((group) => alerts.some((row) => alertGroup(row.rule_code) === group.key))?.key ?? null);
+  const [expanded, setExpanded] = useState(false);
   const counts = Object.fromEntries(ALERT_GROUPS.map((group) => [group.key, alerts.filter((row) => alertGroup(row.rule_code) === group.key).length])) as Record<AlertGroupKey, number>;
   const high = alerts.filter((row) => ["critical", "high"].includes(row.severity)).length;
   const enterprises = new Set(alerts.map((row) => row.node)).size;
   const shown = alerts.filter((row) => !active || alertGroup(row.rule_code) === active);
   const ordered = [...shown].sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
+  const riskBands = ["critical", "high", "medium", "low"].map((key) => ({ key, count: alerts.filter((row) => key === "medium" ? ["medium", "warning"].includes(row.severity) : row.severity === key).length }));
   return <div className="stack">
+    <div className={s.riskOverview} aria-label="预警风险分布"><span>风险分布</span><div className={s.riskTrack}>{riskBands.map((band) => band.count > 0 && <i key={band.key} className={s[band.key]} style={{ width: `${band.count / Math.max(alerts.length, 1) * 100}%` }} title={`${band.key} ${band.count} 项`} />)}</div><strong>{high} 项需优先核查</strong></div>
     <div className={s.summary} aria-label="预警概览">
       <div className={s.metric}><span>当前显示</span><strong>{alerts.length}</strong><small>其中待处理 {openCount} 项</small></div>
       <div className={s.metric}><span>高风险及紧急</span><strong>{high}</strong><small>建议优先核查</small></div>
@@ -31,7 +34,7 @@ export default function DiagnosisAlerts({ alerts, openCount }: { alerts: Alert[]
       </button>)}
     </div>
     <div><div className={s.sectionHead}><h2>{active ? ALERT_GROUPS.find((group) => group.key === active)?.label : "全部预警"} <small>· {ordered.length} 项</small></h2>{active && <button className={s.clear} onClick={() => setActive(null)}>查看全部</button>}</div>
-      <div className={s.list}>{ordered.map((row) => {
+      <div className={s.list}>{ordered.slice(0, expanded ? undefined : 8).map((row) => {
         const group = ALERT_GROUPS.find((item) => item.key === alertGroup(row.rule_code))!;
         const deviation = alertDeviation(row.observed, row.baseline);
         return <article className={s.row} key={row.id} style={{ "--group-color": group.color } as React.CSSProperties}>
@@ -40,6 +43,7 @@ export default function DiagnosisAlerts({ alerts, openCount }: { alerts: Alert[]
           <details className={s.details}><summary>查看诊断与证据</summary><p>{row.message}</p><AlertEvidence value={row.root_cause} /></details>
         </article>;
       })}</div>
+      {ordered.length > 8 && <button className={s.more} type="button" onClick={() => setExpanded((value) => !value)}>{expanded ? "收起明细" : `查看其余 ${ordered.length - 8} 项`}</button>}
     </div>
   </div>;
 }

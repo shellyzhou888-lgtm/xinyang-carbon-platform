@@ -85,7 +85,8 @@ async function Issues({ status, category }: { status: string; category?: string 
       </div>
       {issues.length === 0 && <div className="hint">没有符合条件的工单。</div>}
       {issues.map((g: any) => (
-        <div key={g.issue_id} className={`issue risk-${g.risk}`}>
+        <article key={g.issue_id} className={`issue issue-paper risk-${g.risk}`}>
+          <div className="issue-paper-kicker">数据治理工单 <span>#{g.issue_id}</span></div>
           <div className="issue-head">
             <span className={`tag risk-${g.risk}`}>{RISK[g.risk]}风险</span>
             <span className="tag">{CATEGORY[g.category]}</span>
@@ -99,14 +100,15 @@ async function Issues({ status, category }: { status: string; category?: string 
           {g.decision_note && <p className="muted">处理记录：{g.decided_by ?? ""} {g.decision_note}</p>}
           <form action={decideIssue} className="decide">
             <input type="hidden" name="issue_id" value={g.issue_id} />
-            <input name="note" placeholder="处理意见（可选）" />
+            <input name="note" placeholder="处理意见；提出改进时请填写" />
             {g.status === "open" && <>
-              <button name="decision" value="approve" className="btn">{ACTION[g.action?.kind] ?? "确认"}</button>
-              <button name="decision" value="reject" className="btn ghost">驳回（不再提示）</button>
+              <button name="decision" value="approve" className="btn">确认 · {ACTION[g.action?.kind] ?? "采纳"}</button>
+              <button name="decision" value="improve" className="btn ghost">提出改进</button>
+              <button name="decision" value="reject" className="btn ghost">不适用</button>
             </>}
             {g.status !== "open" && <button name="decision" value="reopen" className="btn ghost">重新打开</button>}
           </form>
-        </div>
+        </article>
       ))}
     </section>
   );

@@ -17,16 +17,22 @@
 .clear { border:0; background:transparent; color:#a6d6b7; font:inherit; cursor:pointer; }
 .list { display:grid; gap:10px; }
 .row { padding:16px 18px; border:1px solid rgba(255,255,255,.1); border-left:3px solid var(--group-color); border-radius:12px; background:rgba(25,35,33,.9); }
-.rowTop { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
-.rowTitle { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; }
+.rowTop { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; min-width:0; }
+.rowTitle { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; min-width:0; flex:1 1 220px; }
 .rowTitle b { font-size:15px; color:#f2f7f3; }
 .rowTitle span { font-size:13px; color:#aab9b4; }
-.rowMeta { display:flex; gap:8px; align-items:center; white-space:nowrap; font-size:12px; }
+.rowMeta { display:flex; gap:8px; align-items:center; flex-wrap:wrap; font-size:12px; }
 .severity { padding:3px 8px; border-radius:6px; color:var(--group-color); background:color-mix(in srgb,var(--group-color) 16%,transparent); }
 .rowBottom { display:flex; flex-wrap:wrap; gap:16px; margin-top:10px; color:#aab9b4; font-size:13px; }
 .rowBottom strong { color:#edf5ef; font-variant-numeric:tabular-nums; }
 .details { margin-top:10px; font-size:13px; color:#b8c9bf; }
 .details summary { color:#a6d6b7; cursor:pointer; }
 .details p { margin:10px 0 0; line-height:1.55; }
+.riskOverview { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:center; padding:14px 18px; border-radius:14px; background:var(--surface-2); color:var(--text-2); font-size:13px; }
+.riskOverview strong { color:var(--danger); font-size:13px; }
+.riskTrack { display:flex; height:10px; overflow:hidden; border-radius:9px; background:var(--surface-4); }
+.riskTrack i { display:block; height:100%; }
+.critical { background:#e65053; }.high { background:#f38a48; }.medium { background:#e3ca58; }.low { background:#55cc9c; }
+.more { justify-self:center; width:100%; margin-top:10px; padding:10px; border:1px solid var(--surface-4); border-radius:10px; background:var(--surface-2); color:var(--text); font:inherit; cursor:pointer; }
 @media(max-width:1100px){.summary,.groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.summary,.groups{grid-template-columns:1fr 1fr}.metric{padding:14px}.groupCard{padding:13px}.rowTop{flex-direction:column}.rowMeta{white-space:normal}}

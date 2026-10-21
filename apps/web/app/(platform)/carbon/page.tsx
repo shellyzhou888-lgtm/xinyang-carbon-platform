@@ -2,7 +2,9 @@ import { charts, management, overview, carbonManagement, enterpriseEnergyMix } f
 import { selectedYear } from "@/lib/workspace";
 import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs, Reveal } from "@/components/MotionParts";
-import { AnnualComboChart, ContributionList, KpiCard, ShareBreakdown, YearCompareChart } from "@/components/InsightParts";
+import { AnnualComboChart, ContributionList, KpiCard, YearCompareChart } from "@/components/InsightParts";
+import CompositionStages from "@/components/CompositionStages";
+import SectionPager from "@/components/SectionPager";
 import { BudgetComparison, CarbonReferences } from "@/components/CarbonDataSections";
 import FlowNetworkMap from "@/components/FlowNetworkMap";
 import { C } from "@/lib/chart-theme";
@@ -43,13 +45,13 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
     </div>
     <LinkTabs id="carbon" label="碳排管理模块" active={tab} items={[{ key: "analysis", label: "碳排放分析", href: `/carbon?year=${year}` }, { key: "flow", label: "碳流网络", href: `/carbon?year=${year}&tab=flow` }]} />
 
-    {tab === "analysis" ? <div className="stack">
+    {tab === "analysis" ? <SectionPager labels={["月度与结构", "趋势与企业", "排放预算", "核算依据", "达标表现"]}>
       <div className="grid-main-side" style={{ marginTop: 0 }}>
         <Reveal><Panel title={`${year} 年月度碳排放`} subtitle={`柱为 ${year} 年，虚线为 ${year - 1} 年同期；悬停查看同比`}>
           {monthly.length ? <YearCompareChart months={monthly.map((item) => `${Number(item.month.slice(5))}月`)} current={monthly.map((item) => item.co2_t)} previous={monthly.map((item) => lastYear.find((prev) => prev.month.slice(5) === item.month.slice(5))?.co2_t ?? null)} year={year} unit="tCO₂" color={C.carbon} label="月度碳排放同比" /> : <Empty title="暂无月度数据" />}
         </Panel></Reveal>
         <Reveal delay={0.06}><Panel title={`${year} 年排放结构`} subtitle="按能源品种分解的排放量与占比">
-          <ShareBreakdown rows={(detail?.carbonStructure || []).map((item) => ({ name: item.name, value: item.co2_t }))} unit="tCO₂" label="碳排放结构" centerLabel="tCO₂ 合计" />
+          <CompositionStages rows={(detail?.carbonStructure || []).map((item) => ({ name: item.name, value: item.co2_t }))} unit="tCO₂" tone="carbon" />
         </Panel></Reveal>
       </div>
       <div className="grid-2">
@@ -64,7 +66,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <Reveal><BudgetComparison data={extended} kind="carbon" /></Reveal>
       <Reveal><CarbonReferences data={extended} /></Reveal>
       <AchievedIndicators data={data} codes={["I17", "I18", "I19"]} title="碳排放达标表现" />
-    </div> : <div className="stack">
+    </SectionPager> : <div className="stack">
       <Reveal><Panel className="panel-flush" title="碳流网络互动地图" subtitle="企业 → 产业片区 → 园区的排放汇聚；卡片显示排放量、占比与单位产值 CO₂，红色光罩为存在未处理预警的企业"
         action={<MoreLink href={`/energy?year=${year}&tab=flow`}>能流网络</MoreLink>}>
         <FlowNetworkMap mode="carbon" year={year} parkTotal={data?.co2_t} mix={mix} nodes={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))}

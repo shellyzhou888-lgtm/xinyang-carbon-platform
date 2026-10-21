@@ -61,12 +61,18 @@ export function getDataInventory() {
   }));
 }
 
-export function getIndicatorConfiguration(version: string) {
+export function getIndicatorConfiguration(version: string, year: number) {
   return readOnly(async c => (await c.query(`select d.code,d.name,d.unit,d.handling,d.score::float score,
-    d.display_enabled,d.display_position,f.code formula,f.status formula_status,d.definition
+    d.display_enabled,d.display_position,f.code formula,f.status formula_status,d.definition,
+    iv.value::float value, iv.achieved, b.value::float benchmark, b.comparator
     from core.indicator_def d join core.standard_version v using(version_id)
-    left join core.formula f using(formula_id) where v.code=$1 and d.level=2 order by d.seq`,[version])).rows as {
+    left join core.formula f using(formula_id)
+    left join fact.indicator_value iv on iv.indicator_id=d.indicator_id and iv.is_current
+      and iv.period_start=make_date($2,1,1) and iv.node_id=(select node_id from core.org_node where code='XYEDZ')
+    left join core.indicator_benchmark b on b.benchmark_id=iv.benchmark_id
+    where v.code=$1 and d.level=2 order by d.seq`,[version,year])).rows as {
       code:string;name:string;unit:string|null;handling:string;score:number|null;display_enabled:boolean;
       display_position:string|null;formula:string|null;formula_status:string|null;definition:string|null;
+      value:number|null;achieved:boolean|null;benchmark:number|null;comparator:string|null;
     }[]);
 }

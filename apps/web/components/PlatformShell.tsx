@@ -50,7 +50,7 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     return () => window.removeEventListener("keydown", close);
   }, [chatOpen]);
 
-  return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined}>
+  return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined} data-module={path === "/energy" || path === "/carbon" ? "analysis" : undefined}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
     <aside className="rail" aria-label="主导航">
       <Link className="rail-logo" href={`/?year=${year}`} aria-label="返回园区总览">
@@ -66,8 +66,8 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
         })}
       </nav>
       <div className="rail-bottom">
-        <button type="button" ref={chatButton} className={`rail-item ${chatOpen ? "on" : ""}`} aria-expanded={chatOpen} onClick={() => setChatOpen((open) => !open)} title="小云总管助手">
-          <IconChat size={21} /><span>助手</span>
+        <button type="button" ref={chatButton} className={`rail-item manager-launch ${chatOpen ? "on" : ""}`} aria-expanded={chatOpen} onClick={() => setChatOpen((open) => !open)} title="小云总管 · 跨板块调度助手">
+          <IconChat size={24} /><span>问总管</span>
         </button>
       </div>
     </aside>

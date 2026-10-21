@@ -10,7 +10,7 @@ const s = (f: FormData, k: string) => {
 
 export async function decideIssue(f: FormData) {
   const a = adminApi();
-  await a.decideIssue(Number(f.get("issue_id")), f.get("decision") as "approve" | "reject" | "reopen", s(f, "note") ?? "", a.reviewer);
+  await a.decideIssue(Number(f.get("issue_id")), f.get("decision") as "approve" | "reject" | "reopen" | "improve", s(f, "note") ?? "", a.reviewer);
   // An executed action (comment write-back, recalculation) changes what the rules see: check again in the background.
   if (f.get("decision") === "approve") a.runGovernance();
   revalidatePath("/admin");

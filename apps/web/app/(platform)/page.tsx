@@ -1,7 +1,7 @@
 import { charts, enterpriseMonthly, management, overview } from "@/lib/server";
 import ParkSpatialOverview, { type MapEnterprise, type MapHonor } from "@/components/ParkSpatialOverview";
 import { DataError } from "@/components/WorkspaceParts";
-import { CarbonBrief, EmitterRanking, EnergyBrief, HonorShowcase, IndicatorBoard, type EmitterRow } from "@/components/OverviewBoards";
+import { CarbonBrief, EmitterRanking, EnergyBrief, HonorShowcase, type EmitterRow } from "@/components/OverviewBoards";
 import { enterprises } from "@/lib/park-geography";
 import { honorKind } from "@/lib/honors";
 import { selectedYear } from "@/lib/workspace";
@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * Full-screen park dashboard: the map fills the viewport; energy floats on the left (under the honour showcase)
- * and carbon on the right. Achieved indicators form a compact status marker over the map.
+ * and carbon on the right. Evaluation indicators sit above the honours in the left panel.
  */
 export default async function Home({ searchParams }: { searchParams: Promise<{ year?: string; enterprise?: string }> }) {
   const sp = await searchParams;
@@ -43,7 +43,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
   }));
 
   const left = <>
-    <div className="float-card"><HonorShowcase honors={honors} /></div>
+    <div className="float-card scroll"><HonorShowcase honors={honors} achieved={data?.achieved ?? []} year={year} /></div>
     <div className="float-card"><EnergyBrief year={year} total={data?.tce} previous={annual(year - 1)?.tce} months={months.map((row) => row.tce)}
       structure={(chartData?.structure || []).map((row) => ({ name: row.name, value: row.tce }))}
       leaders={(chartData?.ranking || []).map((row) => ({ code: row.code, name: row.name, value: row.tce }))} /></div>
@@ -57,7 +57,6 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ y
 
   return <div className="overview-screen">
     <DataError error={error} />
-    <ParkSpatialOverview year={year} ranking={chartData?.ranking} metrics={metrics} honors={honors} initialEnterprise={sp.enterprise} left={left} right={right}
-      assessment={data?.achieved.length ? <IndicatorBoard rows={data.achieved} year={year} /> : undefined} />
+    <ParkSpatialOverview year={year} ranking={chartData?.ranking} metrics={metrics} honors={honors} initialEnterprise={sp.enterprise} left={left} right={right} />
   </div>;
 }

@@ -7,7 +7,7 @@ import { HONOR_KINDS, focusEnterprise, honorLevel } from "@/lib/honors";
 import type { MapHonor } from "./ParkSpatialOverview";
 import { CountUp } from "./MotionParts";
 import { Sparkline } from "./EnergyCharts";
-import { IconCheck, IconTrophy } from "./icons";
+import { IconCheck } from "./icons";
 import { HonorIcon } from "./HonorIcons";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -21,18 +21,19 @@ function Delta({ value, lowerIsBetter = true }: { value: number | null; lowerIsB
 }
 
 /** Honours, one icon per category: the park title first, then each category with its enterprises (click flies the map there). */
-export function HonorShowcase({ honors }: { honors: MapHonor[] }) {
+export function HonorShowcase({ honors, achieved = [], year }: { honors: MapHonor[]; achieved?: ParkOverview["achieved"]; year?: number }) {
   const reduce = useReducedMotion();
   const park = honors.find((honor) => honor.kind === "green_park");
   const groups = HONOR_KINDS.filter((kind) => kind.kind !== "green_park")
     .map((kind) => ({ ...kind, rows: honors.filter((honor) => honor.kind === kind.kind) }))
     .filter((group) => group.rows.length);
   return <section className="brief" aria-label="园区荣誉">
-    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={40} /><div><b>{park.title.replace(/^\d{4}\s*年度\s*/, "")}</b><small>{park.title.match(/^\d{4}/)?.[0] ?? ""} 年度 · 河南省工业和信息化厅</small></div></div>}
+    {year != null && achieved.length > 0 && <IndicatorBoard rows={achieved} year={year} />}
+    {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={25} /><b>2024 年度获评<strong>河南省省级绿色工业园区</strong></b></div>}
     <ul className="trophy-list">
       {groups.map((group, index) => <motion.li key={group.kind} initial={reduce ? false : { opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 + index * 0.05, duration: 0.45, ease }}>
         <div className="trophy-body">
-          <span className="trophy-name"><HonorIcon kind={group.kind} size={22} /><span>{group.label}</span><strong style={{ color: group.color }} aria-label={`${group.rows.length} 项`}>{circled(group.rows.length)}</strong></span>
+          <span className="trophy-name" title={group.label}><HonorIcon kind={group.kind} size={22} /><span>{group.label}</span></span>
           <span className="trophy-holders">{group.rows.map((honor, i) => <button key={i} type="button" disabled={!honor.code} onClick={() => focusEnterprise(honor.code)} title={honor.title}>
             {shortName(honor.node)}{honorLevel(honor.title) && <small>{honorLevel(honor.title)}</small>}
           </button>)}</span>
@@ -43,9 +44,6 @@ export function HonorShowcase({ honors }: { honors: MapHonor[] }) {
 }
 
 type Row = { code: string; name: string; value: number };
-const CIRCLED = "⓪①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳";
-/** Count as a circled numeral (①–⑳) so counts line up as one column. */
-const circled = (n: number) => n >= 0 && n <= 20 ? CIRCLED[n] : String(n);
 
 /** Energy brief: total with year-on-year change and monthly trend, the source mix and the largest consumers. */
 export function EnergyBrief({ year, total, previous, months, structure, leaders }: { year: number; total: number | null | undefined; previous: number | null | undefined; months: (number | null)[]; structure: { name: string; value: number }[]; leaders: Row[] }) {
@@ -78,7 +76,7 @@ export function CarbonBrief({ year, total, previous, months, intensity, intensit
 }
 
 const INDICATOR_SHORT: Record<string, string> = {
-  I03: "高新产值", I09: "固废利用", I10: "工业绿建", I11: "公共绿建", I15: "废水强度", I16: "污染物弹性",
+  I03: "高新产值", I09: "固废利用", I10: "工业绿建", I11: "公共绿建", I15: "废水强度", I16: "污染弹性",
 };
 
 /** Compact overview marker: a large achieved count, with short names and values for quick scanning. */
@@ -87,9 +85,7 @@ export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"];
   if (!rows.length) return null;
   return <section className="indicator-board glass" aria-label={`${year} 年绿色工业园区评价达标指标`}>
     <div className="indicator-hero">
-      <span className="indicator-eyebrow"><IconTrophy size={18} />绿色园区评价 · {year}</span>
-      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达标</small></strong>
-      <span className="indicator-caption">达到 GIP_2026 引领值</span>
+      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达标<span>达到GIP2026指标值</span></small></strong>
     </div>
     <ol className="indicator-summary-list">
       {rows.map((row, index) => <motion.li key={row.code} title={`${row.name} · 引领值 ${row.comparator === "<=" || row.comparator === "<" ? "≤" : "≥"} ${fmt(row.benchmark, 2)}${row.unit || ""}`}

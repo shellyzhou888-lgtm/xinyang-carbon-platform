@@ -28,8 +28,8 @@ const ZONE_MAX_ZOOM = 17.6;
  * marker in the panorama; logos and honour plates appear once a zone is opened at building scale.
  * `left` / `right` are floating panels laid over the map edges (they stack below the map on narrow screens).
  */
-export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right, assessment }: {
-  year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode; assessment?: React.ReactNode;
+export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right }: {
+  year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode;
 }) {
   const shell = useRef<HTMLElement>(null);
   const container = useRef<HTMLDivElement>(null);
@@ -242,7 +242,6 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       </div>
     </div>
 
-    {zone === "all" && assessment && <div className="map-assessment">{assessment}</div>}
     {zone === "all" && left && <div className="map-float left">{left}</div>}
     {zone === "all" && right && <div className="map-float right">{right}</div>}
     <AnimatePresence>{zone !== "all" && <ZoneCard key={zone} zone={zone} metrics={metrics} honors={honors} onBack={() => openZone("all")} onPick={(code) => pick.current(code)} />}</AnimatePresence>

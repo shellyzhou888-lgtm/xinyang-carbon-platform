@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { IconSpreadsheet, IconUpload } from "./icons";
 
 type Template = { code: string; name: string; note: string };
+const CATEGORY: Record<string, string> = { ENT_MONTHLY_ENERGY: "能源台账", ENT_ANNUAL_ECONOMIC: "经济与产量", ENT_ANNUAL_PRODUCTION: "经济与产量", PARK_ANNUAL_RESOURCE_ENV: "资源环境" };
 type Result = { ok?: boolean; error?: string; template?: string; file?: string; batchId?: number | null; rowsRead?: number; unknownHeaders?: string[]; load?: unknown; dryRun?: boolean };
 
 /**
@@ -40,12 +41,13 @@ export default function ImportPanel({ templates }: { templates: Template[] }) {
   const load = result?.load as Record<string, unknown> | undefined;
   return <div className="import-panel">
     <div className="import-steps">
-      <label className="import-field"><span>① 选择模板</span>
-        <select value={template} onChange={(e) => { setTemplate(e.target.value); setChecked(false); setResult(null); }}>
+      <div className="import-field"><label htmlFor="import-template">① 选择模板</label>
+        <select id="import-template" value={template} onChange={(e) => { setTemplate(e.target.value); setChecked(false); setResult(null); }}>
           {templates.map((row) => <option key={row.code} value={row.code}>{row.name}</option>)}
         </select>
-        <small>{spec?.note} · <a href={`/api/admin/templates/${template}`}>下载模板</a></small>
-      </label>
+        <small>{spec?.note}</small>
+        <a className="btn-ghost small import-download" href={`/api/admin/templates/${template}`} download={`${spec?.name || "数据模板"}.xlsx`}>下载所选 Excel 模板 ↓</a>
+      </div>
       <label className="import-field import-drop"><span>② 上传文件</span>
         <input type="file" accept=".xlsx" onChange={(e) => { setFile(e.target.files?.[0] ?? null); setChecked(false); setResult(null); }} />
         <span className="import-file"><IconSpreadsheet size={18} />{file ? `${file.name} · ${(file.size / 1024).toFixed(0)} KB` : "点击选择 .xlsx 文件"}</span>
@@ -57,6 +59,12 @@ export default function ImportPanel({ templates }: { templates: Template[] }) {
         </div>
         <small>先校验，通过后才能导入；导入后自动更新语义目录并运行数据检测。</small>
       </div>
+    </div>
+    <div className="template-catalog" aria-label="可用业务模板">
+      {Object.entries(CATEGORY).filter(([code]) => templates.some((row) => row.code === code)).map(([code, category]) => {
+        const row = templates.find((item) => item.code === code)!;
+        return <button type="button" key={code} className={template === code ? "selected" : ""} onClick={() => { setTemplate(code); setChecked(false); setResult(null); }}><small>{category}</small><b>{row.name}</b><span>{row.note}</span></button>;
+      })}
     </div>
     {result && <motion.div className={`import-result ${result.ok ? "ok" : "bad"}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
       {result.ok ? <>

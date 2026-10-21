@@ -48,9 +48,9 @@ export function inventory() {
   initPool(loadConfig({ requireModelKey: false }).databaseUrl);
   return getDataInventory();
 }
-export function indicatorConfiguration(version: string) {
+export function indicatorConfiguration(version: string, year: number) {
   initPool(loadConfig({ requireModelKey: false }).databaseUrl);
-  return getIndicatorConfiguration(version);
+  return getIndicatorConfiguration(version, year);
 }
 
 /** Connection status for the top-bar indicator. Never returns secrets, only whether each piece is usable. */

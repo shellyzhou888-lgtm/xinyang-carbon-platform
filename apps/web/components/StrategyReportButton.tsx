@@ -34,7 +34,7 @@ export default function StrategyReportButton({ year }: { year: number }) {
   }
 
   return <span style={{ display: "inline-flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-    <button type="button" className="more-link" onClick={exportReport} disabled={busy} aria-busy={busy}>{busy ? "正在生成报告…" : "导出报告 · PDF"}</button>
+    <button type="button" className="btn-primary strategy-export" onClick={exportReport} disabled={busy} aria-busy={busy}>{busy ? "正在生成报告…" : "↓ DeepSeek 减碳报告 · PDF"}</button>
     {error && <small role="alert" style={{ color: "#f2a493" }}>{error}</small>}
   </span>;
 }

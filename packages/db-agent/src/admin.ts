@@ -33,10 +33,15 @@ export async function listIssues(status = "open", category?: string) {
     [status, category ?? null])).rows);
 }
 
-export async function decideIssue(issueId: number, decision: "approve" | "reject" | "reopen", note: string, by: string) {
+export async function decideIssue(issueId: number, decision: "approve" | "reject" | "reopen" | "improve", note: string, by: string) {
   return write("green_app", async (c) => {
     const issue = (await c.query(`select * from semantic.governance_issue where issue_id = $1 for update`, [issueId])).rows[0];
     if (!issue) throw new Error(`工单 ${issueId} 不存在`);
+    if (decision === "improve") {
+      if (!note.trim()) throw new Error("提出改进时请填写具体意见");
+      await c.query(`update semantic.governance_issue set decision_note=$2, decided_by=$3, decided_at=now() where issue_id=$1`, [issueId, `待改进：${note}`, by]);
+      return { status: issue.status, improvement: true };
+    }
     if (decision === "reject" || decision === "reopen") {
       await c.query(`update semantic.governance_issue set status = $2, decided_by = $3, decided_at = now(), decision_note = $4 where issue_id = $1`,
                     [issueId, decision === "reject" ? "rejected" : "open", by, note || null]);

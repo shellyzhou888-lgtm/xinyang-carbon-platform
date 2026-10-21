@@ -47,11 +47,6 @@ export default async function DataManagement({ searchParams }: { searchParams: P
           <div className="list">{data?.factors.map((row) => <div className="list-row" key={row.kind}><div><b>{FACTORS[row.kind] || row.kind}</b><small>{row.kind}</small></div><div className="list-figure"><span className="num">{row.records}</span><small>条</small></div></div>)}</div>
         </Panel></Reveal>
       </div>
-      <Reveal><Panel title="空间与建模资料" subtitle="26号文：围合 26.3429 km²、规划建设用地 15.5630 km²；正式界址坐标尚未取得。">
-        <p className="panel-note" style={{ marginTop: 0 }}>4 个规划功能片区已初步定位并叠加于卫星地图，仍需独立控制点校核。ASTER GDEM V3（N32E114）已免费下载、裁剪并生成高程网格，仅作为备用地形资料；总览不加载 DEM 起伏，能耗与碳排放核算不依赖 DEM，它也不能代替园区界址、厂房模型或建筑高度数据。</p>
-        <div className="resource-links"><a className="btn-ghost small" href="/geography/dem-manifest.json" download>DEM 处理记录</a><a className="btn-ghost small" href="/geography/dem-height-grid-wgs84.json" download>WGS84 高程网格</a><a className="btn-ghost small" href="https://www.henan.gov.cn/2023/07-06/2773998.html" target="_blank" rel="noreferrer">26号文原文</a></div>
-        <img className="dem-preview" src="/geography/dem-elevation-preview.png" alt="园区周边56至191米高程的相对地形预览，并非卫星影像" />
-      </Panel></Reveal>
     </div>
   </>;
 }
