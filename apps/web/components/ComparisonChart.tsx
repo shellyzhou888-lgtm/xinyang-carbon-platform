@@ -4,8 +4,9 @@ import * as echarts from "echarts/core";
 import { LineChart } from "echarts/charts";
 import { GridComponent, TooltipComponent, LegendComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import { LegacyGridContainLabel } from "echarts/features";
 import { axis, C, fade, legend, tooltip } from "@/lib/chart-theme";
-echarts.use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
+echarts.use([LegacyGridContainLabel, LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 export default function ComparisonChart({ labels, series, unit, label }: { labels: string[]; series: { name: string; values: (number | null)[]; color: string; dashed?: boolean }[]; unit: string; label: string }) {
   const host = useRef<HTMLDivElement>(null);

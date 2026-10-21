@@ -43,9 +43,9 @@ export default function EnterpriseEnergy3D({ ranking, year, selected, onSelect }
         grid3D: {
           boxWidth: 160, boxDepth: 26, boxHeight: 65,
           axisLine: { lineStyle: { color: "rgba(255,255,255,0.12)" } }, splitLine: { lineStyle: { color: "rgba(255,255,255,0.05)" } },
-          viewControl: { distance: 190, alpha: 22, beta: 12, autoRotate: false },
+          viewControl: { distance: 135, alpha: 20, beta: 10, autoRotate: false },
           light: { main: { intensity: 1.1, shadow: false }, ambient: { intensity: 0.7 } },
-          environment: "transparent",
+          environment: "none",
         },
         series: [{ type: "bar3D", shading: "lambert", bevelSize: 0.05, barSize: 8,
           data: rows.map((row, index) => ({ name: names[index], code: row.code, value: [index, 0, row.tce],

@@ -273,6 +273,7 @@ td.num, th.num { text-align: right; font-family: var(--font-num); }
 
 /* ---------- Lists ---------- */
 .list { display: grid; gap: 4px; }
+.scroll-list { max-height: 520px; overflow: auto; padding-right: 4px; }
 .list-row { display: flex; justify-content: space-between; gap: 14px; padding: 11px 12px; border-radius: 12px; transition: background 0.15s; }
 .list-row:hover { background: var(--surface-2); }
 .list-row b { font-weight: 500; font-size: 13px; display: block; }
@@ -327,7 +328,7 @@ td.num, th.num { text-align: right; font-family: var(--font-num); }
 .map-float.right { right: 16px; }
 .map-float > * { pointer-events: auto; }
 .float-card { background: var(--glass); backdrop-filter: blur(18px) saturate(1.2); border-radius: 20px; padding: 18px; box-shadow: var(--shadow-float); }
-.float-card.scroll { flex: 1; min-height: 0; overflow: auto; }
+.float-card.scroll { flex: 0 1 auto; min-height: 0; overflow: auto; }
 .float-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
 .hero-figure > span { color: var(--text-2); font-size: 12.5px; }
 .hero-figure strong { display: flex; align-items: baseline; gap: 6px; font-size: 38px; font-weight: 500; line-height: 1.15; margin-top: 2px; }

@@ -48,7 +48,7 @@ export function CarbonReferences({ data }: { data: CarbonManagementData | null }
       </> : <Empty title="暂无行情数据">待接入官方交易记录</Empty>}
     </Panel>
     <Panel title="产品碳足迹参考" subtitle="公开数据库与文献参考值，核对后在后台批准">
-      {data?.footprint_refs.length ? <div className="list">{data.footprint_refs.map((row, index) => <div className="list-row" key={index}>
+      {data?.footprint_refs.length ? <div className="list scroll-list">{data.footprint_refs.map((row, index) => <div className="list-row" key={index}>
         <div><b>{row.product}</b><small>{row.boundary || "边界未标注"} · {row.source}</small></div>
         <div className="list-figure"><span className="num">{fmt(row.value, 3)}</span><small>{row.unit} / {row.functional_unit}</small>{row.status === "draft" && <em className="chip-warn">待审核</em>}</div>
       </div>)}</div> : <Empty title="暂无参考数据">待补充产品功能单位、边界与来源</Empty>}

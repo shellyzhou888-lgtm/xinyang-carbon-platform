@@ -4,9 +4,10 @@ import * as echarts from "echarts/core";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { GridComponent, TooltipComponent, LegendComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import { LegacyGridContainLabel } from "echarts/features";
 import { axis, barFade, C, fade, legend, SERIES, tooltip } from "@/lib/chart-theme";
 
-echarts.use([BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
+echarts.use([LegacyGridContainLabel, BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
 export default function MetricChart({ rows, kind = "bar", unit, color = C.energy, label }: {
   rows: { name: string; value: number | null }[]; kind?: "bar" | "line" | "pie"; unit: string; color?: string; label: string;
@@ -24,7 +25,7 @@ export default function MetricChart({ rows, kind = "bar", unit, color = C.energy
     } : {
       ...common,
       grid: { left: 8, right: 12, top: 32, bottom: 8, containLabel: true },
-      xAxis: { type: "category", data: rows.map((row) => row.name), ...axis, axisLabel: { ...axis.axisLabel, rotate: rows.length > 10 ? 35 : 0 }, boundaryGap: kind === "bar" },
+      xAxis: { type: "category", data: rows.map((row) => row.name), ...axis, axisLabel: { ...axis.axisLabel, rotate: rows.length > 12 ? 35 : 0 }, boundaryGap: kind === "bar" },
       yAxis: { type: "value", name: unit, nameTextStyle: { color: C.muted, align: "left" }, ...axis },
       series: [{ type: kind, data: rows.map((row) => row.value), connectNulls: false, smooth: kind === "line" ? 0.35 : undefined, symbol: kind === "line" ? "circle" : undefined, symbolSize: 6,
         lineStyle: { width: 2.2, color }, areaStyle: kind === "line" ? { color: fade(color, 0.25) } : undefined,

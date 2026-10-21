@@ -5,11 +5,12 @@ import * as echarts from "echarts/core";
 import { BarChart, LineChart, PieChart } from "echarts/charts";
 import { DataZoomComponent, GridComponent, LegendComponent, MarkAreaComponent, TooltipComponent } from "echarts/components";
 import { CanvasRenderer } from "echarts/renderers";
+import { LegacyGridContainLabel } from "echarts/features";
 import type { ChartData } from "@xinyang/db-agent";
 import { axis, barFade, C, fade, legend, SERIES, tooltip } from "@/lib/chart-theme";
 
 // Only the chart types we use are bundled (tree-shaking keeps the page small).
-echarts.use([LineChart, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent, MarkAreaComponent, CanvasRenderer]);
+echarts.use([LegacyGridContainLabel, LineChart, BarChart, PieChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent, MarkAreaComponent, CanvasRenderer]);
 
 export function useChart(option: echarts.EChartsCoreOption) {
   const ref = useRef<HTMLDivElement>(null);

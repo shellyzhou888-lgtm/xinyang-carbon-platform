@@ -10,9 +10,11 @@ import pg from "pg";
  */
 
 let pool: pg.Pool | undefined;
+let poolUrl: string | undefined;
 
 /** Creates the shared pool once; later calls reuse it (the web app creates one agent per conversation). */
 export function initPool(connectionString: string) {
+  poolUrl ??= connectionString;
   pool ??= new pg.Pool({ connectionString, max: 6 });
   return pool;
 }
@@ -22,11 +24,21 @@ function getPool(): pg.Pool {
   return pool;
 }
 
-/** Health check for the web status indicator: one trivial read-only round trip, with its latency. */
+/**
+ * Health check for the web status indicator: one trivial round trip with its latency. Uses its own short-lived
+ * connection so a pool busy with page queries is not misreported as "database down".
+ */
 export async function ping(): Promise<{ ok: true; ms: number }> {
+  if (!poolUrl) throw new Error("database pool not initialised");
+  const client = new pg.Client({ connectionString: poolUrl, connectionTimeoutMillis: 5000 });
   const started = Date.now();
-  await readOnly((c) => c.query("SELECT 1"));
-  return { ok: true, ms: Date.now() - started };
+  try {
+    await client.connect();
+    await client.query("SELECT 1");
+    return { ok: true, ms: Date.now() - started };
+  } finally {
+    await client.end().catch(() => undefined);
+  }
 }
 
 export async function closePool() {

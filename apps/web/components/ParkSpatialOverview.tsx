@@ -111,7 +111,7 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, ini
       // DOM markers can instead throw Pixel(NaN, NaN) when zooming into one factory.
       pinLayer.current = new AMap.LabelsLayer({ zIndex: 150, collision: false });
       nameLayer.current = new AMap.LabelsLayer({ zIndex: 151, collision: true, allowCollision: false });
-      areaLayer.current = new AMap.LabelsLayer({ zIndex: 160, collision: false });
+      areaLayer.current = new AMap.LabelsLayer({ zIndex: 160, collision: true, allowCollision: false });
       currentMap.add([pinLayer.current, nameLayer.current,areaLayer.current]);
       setReady(true);
       // Real AMap overlays remain usable if the optional WebGL visualization layer fails.
@@ -193,8 +193,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, ini
     const areas=planning.features.filter(feature=>sector==="全部"||feature.properties.id===(sector==="绿色家居"?"green-home":"electronics"));
     for(const area of areas)for(const polygon of area.geometry.coordinates)for(const point of polygon[0])targets.push(new AMap.Marker({position:point}));
     // Leave room for the floating side panels so the zones land in the visible centre.
+    // AMap's avoid margins are ordered [top, bottom, left, right] (not CSS order).
     const wide = (shell.current?.clientWidth ?? 0) > 1180;
-    instance.setFitView(targets, true, wide ? [90, 360, 110, 360] : [70, 40, 70, 40], sector === "全部" ? 14 : 16);
+    instance.setFitView(targets, true, wide ? [130, 110, 360, 360] : [70, 70, 40, 40], sector === "全部" ? 14.5 : 16);
     shell.current?.setAttribute("data-map-preset", sector === "全部" ? "panorama" : sector === "绿色家居" ? "yangshan" : "jinniu");
     if (selected && !visible.some((feature) => feature.properties.code === selected)) setSelected("");
     // Camera follows the sector once; selecting a point zooms independently.
@@ -219,7 +220,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, ini
         polygon.setMap(map.current);
         planningPolygons.current.push(polygon);
       }
-      areaLayer.current.add(new AMap.LabelMarker({position:area.properties.labelPosition,icon:{image:planningLabel(area.properties.name,area.properties.color,area.properties.areaKm2),size:[190,44],anchor:"center"}}));
+      // Larger zones win label collisions; the small 科创部落 label reappears when zoomed in.
+      areaLayer.current.add(new AMap.LabelMarker({position:area.properties.labelPosition,rank:area.properties.areaKm2,icon:{image:planningLabel(area.properties.name,area.properties.color,area.properties.areaKm2),size:[190,44],anchor:"center"}}));
     }
   },[ready,areaNames,sector]);
 
