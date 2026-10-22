@@ -1,11 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 196 196" role="img" aria-label="信阳经开区能碳管理平台图形标识">
   <title>信阳经开区能碳管理平台图形标识</title>
   <g fill="none">
-    <rect width="196" height="196" rx="45" fill="#0E9F6C"/>
+    <defs>
+      <linearGradient id="logoAvatarGradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="196" y2="196">
+        <stop offset="0" stop-color="#2EE8A5"/>
+        <stop offset="1" stop-color="#D4F75C"/>
+      </linearGradient>
+    </defs>
+    <rect width="196" height="196" rx="45" fill="url(#logoAvatarGradient)"/>
     <g transform="translate(31.36 31.36) scale(0.68)">
       <path d="M147.5 48.5 A70 70 0 1 0 147.5 147.5" stroke="#FFFFFF" stroke-width="19" stroke-linecap="round"/>
       <path d="M90 129 C94 101 114 76 151 68 C153 104 131 129 90 129Z" fill="#FFFFFF"/>
-      <path d="M101 118 C115 102 128 91 143 82" stroke="#0E9F6C" stroke-width="5" stroke-linecap="round"/>
+      <path d="M101 118 C115 102 128 91 143 82" stroke="url(#logoAvatarGradient)" stroke-width="5" stroke-linecap="round"/>
     </g>
   </g>
 </svg>
