@@ -4,6 +4,7 @@ import { C } from "@/lib/chart-theme";
 import ComparisonChart from "./ComparisonChart";
 import { cleanSource } from "@/lib/source-text";
 import { Empty, Panel } from "./WorkspaceParts";
+import { BOUNDARY } from "@/lib/footprint-labels";
 
 export function Roadmap({ data }: { data: CarbonManagementData | null }) {
   const roadmap = data?.roadmap, years = [...new Set([...(roadmap?.actual.map((row) => row.year) || []), ...(roadmap?.scenarios.flatMap((row) => row.points.map((point) => point.year)) || [])])].sort();
@@ -19,22 +20,25 @@ export function Roadmap({ data }: { data: CarbonManagementData | null }) {
   </Panel>;
 }
 
-export function CarbonReferences({ data }: { data: CarbonManagementData | null }) {
+/** National carbon market quotes: latest price per market and the monthly average over the last two years. */
+export function CarbonMarket({ data }: { data: CarbonManagementData | null }) {
   const markets = data?.carbon_price.filter((row) => row.latest) || [];
   const series = markets.map((row, index) => ({ name: row.name, values: row.monthly.slice(-24).map((m) => m.avg_price), color: index ? C.info : C.accent }));
   const labels = markets[0]?.monthly.slice(-24).map((m) => m.month.slice(2)) || [];
-  return <div className="grid-2">
-    <Panel title="碳市场行情" subtitle="上海环境能源交易所公开日行情，按月均价汇总">
-      {markets.length ? <>
-        <div className="quote-row">{markets.map((row) => <div key={row.market} className="quote"><span>{row.name}</span><strong className="num">{fmt(row.latest?.price, 2)}<small>元/t</small></strong><small>{row.latest?.date}</small></div>)}</div>
-        <ComparisonChart labels={labels} unit="元/t" label="碳市场月均成交价" series={series} />
-      </> : <Empty title="暂无行情数据">待接入官方交易记录</Empty>}
-    </Panel>
-    <Panel title="产品碳足迹参考" subtitle="公开数据库与文献参考值，核对后在后台批准">
-      {data?.footprint_refs.length ? <div className="list scroll-list">{data.footprint_refs.map((row, index) => <div className="list-row" key={index}>
-        <div><b>{row.product}</b><small>{row.boundary || "边界未标注"} · {cleanSource(row.source)}</small></div>
-        <div className="list-figure"><span className="num">{fmt(row.value, 3)}</span><small>{row.unit} / {row.functional_unit}</small></div>
-      </div>)}</div> : <Empty title="暂无参考数据">待补充产品功能单位、边界与来源</Empty>}
-    </Panel>
-  </div>;
+  return <Panel className="view-fill" title="碳市场行情" subtitle="上海环境能源交易所公开日行情，按月均价汇总">
+    {markets.length ? <>
+      <div className="quote-row">{markets.map((row) => <div key={row.market} className="quote"><span>{row.name}</span><strong className="num">{fmt(row.latest?.price, 2)}<small>元/t</small></strong><small>{row.latest?.date}</small></div>)}</div>
+      <ComparisonChart labels={labels} unit="元/t" label="碳市场月均成交价" series={series} />
+    </> : <Empty title="暂无行情数据">待接入官方交易记录</Empty>}
+  </Panel>;
+}
+
+/** Reference product footprints from public databases; approved in the admin pages before use. */
+export function FootprintRefs({ data }: { data: CarbonManagementData | null }) {
+  return <Panel title="产品碳足迹参考" subtitle="公开数据库与文献参考值，核对后在后台批准">
+    {data?.footprint_refs.length ? <div className="list scroll-list">{data.footprint_refs.map((row, index) => <div className="list-row" key={index}>
+      <div><b>{row.product}</b><small>{row.boundary ? BOUNDARY[row.boundary] ?? row.boundary : "边界未标注"} · {cleanSource(row.source)}</small></div>
+      <div className="list-figure"><span className="num">{fmt(row.value, 3)}</span><small>{row.unit} / {row.functional_unit}</small></div>
+    </div>)}</div> : <Empty title="暂无参考数据">待补充产品功能单位、边界与来源</Empty>}
+  </Panel>;
 }

@@ -1300,3 +1300,124 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 
 /* The month pill was matched by `.twin-months button span` (position: relative) and collapsed to nothing. */
 .twin-months button .twin-month-pill { position: absolute; inset: 0; z-index: 0; }
+
+/* ==========================================================================
+   v0.41 · soft, borderless controls: selected and primary states are a quiet tint of their colour with coloured text,
+   instead of solid fluorescent fills with dark ink. One accent (lime) for navigation; emerald / amber only for energy / carbon.
+   ========================================================================== */
+:root { --accent-text: var(--accent); --tint: rgb(var(--accent-rgb) / 0.15); --tint-strong: rgb(var(--accent-rgb) / 0.22); }
+:root[data-theme="light"] { --accent-text: #557a08; --tint: rgb(var(--accent-rgb) / 0.16); --tint-strong: rgb(var(--accent-rgb) / 0.24); }
+
+/* Navigation: rail, segmented pills (园区全景), diagnosis steps, month timeline */
+.rail-active, :root[data-theme="light"] .rail-active { background: var(--tint); box-shadow: none; }
+.rail-item.on, :root[data-theme="light"] .rail-item.on { color: var(--accent-text); }
+.segmented-pill, :root[data-theme="light"] .segmented-pill { background: var(--tint-strong); }
+.segmented > .on, :root[data-theme="light"] .segmented > .on { color: var(--accent-text); }
+.step-pill { background: var(--tint); }
+.step.on { color: var(--accent-text); }
+.step.on span { color: var(--accent-text); opacity: .75; }
+.step.on small { color: var(--text-2); }
+.twin-month-pill { background: var(--tint-strong); }
+.twin-months button.on { color: var(--accent-text); }
+.twin-play { background: var(--tint-strong); color: var(--accent-text); }
+.section-pager-tabs button.on { background: var(--tint); color: var(--accent-text); box-shadow: none; }
+.section-pager-tabs button.on i { color: var(--accent-text); }
+.matrix-mode button.on { background: var(--tint); color: var(--accent-text); }
+
+/* Buttons */
+.btn-primary, .btn { background: var(--tint); color: var(--accent-text); box-shadow: none; }
+.btn-primary:hover:not(:disabled), .btn:hover:not(:disabled) { background: var(--tint-strong); opacity: 1; }
+.rail-bottom .manager-launch { background: var(--tint); color: var(--accent-text); box-shadow: none; }
+.rail-bottom .manager-launch:hover, .rail-bottom .manager-launch.on { background: var(--tint-strong); color: var(--accent-text); filter: none; }
+.msg.user { background: var(--tint-strong); color: var(--text); }
+.flowmap-view { border: 0; background: var(--tint); color: var(--accent-text); }
+
+/* Tags and featured cards: tinted, no outline */
+.brief-tag.energy { background: rgb(var(--energy-rgb) / .16); color: var(--energy); box-shadow: none; }
+.brief-tag.carbon { background: rgb(var(--carbon-rgb) / .16); color: var(--carbon); box-shadow: none; }
+.kpi.featured { box-shadow: 0 24px 50px -30px color-mix(in srgb, var(--tone) 45%, transparent); }
+
+/* Overview honours: six small tiles (icon + count, short label), counts in plain text colour */
+.honor-tiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.honor-tiles li { display: grid; gap: 4px; min-width: 0; padding: 8px 10px; border-radius: 10px; background: rgb(var(--ink) / .04); transition: background .2s; }
+.honor-tiles li:hover { background: rgb(var(--ink) / .07); }
+.honor-tile-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.honor-tile-top .honor-icon { flex: none; }
+.honor-tile-top b { font-size: 18px; font-weight: 600; line-height: 1; color: var(--text); }
+.honor-tile-top b small { margin-left: 2px; font-family: var(--font); font-size: 10px; font-weight: 400; color: var(--text-3); }
+.honor-tile-label { font-size: 12px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- v0.41 · carbon analysis and carbon asset views ---------- */
+@media (min-width: 1181px) and (min-height: 700px) {
+  .fit-screen :is(.section-pager-view, .fit-body) .panel > :is(.scope-split, .quadrant, .asset-exposure, .footprint-list) { flex: 1 1 0; min-height: 0; }
+  .fit-screen :is(.section-pager-view, .fit-body) .panel > .footprint-list { overflow: auto; scrollbar-width: thin; }
+}
+.viz-stack > .chart { flex: 1 1 0; min-height: 200px; height: auto; }
+
+.scope-split { display: flex; flex-direction: column; gap: 16px; min-height: 0; }
+.scope-bar { display: flex; height: 14px; border-radius: 8px; overflow: hidden; background: rgb(var(--ink) / .06); }
+.scope-bar i { display: block; height: 100%; }
+.scope-bar .s1 { background: linear-gradient(90deg, rgb(var(--carbon-rgb) / .55), var(--carbon)); }
+.scope-bar .s2 { background: linear-gradient(90deg, rgb(var(--info-rgb) / .55), var(--info)); }
+.scope-groups { display: grid; gap: 12px; align-content: start; overflow: auto; scrollbar-width: thin; }
+.scope-group { padding: 12px 14px; border-radius: 12px; background: rgb(var(--ink) / .035); }
+.scope-group header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.scope-group header b { font-size: 14px; }
+.scope-group header small { flex: 1; color: var(--text-3); font-size: 12px; }
+.scope-group header strong { font-size: 18px; font-weight: 600; }
+.scope-group.s1 header strong { color: var(--carbon); }
+.scope-group.s2 header strong { color: var(--info); }
+.scope-group ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.scope-group li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 8px; font-size: 13px; color: var(--text-2); }
+.scope-group li b { font-weight: 500; color: var(--text); }
+.scope-group li b small { margin-left: 3px; font-family: var(--font); font-size: 11px; color: var(--text-3); font-weight: 400; }
+.scope-group li i { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: rgb(var(--ink) / .06); overflow: hidden; }
+.scope-group li em { display: block; height: 100%; border-radius: 2px; }
+.scope-group.s1 li em { background: var(--carbon); }
+.scope-group.s2 li em { background: var(--info); }
+
+.quadrant { display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+.quadrant > .chart { flex: 1 1 0; min-height: 260px; height: auto; }
+.quadrant-note { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12px; color: var(--text-3); }
+.quadrant-note i { width: 10px; height: 10px; border-radius: 50%; background: var(--carbon); box-shadow: 0 0 10px var(--carbon); }
+.chart.gauge { min-height: 240px; }
+.gauge-note { margin: 0; text-align: center; font-size: 12px; color: var(--text-3); }
+
+.asset-exposure { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); gap: 24px; min-height: 0; }
+.exposure-list, .value-list { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 4px; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.exposure-list li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto 58px; gap: 6px 8px; align-items: baseline; padding: 8px; border-radius: 10px; }
+.exposure-list li:hover, .value-list li:hover { background: rgb(var(--ink) / .04); }
+.exposure-list li > span, .value-list li > span { font-size: 12px; color: var(--text-3); }
+.exposure-list b { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.exposure-list strong, .value-list strong { font-size: 14px; font-weight: 600; white-space: nowrap; }
+.exposure-list strong small, .value-list strong small { margin-left: 3px; font-family: var(--font); font-size: 11px; font-weight: 400; color: var(--text-3); }
+.exposure-list em, .value-list em { font-style: normal; font-size: 12px; color: var(--text-3); text-align: right; white-space: nowrap; }
+.exposure-list li > i { grid-column: 2 / -1; height: 4px; border-radius: 2px; background: rgb(var(--ink) / .06); overflow: hidden; }
+.exposure-list u, .value-list u, .footprint-list u { display: block; height: 100%; border-radius: 2px; text-decoration: none; }
+.exposure-list u { background: linear-gradient(90deg, rgb(var(--carbon-rgb) / .4), var(--carbon)); }
+
+.value-list li { display: grid; grid-template-columns: 24px minmax(180px, 1.2fr) minmax(120px, 2fr) 110px 90px; gap: 12px; align-items: center; padding: 10px 8px; border-radius: 10px; }
+.value-list li div { display: grid; gap: 2px; min-width: 0; }
+.value-list li div b { font-size: 14px; font-weight: 600; }
+.value-list li div small { font-size: 12px; color: var(--text-3); }
+.value-list li > i { height: 8px; border-radius: 4px; background: rgb(var(--ink) / .06); overflow: hidden; }
+.value-list u { background: linear-gradient(90deg, rgb(var(--energy-rgb) / .4), var(--energy)); }
+.value-list strong { text-align: right; }
+.value-list em { color: var(--carbon); }
+
+.footprint-list { display: grid; align-content: start; gap: 12px; }
+.footprint-list article { padding: 12px 14px; border-radius: 12px; background: rgb(var(--ink) / .035); }
+.footprint-list header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.footprint-list header b { font-size: 14px; }
+.footprint-list header span { flex: 1; font-size: 12px; color: var(--text-3); }
+.footprint-list header strong { font-size: 16px; font-weight: 600; color: var(--carbon); }
+.footprint-list header strong small { margin-left: 3px; font-family: var(--font); font-size: 11px; font-weight: 400; color: var(--text-3); }
+.footprint-list ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.footprint-list li { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(80px, 1fr) auto; gap: 10px; align-items: center; font-size: 12px; color: var(--text-2); }
+.footprint-list li > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.footprint-list li > i { height: 6px; border-radius: 3px; background: rgb(var(--ink) / .06); overflow: hidden; }
+.footprint-list u { background: var(--energy); }
+.footprint-list u.over { background: var(--carbon); }
+.footprint-list li em { font-style: normal; font-size: 13px; color: var(--text); white-space: nowrap; }
+.footprint-list li em small { margin-left: 6px; font-size: 11px; color: var(--text-3); }
+@media (max-width: 1180px) { .asset-exposure { grid-template-columns: minmax(0, 1fr); } .value-list li { grid-template-columns: 24px minmax(0, 1fr) 90px; } .value-list li > i, .value-list em { display: none; } }

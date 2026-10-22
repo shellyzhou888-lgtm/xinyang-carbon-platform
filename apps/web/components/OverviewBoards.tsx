@@ -20,12 +20,13 @@ function Delta({ value, lowerIsBetter = true }: { value: number | null; lowerIsB
   return <em className={`kpi-delta ${good ? "good" : "bad"}`} title="与上年相比">{value > 0 ? "▲" : value < 0 ? "▼" : "■"} {fmt(Math.abs(value), 1)}%</em>;
 }
 
-const HONOR_PHRASES: Record<string, string> = {
-  green_factory: "获评绿色工厂", zero_carbon: "获评零碳工厂", smart_factory: "入选5G工厂",
-  little_giant: "入选专精特新小巨人", high_tech: "认定高新技术企业", cluster: "入选特色产业集群",
+/** Short single-line labels for the honour tiles; the verb ("获评", "入选") moves to the tooltip. */
+const HONOR_TILE: Record<string, { label: string; verb: string }> = {
+  green_factory: { label: "绿色工厂", verb: "获评" }, zero_carbon: { label: "零碳工厂", verb: "获评" }, smart_factory: { label: "5G 工厂", verb: "入选" },
+  little_giant: { label: "专精特新", verb: "入选" }, high_tech: { label: "高新技术", verb: "认定" }, cluster: { label: "产业集群", verb: "入选" },
 };
 
-/** The park award leads; six concise achievement types follow in two columns. */
+/** The park award leads; six honour types follow as small tiles: icon, count, short label. */
 export function HonorShowcase({ honors, achieved = [], year }: { honors: MapHonor[]; achieved?: ParkOverview["achieved"]; year?: number }) {
   const reduce = useReducedMotion();
   const park = honors.find((honor) => honor.kind === "green_park");
@@ -33,14 +34,13 @@ export function HonorShowcase({ honors, achieved = [], year }: { honors: MapHono
   return <section className="brief" aria-label="园区荣誉">
     {year != null && achieved.length > 0 && <IndicatorBoard rows={achieved} year={year} />}
     {park && <div className="trophy-hero"><HonorIcon kind="green_park" size={25} /><b>2024 年度获评河南省省级绿色工业园区</b></div>}
-    <ul className="honor-rows">
+    <ul className="honor-tiles">
       {groups.map((group, index) => {
-        const holders = honors.filter((honor) => honor.kind === group.kind);
-        return <motion.li key={group.kind} style={{ ["--honor" as string]: group.color }} title={holders.map((honor) => shortName(honor.node)).join("、")}
+        const holders = honors.filter((honor) => honor.kind === group.kind), tile = HONOR_TILE[group.kind];
+        return <motion.li key={group.kind} style={{ ["--honor" as string]: group.color }} title={`${tile.verb}${group.label}：${holders.map((honor) => shortName(honor.node)).join("、")}`}
           initial={reduce ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + index * 0.04, duration: 0.4, ease }}>
-          <span className="honor-badge"><HonorIcon kind={group.kind} size={16} /></span>
-          <span className="honor-phrase">{HONOR_PHRASES[group.kind]}</span>
-          <b className="honor-count num">{holders.length}<small>{group.kind === "cluster" ? "项" : "家"}</small></b>
+          <span className="honor-tile-top"><HonorIcon kind={group.kind} size={16} /><b className="num">{holders.length}<small>{group.kind === "cluster" ? "项" : "家"}</small></b></span>
+          <span className="honor-tile-label">{tile.label}</span>
         </motion.li>;
       })}
     </ul>

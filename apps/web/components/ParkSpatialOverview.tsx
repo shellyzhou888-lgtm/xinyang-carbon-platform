@@ -168,8 +168,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       const mask = new AMap.Polygon({ path: [outer, ...rings], fillColor: isLight() ? "#f1f3ee" : "#0c0d10", fillOpacity: 0.62, strokeWeight: 0, zIndex: 55, bubble: true });
       mask.setMap(map); polygons.current.push(mask);
       for (const ring of rings) {
-        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: color, strokeOpacity: 0.28, strokeWeight: 10, zIndex: 61, bubble: true });
-        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: color, strokeOpacity: 1, strokeWeight: 3, zIndex: 62, bubble: true });
+        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: "#ffffff", strokeOpacity: 0.22, strokeWeight: 10, zIndex: 61, bubble: true });
+        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: "#ffffff", strokeOpacity: 0.95, strokeWeight: 2.5, zIndex: 62, bubble: true });
         glow.setMap(map); line.setMap(map); polygons.current.push(glow, line);
       }
       return;
@@ -178,7 +178,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     for (const feature of zoneFeatures) {
       const key = feature.properties.id as Exclude<ZoneKey, "all">;
       for (const rings of feature.geometry.coordinates) {
-        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: ZONE_COLOR[key],
+        // Boundaries are white on every zone; the light fill keeps each zone's colour.
+        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: "#ffffff",
           strokeOpacity: 0.9, strokeWeight: 2, zIndex: 60, cursor: "pointer" });
         polygon.on("click", () => openZone(key));
         polygon.setMap(map);
