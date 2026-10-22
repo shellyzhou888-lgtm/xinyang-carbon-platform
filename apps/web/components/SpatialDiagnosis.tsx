@@ -1,0 +1,228 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import type { CarbonManagementData, EnterpriseMonthly, ManagementData } from "@xinyang/db-agent";
+import { enterprises, type Position } from "@/lib/park-geography";
+import { fmt, frameParkTilted, SECTOR_ZONE, shortName, useParkMap, zoneHub } from "@/lib/park-map";
+import { ALERT_GROUPS, alertGroup, alertSeverity, type AlertGroupKey } from "@/lib/diagnosis-alerts";
+
+type Alert = ManagementData["alerts"][number];
+type Ranking = ManagementData["carbonRanking"][number];
+type Plan = CarbonManagementData["plans"][number];
+type Contributor = { node: string; name: string; share_pct?: number; delta?: number };
+
+const PARK = "XYEDZ";
+const SEVERITY_COLOR: Record<string, string> = { critical: "#ff4d5e", high: "#ff6b81", warning: "#ffab3d", medium: "#ffab3d", info: "#4cb4ff", low: "#4cb4ff" };
+const severityRank = (s: string) => ({ critical: 4, high: 3, warning: 2, medium: 2, info: 1, low: 1 } as Record<string, number>)[s] ?? 0;
+const contributors = (alert: Alert): Contributor[] => {
+  const root = alert.root_cause as { top_contributors?: Contributor[] } | null;
+  return Array.isArray(root?.top_contributors) ? root!.top_contributors : [];
+};
+/** Map objects an alert concerns: the enterprise itself, or for a park-level alert its top contributors (or the park). */
+const alertTargets = (alert: Alert): string[] => {
+  if (alert.node_type === "enterprise") return [alert.node_code];
+  const list = contributors(alert).filter((c) => (c.share_pct ?? 100) >= 10).map((c) => c.node);
+  return list.length ? list : [PARK];
+};
+
+/** Enterprise dot: size by emissions, colour by its worst alert; selected gets a white ring. */
+function dot(color: string, size: number, selected: boolean) {
+  const r = size / 2, pad = selected ? 4 : 2, d = size + pad * 2;
+  return { image: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${d}" height="${d}"><circle cx="${d / 2}" cy="${d / 2}" r="${r}" fill="${color}" fill-opacity=".92" ${selected ? `stroke="#fff" stroke-width="3"` : ""}/></svg>`), size: [d, d] as [number, number] };
+}
+
+/**
+ * Spatial diagnosis: the park map is the base layer. Each enterprise sits at its real location, sized by emissions;
+ * alerts light up where they occur (park-level alerts on the enterprises that drive them), and the side panel shows
+ * the selected object's figures, monthly evidence, alerts and matching reduction measures.
+ */
+export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previous, plans, parkCo2 }: {
+  year: number; alerts: Alert[]; ranking: Ranking[]; monthly: EnterpriseMonthly[]; previous: EnterpriseMonthly[]; plans: Plan[]; parkCo2: number | null | undefined;
+}) {
+  const container = useRef<HTMLDivElement>(null);
+  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { satellite: true, pitch: 48 });
+  const layer = useRef<any>(null);
+  const ripple = useRef<any>(null);
+  const [status, setStatus] = useState<"open" | "all">(alerts.some((a) => a.status === "open") ? "open" : "all");
+  const [group, setGroup] = useState<AlertGroupKey | null>(null);
+  const shown = useMemo(() => alerts.filter((a) => (status === "all" || a.status === "open") && (!group || alertGroup(a.rule_code) === group))
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity)), [alerts, status, group]);
+
+  const sites = useMemo(() => enterprises.filter((f) => f.properties.metricBindingApproved).map((f) => {
+    const r = ranking.find((row) => row.code === f.properties.code);
+    const own = shown.filter((a) => alertTargets(a).includes(f.properties.code));
+    const worst = own.reduce((w, a) => Math.max(w, severityRank(a.severity)), 0);
+    return { code: f.properties.code, name: f.properties.name, sector: f.properties.sector, at: f.geometry.coordinates as Position, co2: r?.co2_t ?? 0, intensity: r?.intensity ?? null, alerts: own, worst };
+  }).filter((s) => s.co2 > 0), [ranking, shown]);
+  const parkAlerts = shown.filter((a) => alertTargets(a).includes(PARK));
+  const topSite = [...sites].sort((a, b) => b.worst - a.worst || b.co2 - a.co2)[0];
+  const [selected, setSelected] = useState<string>(() => topSite?.code ?? PARK);
+  const site = sites.find((s) => s.code === selected);
+
+  // Satellite imagery as the base (a real-scene diagnosis); the park's zones are framed between the alert list and the
+  // detail panel, and refitted when the map box changes size until the user moves the map.
+  useEffect(() => {
+    const current = handle.current, element = container.current;
+    if (!ready || !current || !element) return;
+    current.satellite.forEach((layer: any) => layer.show());
+    let touched = false, timer = 0;
+    const frame = () => frameParkTilted(current.map, current.AMap, { avoid: [90, 40, 330, 380], fill: 0.98, rotation: 28, pitch: 46 });
+    frame();
+    const mark = () => { touched = true; };
+    element.addEventListener("pointerdown", mark);
+    element.addEventListener("wheel", mark, { passive: true });
+    const observer = new ResizeObserver(() => { if (touched) return; window.clearTimeout(timer); timer = window.setTimeout(frame, 150); });
+    observer.observe(element);
+    return () => { observer.disconnect(); window.clearTimeout(timer); element.removeEventListener("pointerdown", mark); element.removeEventListener("wheel", mark); };
+  }, [ready, handle]);
+
+  // Markers: every enterprise and the park hub; colour = worst alert, size = emissions.
+  useEffect(() => {
+    const current = handle.current;
+    if (!ready || !current) return;
+    const { AMap, map } = current;
+    if (!layer.current) { layer.current = new AMap.LabelsLayer({ zIndex: 160, collision: false }); map.add(layer.current); }
+    layer.current.clear();
+    const top = Math.max(1, ...sites.map((s) => s.co2));
+    for (const s of sites) {
+      const color = s.worst ? SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] : "#2ee8a5";
+      const icon = dot(color, 10 + Math.sqrt(s.co2 / top) * 18, s.code === selected);
+      const marker = new AMap.LabelMarker({ position: s.at, zIndex: s.code === selected ? 5 : s.worst ? 4 : 3, icon: { image: icon.image, size: icon.size, anchor: "center" },
+        text: s.worst || s.code === selected ? { content: shortName(s.name), direction: "top", offset: [0, -6], style: { fontSize: 12, fillColor: "#fff", strokeColor: "rgba(10,12,16,.85)", strokeWidth: 3, fontWeight: 600 } } : undefined });
+      marker.on("click", () => setSelected(s.code));
+      layer.current.add(marker);
+    }
+    const hub = dot(parkAlerts.length ? "#ffab3d" : "#d4f75c", 18, selected === PARK);
+    const park = new AMap.LabelMarker({ position: zoneHub("all"), zIndex: 6, icon: { image: hub.image, size: hub.size, anchor: "center" },
+      text: { content: parkAlerts.length ? `园区级 · ${parkAlerts.length} 项` : "园区", direction: "top", offset: [0, -6], style: { fontSize: 12, fillColor: "#fff", strokeColor: "rgba(10,12,16,.85)", strokeWidth: 3, fontWeight: 600 } } });
+    park.on("click", () => setSelected(PARK));
+    layer.current.add(park);
+  }, [ready, handle, sites, parkAlerts.length, selected]);
+  useEffect(() => () => { layer.current = null; ripple.current = null; }, []);
+
+  // Alerts light up where they occur: an L7 ripple in the alert colour.
+  useEffect(() => {
+    const scene = handle.current?.scene;
+    if (!l7Ready || !scene) return;
+    const data = [
+      ...sites.filter((s) => s.worst).map((s) => ({ lng: s.at[0], lat: s.at[1], color: SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] })),
+      ...(parkAlerts.length ? [{ lng: zoneHub("all")[0], lat: zoneHub("all")[1], color: "#ffab3d" }] : []),
+    ];
+    if (ripple.current) { ripple.current.setData(data); return; }
+    if (!data.length) return;
+    let disposed = false;
+    import("@antv/l7-layers").then(({ PointLayer }) => {
+      if (disposed || !handle.current?.scene) return;
+      ripple.current = new PointLayer({ name: "diagnosis-ripple", zIndex: 4, blend: "additive" }).source(data, { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(46).color("color", (c: string) => c).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 });
+      handle.current.scene.addLayer(ripple.current);
+    }).catch((reason) => console.warn("[diagnosis] ripple layer unavailable", reason));
+    return () => { disposed = true; };
+  }, [l7Ready, handle, sites, parkAlerts.length]);
+
+  // Selecting an object (after the first view) flies the camera to it.
+  const firstSelection = useRef(true);
+  useEffect(() => {
+    const map = handle.current?.map;
+    if (!ready || !map) return;
+    if (firstSelection.current) { firstSelection.current = false; return; }
+    const at = selected === PARK ? zoneHub("all") : site?.at;
+    if (at) map.panTo(at, 600);
+  }, [ready, handle, selected, site?.at]);
+
+  const openCount = alerts.filter((a) => a.status === "open").length;
+  const high = shown.filter((a) => severityRank(a.severity) >= 3).length;
+  const involved = new Set(shown.flatMap(alertTargets).filter((c) => c !== PARK)).size;
+  const lead = [...sites].sort((a, b) => b.co2 - a.co2)[0];
+  return <div className="spatial">
+    <div ref={container} className="spatial-map" role="img" aria-label="园区实景诊断地图" />
+    {!ready && !error && <div className="map-loading" role="status"><span className="spinner" />正在载入园区实景地图…</div>}
+    {error && <div className="map-error" role="status">{error}<button type="button" className="btn-ghost small" onClick={retry}>重试</button></div>}
+
+    <div className="spatial-kpis">
+      <div><span>{year} 年预警</span><strong className="num">{alerts.length}</strong><small>待处理 {openCount}</small></div>
+      <div><span>需优先处理</span><strong className="num">{high}</strong><small>高风险及紧急</small></div>
+      <div><span>涉及企业</span><strong className="num">{involved}</strong><small>按预警定位</small></div>
+      {lead && <div><span>最大排放企业</span><strong>{shortName(lead.name)}</strong><small>占园区 {fmt(parkCo2 ? lead.co2 / parkCo2 * 100 : 0, 1)}%</small></div>}
+    </div>
+
+    <aside className="spatial-list" aria-label="预警清单">
+      <div className="spatial-filter">
+        <button type="button" className={status === "open" ? "on" : ""} onClick={() => setStatus("open")}>待处理 {openCount}</button>
+        <button type="button" className={status === "all" ? "on" : ""} onClick={() => setStatus("all")}>本次评估 {alerts.length}</button>
+      </div>
+      <div className="spatial-groups">{ALERT_GROUPS.map((g) => {
+        const n = alerts.filter((a) => (status === "all" || a.status === "open") && alertGroup(a.rule_code) === g.key).length;
+        return <button key={g.key} type="button" className={group === g.key ? "on" : ""} style={{ ["--g" as string]: g.color }} disabled={!n} onClick={() => setGroup(group === g.key ? null : g.key)}><i />{g.label}<b className="num">{n}</b></button>;
+      })}</div>
+      <ol>{shown.length ? shown.map((a) => {
+        const targets = alertTargets(a);
+        const on = targets.includes(selected);
+        return <li key={a.id}><button type="button" className={on ? "on" : ""} onClick={() => setSelected(targets[0])} style={{ ["--sev" as string]: SEVERITY_COLOR[a.severity] ?? "#9aa3ad" }}>
+          <span className="sev">{alertSeverity(a.severity)}</span>
+          <b>{a.rule_name}</b>
+          <small>{targets.map((c) => c === PARK ? "园区整体" : shortName(sites.find((s) => s.code === c)?.name ?? c)).join("、")}{a.period ? ` · ${a.period}` : ""}</small>
+        </button></li>;
+      }) : <li className="spatial-empty">当前筛选下没有预警</li>}</ol>
+    </aside>
+
+    <AnimatePresence mode="wait">
+      <motion.aside key={selected} className="spatial-detail" aria-label="诊断详情" initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 16 }} transition={{ duration: 0.25 }}>
+        {selected === PARK || !site
+          ? <ParkDetail alerts={parkAlerts} />
+          : <SiteDetail site={site} parkCo2={parkCo2} year={year} monthly={monthly.filter((m) => m.code === site.code)} previous={previous.filter((m) => m.code === site.code)}
+              plans={plans.filter((p) => shortName(p.node) === shortName(site.name))} />}
+      </motion.aside>
+    </AnimatePresence>
+  </div>;
+}
+
+function Evidence({ alert, code }: { alert: Alert; code?: string }) {
+  const root = alert.root_cause as { months?: { month: string; deviation_pct: number }[]; top_contributors?: Contributor[] } | null;
+  const mine = code ? contributors(alert).find((c) => c.node === code) : undefined;
+  return <div className="spatial-alert" style={{ ["--sev" as string]: SEVERITY_COLOR[alert.severity] ?? "#9aa3ad" }}>
+    <header><span className="sev">{alertSeverity(alert.severity)}</span><b>{alert.rule_name}</b><small>{alert.status === "open" ? "待处理" : "已处理"}</small></header>
+    <p>{alert.message}</p>
+    {mine && <small className="spatial-share">本企业贡献 {fmt(mine.share_pct ?? 0, 1)}%{mine.delta != null ? `（${mine.delta > 0 ? "+" : ""}${fmt(mine.delta, 0)} t）` : ""}</small>}
+    {root?.months?.length ? <div className="spatial-months">{root.months.map((m) => <i key={m.month} title={`${m.month} 同比 ${m.deviation_pct > 0 ? "+" : ""}${m.deviation_pct}%`}
+      className={m.deviation_pct < 0 ? "down" : "up"} style={{ height: `${Math.min(100, Math.abs(m.deviation_pct) * 4)}%` }} />)}</div> : null}
+  </div>;
+}
+
+function SiteDetail({ site, parkCo2, year, monthly, previous, plans }: {
+  site: { code: string; name: string; sector: string; co2: number; intensity: number | null; alerts: Alert[] }; parkCo2: number | null | undefined; year: number;
+  monthly: EnterpriseMonthly[]; previous: EnterpriseMonthly[]; plans: Plan[];
+}) {
+  const months = Array.from({ length: 12 }, (_, i) => ({ now: monthly.find((m) => Number(m.month.slice(5)) === i + 1)?.co2_t ?? null, before: previous.find((m) => Number(m.month.slice(5)) === i + 1)?.co2_t ?? null }));
+  const sumNow = months.reduce((a, m) => a + (m.now ?? 0), 0), sumBefore = months.reduce((a, m) => a + (m.before ?? 0), 0);
+  const yoy = sumBefore ? (sumNow - sumBefore) / sumBefore * 100 : null;
+  const top = Math.max(1, ...months.flatMap((m) => [m.now ?? 0, m.before ?? 0]));
+  return <>
+    <header className="spatial-head"><span className="eyebrow">{site.sector} · {SECTOR_ZONE[site.sector] === "electronics" ? "电子信息产业园区" : "绿色家居产业园区"}</span><h3>{site.name}</h3>
+      <em className={site.alerts.length ? "warn" : "ok"}>{site.alerts.length ? `${site.alerts.length} 项预警` : "运行正常"}</em></header>
+    <div className="spatial-stats">
+      <div><span>{year} 年碳排放</span><strong className="num">{fmt(site.co2, 0)}<small>tCO₂</small></strong><small>占园区 {fmt(parkCo2 ? site.co2 / parkCo2 * 100 : 0, 1)}%</small></div>
+      <div><span>同比</span><strong className={`num ${yoy != null && yoy <= 0 ? "good" : "bad"}`}>{yoy == null ? "—" : `${yoy > 0 ? "+" : ""}${fmt(yoy, 1)}%`}</strong><small>较上年</small></div>
+      <div><span>单位产值 CO₂</span><strong className="num">{fmt(site.intensity, 3)}</strong><small>t/万元</small></div>
+    </div>
+    <div className="spatial-bars" aria-label="逐月碳排放与上年同期">
+      <span className="spatial-label">逐月碳排放 <small>柱为本年，横线为上年同月</small></span>
+      <div>{months.map((m, i) => <span key={i} title={`${i + 1}月 ${fmt(m.now, 0)} t${m.before != null ? `，上年 ${fmt(m.before, 0)} t` : ""}`}>
+        <i style={{ height: `${(m.now ?? 0) / top * 100}%` }} className={m.now != null && m.before != null && m.now > m.before ? "up" : ""} />
+        {m.before != null && <u style={{ bottom: `${m.before / top * 100}%` }} />}<small>{i + 1}</small></span>)}</div>
+    </div>
+    <span className="spatial-label">相关预警</span>
+    {site.alerts.length ? site.alerts.slice(0, 4).map((a) => <Evidence key={a.id} alert={a} code={site.code} />) : <p className="spatial-muted">本企业在当前筛选下没有预警。</p>}
+    {plans.length > 0 && <><span className="spatial-label">匹配的减碳措施</span>
+      <ul className="spatial-plans">{plans.slice(0, 4).map((p, i) => <li key={i}><b>{p.strategy}</b><span className="num">{p.co2_reduction_t != null ? `${fmt(p.co2_reduction_t, 0)} tCO₂/年` : "—"}</span></li>)}</ul></>}
+  </>;
+}
+
+function ParkDetail({ alerts }: { alerts: Alert[] }) {
+  return <>
+    <header className="spatial-head"><span className="eyebrow">园区整体</span><h3>信阳经济技术开发区</h3><em className={alerts.length ? "warn" : "ok"}>{alerts.length ? `${alerts.length} 项园区级预警` : "运行正常"}</em></header>
+    <p className="spatial-muted">预算、评价指标等园区级预警无法落到单个企业，统一显示在园区中心；同比异常类预警按主要贡献企业显示在地图上。</p>
+    {alerts.length ? alerts.map((a) => <Evidence key={a.id} alert={a} />) : <p className="spatial-muted">当前筛选下没有园区级预警。</p>}
+  </>;
+}

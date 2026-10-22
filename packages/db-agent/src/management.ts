@@ -6,7 +6,7 @@ export interface ManagementData {
   annual: { year: number; tce: number | null; co2_t: number | null; value_added: number | null }[];
   renewable: { name: string; tce: number; renewable: boolean }[];
   transfers: { source: string; target: string; energy: string; quantity: number; unit: string }[];
-  alerts: { id: number; rule_code: string; rule_name: string; node: string; message: string; severity: string; status: string; observed: number | null; baseline: number | null; root_cause: unknown }[];
+  alerts: { id: number; rule_code: string; rule_name: string; node: string; node_code: string; node_type: string; period: string; message: string; severity: string; status: string; observed: number | null; baseline: number | null; root_cause: unknown }[];
   strategies: { code: string; name: string; category: string; description: string | null; reference: string | null }[];
 }
 
@@ -42,10 +42,13 @@ export function getManagementData(year: number): Promise<ManagementData> {
       join core.org_node t on t.node_id=a.to_node_id join core.energy_type e on e.code=a.energy_type_code
       where a.is_current and extract(year from a.period_month)=$1 group by 1,2,3,5 order by 4 desc limit 100`, [year])).rows;
     const alerts = (await c.query(`
-      select a.alert_id::int id,r.code rule_code,r.name rule_name,n.name node,a.message,a.severity,a.status,a.observed_value::float observed,
+      select a.alert_id::int id,r.code rule_code,r.name rule_name,n.name node,n.code node_code,n.node_type,to_char(a.period_start,'YYYY-MM') period,a.message,a.severity,a.status,a.observed_value::float observed,
         a.baseline_value::float baseline,a.root_cause from fact.alert_event a join core.org_node n using(node_id)
         join core.alert_rule r using(rule_id)
-      where extract(year from a.period_start)=$1 order by a.detected_at desc limit 60`, [year])).rows;
+      where extract(year from a.period_start)=$1
+        -- only the latest evaluation run of the year: earlier runs were superseded by re-imported data and are all resolved
+        and a.run_id is not distinct from (select max(x.run_id) from fact.alert_event x where extract(year from x.period_start)=$1)
+      order by a.detected_at desc limit 60`, [year])).rows;
     const strategies = (await c.query(`select code,name,category,description,reference_source reference from core.strategy order by category,code`)).rows;
     return { carbonStructure, carbonRanking, annual, renewable, transfers, alerts, strategies };
   });

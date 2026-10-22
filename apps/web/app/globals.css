@@ -1553,3 +1553,91 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .flowmap-tools button.on { background: var(--tint); color: var(--accent-text); }
 .flowmap-tools button i { width: 14px; height: 6px; border-radius: 3px; }
 .flowmap .flowmap-panel { top: 64px; max-height: calc(100% - 80px); }
+
+/* ---------- v0.46 · overview: more opaque side panels ---------- */
+.map-stage .float-card { background: rgb(var(--panel) / .97); }
+.map-stage .glass { background: rgb(var(--panel) / .95); }
+
+/* ---------- v0.46 · spatial diagnosis: the park map is the base, panels float over it ---------- */
+.spatial { position: relative; flex: 1 1 auto; min-height: 560px; border-radius: 16px; overflow: hidden; background: var(--bg-2); isolation: isolate; }
+.spatial-map { position: absolute; inset: 0; }
+.spatial-map .amap-inner { position: absolute; inset: 0; }
+.spatial .map-loading, .spatial .map-error { position: absolute; inset: 0; z-index: 2; }
+.spatial::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(var(--base) / .55)); }
+.spatial > aside, .spatial-kpis { position: absolute; z-index: 5; }
+
+.spatial-kpis { top: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; padding: 6px; border-radius: 14px; background: rgb(var(--panel) / .9); box-shadow: var(--shadow-float); }
+.spatial-kpis > div { display: grid; gap: 1px; min-width: 116px; padding: 6px 16px; border-left: 1px solid rgb(var(--ink) / .08); }
+.spatial-kpis > div:first-child { border-left: 0; }
+.spatial-kpis span { font-size: 11px; color: var(--text-3); letter-spacing: .04em; }
+.spatial-kpis strong { font-size: 22px; font-weight: 600; line-height: 1.2; white-space: nowrap; }
+.spatial-kpis small { font-size: 11px; color: var(--text-3); }
+
+.spatial-list { top: 14px; left: 14px; bottom: 14px; width: 300px; display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: 16px; background: rgb(var(--panel) / .93); box-shadow: var(--shadow-float); }
+.spatial-filter { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: rgb(var(--ink) / .05); }
+.spatial-filter button { flex: 1; border: 0; border-radius: 8px; background: transparent; color: var(--text-2); padding: 6px; font: inherit; font-size: 12px; cursor: pointer; }
+.spatial-filter button.on { background: var(--tint); color: var(--accent-text); font-weight: 600; }
+.spatial-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.spatial-groups button { display: flex; align-items: center; gap: 6px; border: 0; border-radius: 8px; background: rgb(var(--ink) / .04); color: var(--text-2); padding: 6px 8px; font: inherit; font-size: 12px; cursor: pointer; }
+.spatial-groups button i { width: 7px; height: 7px; border-radius: 50%; background: var(--g); }
+.spatial-groups button b { margin-left: auto; font-weight: 600; color: var(--text); }
+.spatial-groups button.on { background: color-mix(in srgb, var(--g) 18%, transparent); color: var(--text); }
+.spatial-groups button:disabled { opacity: .4; cursor: default; }
+.spatial-list ol { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 6px; flex: 1; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.spatial-list li button { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; align-items: center; text-align: left; border: 0; border-radius: 10px;
+  background: rgb(var(--ink) / .035); color: var(--text); padding: 9px 10px; font: inherit; cursor: pointer; box-shadow: inset 3px 0 0 var(--sev); transition: background .15s; }
+.spatial-list li button:hover { background: rgb(var(--ink) / .07); }
+.spatial-list li button.on { background: color-mix(in srgb, var(--sev) 14%, transparent); }
+.spatial-list li b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spatial-list li small { grid-column: 1 / -1; font-size: 11px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.spatial .sev { font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 6px; color: var(--sev); background: color-mix(in srgb, var(--sev) 16%, transparent); white-space: nowrap; }
+.spatial-empty { padding: 12px; font-size: 12px; color: var(--text-3); text-align: center; }
+
+.spatial-detail { top: 14px; right: 14px; bottom: 14px; width: 360px; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 16px;
+  background: rgb(var(--panel) / .93); box-shadow: var(--shadow-float); overflow: auto; scrollbar-width: thin; }
+.spatial-head { display: grid; gap: 4px; }
+.spatial-head h3 { margin: 0; font-size: 18px; }
+.spatial-head em { justify-self: start; font-style: normal; font-size: 12px; padding: 3px 8px; border-radius: 7px; }
+.spatial-head em.warn { color: var(--carbon); background: rgb(var(--carbon-rgb) / .14); }
+.spatial-head em.ok { color: var(--energy); background: rgb(var(--energy-rgb) / .14); }
+.spatial-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.spatial-stats > div { display: grid; gap: 2px; padding: 10px; border-radius: 10px; background: rgb(var(--ink) / .04); }
+.spatial-stats span, .spatial-stats > div > small { font-size: 11px; color: var(--text-3); }
+.spatial-stats strong { font-size: 17px; font-weight: 600; white-space: nowrap; }
+.spatial-stats strong small { margin-left: 2px; font-family: var(--font); font-size: 10px; font-weight: 400; color: var(--text-3); }
+.spatial-stats strong.good { color: var(--energy); }
+.spatial-stats strong.bad { color: var(--carbon); }
+.spatial-label { font-size: 12px; font-weight: 600; color: var(--text-2); }
+.spatial-label small { margin-left: 6px; font-weight: 400; color: var(--text-3); }
+.spatial-bars { display: grid; gap: 8px; }
+.spatial-bars > div { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; height: 96px; align-items: end; }
+.spatial-bars > div > span { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; }
+.spatial-bars i { display: block; border-radius: 4px 4px 1px 1px; background: linear-gradient(180deg, var(--energy), rgb(var(--energy-rgb) / .35)); }
+.spatial-bars i.up { background: linear-gradient(180deg, var(--carbon), rgb(var(--carbon-rgb) / .35)); }
+.spatial-bars u { position: absolute; left: -1px; right: -1px; height: 2px; margin-bottom: 12px; background: var(--text); opacity: .7; }
+.spatial-bars small { height: 12px; margin-top: 2px; font-size: 9px; text-align: center; color: var(--text-3); }
+.spatial-alert { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--ink) / .035); box-shadow: inset 3px 0 0 var(--sev); }
+.spatial-alert header { display: flex; align-items: center; gap: 8px; }
+.spatial-alert header b { flex: 1; font-size: 13px; }
+.spatial-alert header small { font-size: 11px; color: var(--text-3); }
+.spatial-alert p { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-2); }
+.spatial-share { font-size: 12px; color: var(--carbon); }
+.spatial-months { display: flex; align-items: center; gap: 3px; height: 26px; }
+.spatial-months i { flex: 1; min-height: 3px; border-radius: 2px; }
+.spatial-months i.up { background: var(--carbon); align-self: flex-end; }
+.spatial-months i.down { background: var(--energy); align-self: flex-start; }
+.spatial-plans { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.spatial-plans li { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; border-radius: 9px; background: rgb(var(--tint-rgb, var(--accent-rgb)) / .08); font-size: 12px; }
+.spatial-plans li b { font-weight: 600; }
+.spatial-plans li span { color: var(--energy); white-space: nowrap; }
+.spatial-muted { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-3); }
+@media (min-width: 1181px) and (min-height: 700px) {
+  .fit-screen .fit-body > .spatial { flex: 1 1 0; min-height: 0; }
+}
+@media (max-width: 1180px) {
+  .spatial { min-height: 900px; }
+  .spatial-list { top: auto; height: 300px; width: auto; right: 14px; }
+  .spatial-detail { width: auto; left: 14px; bottom: 330px; top: 90px; }
+  .spatial-kpis { left: 14px; transform: none; flex-wrap: wrap; }
+}

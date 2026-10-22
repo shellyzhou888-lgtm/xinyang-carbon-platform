@@ -1,60 +1,40 @@
 import Link from "next/link";
-import { charts, management, overview, carbonManagement, indicatorBoard } from "@/lib/server";
+import { charts, management, overview, carbonManagement, indicatorBoard, enterpriseMonthly } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
-import { LinkTabs } from "@/components/MotionParts";
+import { DataError, Empty, PageHeading, Panel } from "@/components/WorkspaceParts";
 import DiagnosisSteps from "@/components/DiagnosisSteps";
+import SpatialDiagnosis from "@/components/SpatialDiagnosis";
 import { TrendChart } from "@/components/EnergyCharts";
-import MetricChart from "@/components/MetricChart";
-import DiagnosisAlerts from "@/components/DiagnosisAlerts";
 import StrategyReportButton from "@/components/StrategyReportButton";
 import { Roadmap } from "@/components/CarbonDataSections";
 import { cleanSource } from "@/lib/source-text";
-import { C } from "@/lib/chart-theme";
 import SectionPager from "@/components/SectionPager";
 import { IndicatorScales } from "@/components/IndicatorScales";
 
 export const dynamic = "force-dynamic";
 const CATEGORIES: Record<string, string> = { clean_energy: "清洁能源", green_power: "绿电交易", efficiency: "能效提升", waste_heat: "余热回收", electrification: "电气化", process: "工艺优化", management: "运行管理", offset: "抵消" };
-const TABS = ["causes", "alerts", "evaluation", "strategies"];
+const TABS = ["spatial", "evaluation", "strategies"];
 
 export default async function Diagnosis({ searchParams }: { searchParams: Promise<{ year?: string; tab?: string; status?: string }> }) {
   const sp = await searchParams, year = selectedYear(sp.year);
-  const tab = sp.tab === "forecast" ? "strategies" : TABS.includes(sp.tab || "") ? sp.tab! : "causes";
+  // Old links: "forecast" opens optimisation; "alerts" and "causes" open the merged spatial diagnosis.
+  const tab = sp.tab === "forecast" ? "strategies" : TABS.includes(sp.tab || "") ? sp.tab! : "spatial";
   let data: Awaited<ReturnType<typeof overview>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, chart: Awaited<ReturnType<typeof charts>> | null = null, error = "";
   let extended: Awaited<ReturnType<typeof carbonManagement>> | null = null;
   let board: Awaited<ReturnType<typeof indicatorBoard>> = [];
-  try { [data, detail, chart, extended, board] = await Promise.all([overview(year), management(year), charts(year), carbonManagement(year), tab === "evaluation" ? indicatorBoard(year) : Promise.resolve([])]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
+  let entNow: Awaited<ReturnType<typeof enterpriseMonthly>> = [], entPrev: Awaited<ReturnType<typeof enterpriseMonthly>> = [];
+  try { [data, detail, chart, extended, board, entNow, entPrev] = await Promise.all([overview(year), management(year), charts(year), carbonManagement(year), tab === "evaluation" ? indicatorBoard(year) : Promise.resolve([]),
+    tab === "spatial" ? enterpriseMonthly(year) : Promise.resolve([]), tab === "spatial" && year > 2021 ? enterpriseMonthly(year - 1) : Promise.resolve([])]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const openAlerts = (detail?.alerts || []).filter((row) => row.status === "open");
-  const visibleAlerts = sp.status === "all" ? detail?.alerts || [] : openAlerts;
-  const top = detail?.carbonRanking[0]?.co2_t || 1;
 
   return <div className="fit-screen">
-    <PageHeading eyebrow={`ENERGY & CARBON DIAGNOSIS · ${year} 年度`} title="能碳综合诊断" description="发现问题、追查贡献、选择策略，再用预测检验方向。" />
+    <PageHeading eyebrow={`ENERGY & CARBON DIAGNOSIS · ${year} 年度`} title="能碳综合诊断" description="在园区实景上定位问题与贡献，对照指标，再选择策略并检验效果。" />
     <DataError error={error} />
-    <DiagnosisSteps year={year} active={tab} counts={{ alerts: openAlerts.length, causes: detail?.carbonRanking.length ?? 0, evaluation: 19, strategies: extended?.plans.length ?? 0 }} />
+    <DiagnosisSteps year={year} active={tab} counts={{ spatial: openAlerts.length, evaluation: 19, strategies: extended?.plans.length ?? 0 }} />
 
-    {tab === "alerts" && <div className="fit-body diagnosis-workspace">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-        <LinkTabs id="alert-status" label="预警状态" active={sp.status === "all" ? "all" : "open"} items={[{ key: "open", label: "待处理预警", href: `/diagnosis?year=${year}`, badge: openAlerts.length }, { key: "all", label: "全部与历史", href: `/diagnosis?year=${year}&status=all` }]} />
-        <MoreLink href={`/admin?year=${year}`}>数据质量工单</MoreLink>
-      </div>
-      <div className="diagnosis-scroll">{visibleAlerts.length ? <DiagnosisAlerts alerts={visibleAlerts} openCount={openAlerts.length} /> : <Empty title="本年度暂无已生成的诊断预警" action={<MoreLink href={`/diagnosis?year=${year}&tab=causes`}>查看企业排放贡献</MoreLink>}>这里显示诊断规则产生的预警记录。</Empty>}</div>
+    {tab === "spatial" && <div className="fit-body">
+      <SpatialDiagnosis year={year} alerts={detail?.alerts ?? []} ranking={detail?.carbonRanking ?? []} monthly={entNow} previous={entPrev} plans={extended?.plans ?? []} parkCo2={data?.co2_t} />
     </div>}
-
-    {tab === "causes" && <div className="fit-body"><div className="view-split">
-      <Panel title="企业排放贡献分解" subtitle="贡献排序用于定位核查重点，不能直接认定因果关系">
-        <MetricChart rows={(detail?.carbonRanking || []).map((row) => ({ name: row.name.replace(/（.*?）/g, ""), value: row.co2_t }))} unit="tCO₂" color={C.carbon} label="企业排放贡献" />
-      </Panel>
-      <Panel title="溯源到企业" subtitle="排放量前五">
-        {detail?.carbonRanking.slice(0, 5).map((row, index) => <div className="rank-row" key={row.code}>
-          <span>{String(index + 1).padStart(2, "0")}</span>
-          <div><b style={{ fontWeight: 500 }}>{row.name}</b><div className="rank-bar"><i style={{ width: `${row.co2_t / top * 100}%` }} /></div></div>
-          <strong>{fmt(row.co2_t)}<small>tCO₂</small></strong>
-        </div>)}
-        <p className="panel-note">产线、设备层级需补充对应计量及分摊数据。</p>
-      </Panel>
-    </div></div>}
 
     {tab === "evaluation" && <SectionPager labels={["评价指标"]}>
       <Panel className="view-fill" title="绿色工业园区评价指标" subtitle={`《绿色工业园区评价要求》（GIP_2026）全部 ${board.length} 项二级指标：当前值、引领值与 2021 年以来的变化`}>
@@ -78,6 +58,6 @@ export default async function Diagnosis({ searchParams }: { searchParams: Promis
       <Roadmap data={extended} />
     </SectionPager>}
 
-    <p className="panel-note fit-foot">诊断顺序：碳分析定位对象 → 碳预警发现问题 → 碳评价对照指标 → 能耗优化匹配策略并以预测检验效果。<Link href={`/carbon?year=${year}`}>返回碳管理</Link></p>
+    <p className="panel-note fit-foot">诊断顺序：实景诊断在地图上定位问题与贡献 → 碳评价对照指标 → 能耗优化匹配策略并以预测检验效果。<Link href={`/carbon?year=${year}`}>返回碳管理</Link></p>
   </div>;
 }

@@ -168,7 +168,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       const wide = (shell.current?.clientWidth ?? 0) > 1180;
       map.setPitch(0, true);
       map.setFitView(targets, true, wide ? [150, 110, 420, 420] : [70, 70, 30, 30], 15.2);
-      if (pitched) { map.setPitch(45, true); map.setZoom(map.getZoom() - 0.25, true); }
+      // Open closer on the park: the zones may run slightly under the side panels.
+      if (pitched) { map.setPitch(45, true); map.setZoom(map.getZoom() + 0.2, true); } else map.setZoom(map.getZoom() + 0.25, true);
     } else {
       // Side panels are hidden in zone mode, so the outline is fitted to almost the whole screen (avoid: top, bottom, left, right).
       const targets = zonePoints(zone).map((point) => new AMap.Marker({ position: point }));
