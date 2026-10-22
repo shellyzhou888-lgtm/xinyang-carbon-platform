@@ -8,7 +8,13 @@
 .\scripts\start-db-tunnel.ps1
 ```
 
-该脚本用已授权的本机 SSH 私钥连接服务器 `2222` 端口，并将本机 `15432` 转发至服务器的 `127.0.0.1:5432`。也可以直接执行：
+该脚本用已授权的本机 SSH 私钥连接服务器 `2222` 端口，并将本机 `15432` 转发至服务器的 `127.0.0.1:5432`：
+
+- 本机 `15432` 已有隧道在运行时，脚本提示“already running”后直接退出，不再报 `Address already in use`。
+- 服务器断开连接（`closed by remote host`）或暂时不可达（`Connection timed out`）时，脚本记录时间后自动重连（间隔 5 秒起，逐次加长，最长 60 秒），按 Ctrl+C 停止；只想连一次时加 `-Once`。
+- 优先使用 Windows 自带的 `C:\Windows\System32\OpenSSH\ssh.exe`，没有时再用 PATH 中的 ssh（Git、conda）。
+
+也可以直接执行：
 
 ```powershell
 ssh -p 2222 -i "$env:USERPROFILE\.ssh\id_ed25519" -N -L 127.0.0.1:15432:127.0.0.1:5432 administrator@218.197.118.49
