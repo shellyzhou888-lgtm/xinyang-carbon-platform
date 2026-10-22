@@ -40,9 +40,9 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
   const { handle, ready, l7Ready, error, retry } = useParkMap(container, { satellite: true, pitch: 48 });
   const layer = useRef<any>(null);
   const ripple = useRef<any>(null);
-  const [status, setStatus] = useState<"open" | "all">(alerts.some((a) => a.status === "open") ? "open" : "all");
+  const [status, setStatus] = useState<"open" | "all">("all");
   const [group, setGroup] = useState<AlertGroupKey | null>(null);
-  const shown = useMemo(() => alerts.filter((a) => (status === "all" || a.status === "open") && (!group || alertGroup(a.rule_code) === group))
+  const shown = useMemo(() => alerts.filter((a) => (status === "all" || a.severity !== "info") && (!group || alertGroup(a.rule_code) === group))
     .sort((a, b) => severityRank(b.severity) - severityRank(a.severity)), [alerts, status, group]);
 
   const allSites = useMemo(() => enterprises.filter((f) => f.properties.metricBindingApproved).map((f) => {
@@ -155,7 +155,7 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     if (selected !== PARK && site?.at) map.panTo(site.at, 600);
   }, [ready, handle, selected, site?.at]);
 
-  const openCount = alerts.filter((a) => a.status === "open").length;
+  const openCount = alerts.filter((a) => a.severity !== "info").length;
   const high = shown.filter((a) => severityRank(a.severity) >= 3).length;
   const involved = new Set(shown.flatMap(alertTargets).filter((c) => sites.some((s) => s.code === c))).size;
   const lead = [...sites].sort((a, b) => b.co2 - a.co2)[0];
@@ -166,19 +166,19 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
 
     <div className="spatial-kpis">
       <nav className="spatial-zones" aria-label="产业片区">{DIAG_ZONES.map((z) => <button key={z.key} type="button" className={zone === z.key ? "on" : ""} aria-pressed={zone === z.key} onClick={() => switchZone(z.key)}>{z.label}</button>)}</nav>
-      <div><span>{year} 年预警</span><strong className="num">{alerts.length}</strong><small>待处理 {openCount}</small></div>
+      <div><span>{year} 年诊断问题</span><strong className="num">{alerts.length}</strong><small>需关注 {openCount}</small></div>
       <div><span>需优先处理</span><strong className="num">{high}</strong><small>高风险及紧急</small></div>
-      <div><span>本片区涉及企业</span><strong className="num">{involved}</strong><small>按预警定位</small></div>
+      <div><span>本片区涉及企业</span><strong className="num">{involved}</strong><small>按问题定位</small></div>
       {lead && <div><span>片区最大排放</span><strong>{shortName(lead.name)}</strong><small>占园区 {fmt(parkCo2 ? lead.co2 / parkCo2 * 100 : 0, 1)}%</small></div>}
     </div>
 
-    <aside className="spatial-list" aria-label="预警清单">
+    <aside className="spatial-list" aria-label="问题清单">
       <div className="spatial-filter">
-        <button type="button" className={status === "open" ? "on" : ""} onClick={() => setStatus("open")}>待处理 {openCount}</button>
-        <button type="button" className={status === "all" ? "on" : ""} onClick={() => setStatus("all")}>本次评估 {alerts.length}</button>
+        <button type="button" className={status === "open" ? "on" : ""} onClick={() => setStatus("open")}>需关注 {openCount}</button>
+        <button type="button" className={status === "all" ? "on" : ""} onClick={() => setStatus("all")}>全部 {alerts.length}</button>
       </div>
       <div className="spatial-groups">{ALERT_GROUPS.map((g) => {
-        const n = alerts.filter((a) => (status === "all" || a.status === "open") && alertGroup(a.rule_code) === g.key).length;
+        const n = alerts.filter((a) => (status === "all" || a.severity !== "info") && alertGroup(a.rule_code) === g.key).length;
         return <button key={g.key} type="button" className={group === g.key ? "on" : ""} style={{ ["--g" as string]: g.color }} disabled={!n} onClick={() => setGroup(group === g.key ? null : g.key)}><i />{g.label}<b className="num">{n}</b></button>;
       })}</div>
       <ol>{zoneAlerts.length ? zoneAlerts.map((a) => {
@@ -190,7 +190,7 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
           <b>{a.rule_name}</b>
           <small>{targets.map((c) => c === PARK ? "园区整体" : shortName(allSites.find((s) => s.code === c)?.name ?? c)).join("、")}{a.period ? ` · ${a.period}` : ""}</small>
         </button></li>;
-      }) : <li className="spatial-empty">当前筛选下没有预警</li>}</ol>
+      }) : <li className="spatial-empty">当前筛选下没有问题</li>}</ol>
     </aside>
 
     <AnimatePresence mode="wait">
@@ -208,7 +208,7 @@ function Evidence({ alert, code }: { alert: Alert; code?: string }) {
   const root = alert.root_cause as { months?: { month: string; deviation_pct: number }[]; top_contributors?: Contributor[] } | null;
   const mine = code ? contributors(alert).find((c) => c.node === code) : undefined;
   return <div className="spatial-alert" style={{ ["--sev" as string]: SEVERITY_COLOR[alert.severity] ?? "#9aa3ad" }}>
-    <header><span className="sev">{alertSeverity(alert.severity)}</span><b>{alert.rule_name}</b><small>{alert.status === "open" ? "待处理" : "已处理"}</small></header>
+    <header><span className="sev">{alertSeverity(alert.severity)}</span><b>{alert.rule_name}</b><small>{alert.period}</small></header>
     <p>{alert.message}</p>
     {mine && <small className="spatial-share">本企业贡献 {fmt(mine.share_pct ?? 0, 1)}%{mine.delta != null ? `（${mine.delta > 0 ? "+" : ""}${fmt(mine.delta, 0)} t）` : ""}</small>}
     {root?.months?.length ? <div className="spatial-months">{root.months.map((m) => <i key={m.month} title={`${m.month} 同比 ${m.deviation_pct > 0 ? "+" : ""}${m.deviation_pct}%`}
@@ -226,7 +226,7 @@ function SiteDetail({ site, parkCo2, year, monthly, previous, plans }: {
   const top = Math.max(1, ...months.flatMap((m) => [m.now ?? 0, m.before ?? 0]));
   return <>
     <header className="spatial-head"><span className="eyebrow">{site.sector} · {SECTOR_ZONE[site.sector] === "electronics" ? "电子信息产业园区" : "绿色家居产业园区"}</span><h3>{site.name}</h3>
-      <em className={site.alerts.length ? "warn" : "ok"}>{site.alerts.length ? `${site.alerts.length} 项预警` : "运行正常"}</em></header>
+      <em className={site.alerts.length ? "warn" : "ok"}>{site.alerts.length ? `${site.alerts.length} 项问题` : "运行正常"}</em></header>
     <div className="spatial-stats">
       <div><span>{year} 年碳排放</span><strong className="num">{fmt(site.co2, 0)}<small>tCO₂</small></strong><small>占园区 {fmt(parkCo2 ? site.co2 / parkCo2 * 100 : 0, 1)}%</small></div>
       <div><span>同比</span><strong className={`num ${yoy != null && yoy <= 0 ? "good" : "bad"}`}>{yoy == null ? "—" : `${yoy > 0 ? "+" : ""}${fmt(yoy, 1)}%`}</strong><small>较上年</small></div>
@@ -238,17 +238,17 @@ function SiteDetail({ site, parkCo2, year, monthly, previous, plans }: {
         <i style={{ height: `${(m.now ?? 0) / top * 100}%` }} className={m.now != null && m.before != null && m.now > m.before ? "up" : ""} />
         {m.before != null && <u style={{ bottom: `${m.before / top * 100}%` }} />}<small>{i + 1}</small></span>)}</div>
     </div>
-    <span className="spatial-label">相关预警</span>
-    {site.alerts.length ? site.alerts.slice(0, 4).map((a) => <Evidence key={a.id} alert={a} code={site.code} />) : <p className="spatial-muted">本企业在当前筛选下没有预警。</p>}
-    {plans.length > 0 && <><span className="spatial-label">匹配的减碳措施</span>
+    <span className="spatial-label">诊断出的问题</span>
+    {site.alerts.length ? site.alerts.slice(0, 4).map((a) => <Evidence key={a.id} alert={a} code={site.code} />) : <p className="spatial-muted">本企业在当前筛选下没有问题。</p>}
+    {plans.length > 0 && <><span className="spatial-label">生成的减碳策略</span>
       <ul className="spatial-plans">{plans.slice(0, 4).map((p, i) => <li key={i}><b>{p.strategy}</b><span className="num">{p.co2_reduction_t != null ? `${fmt(p.co2_reduction_t, 0)} tCO₂/年` : "—"}</span></li>)}</ul></>}
   </>;
 }
 
 function ParkDetail({ alerts }: { alerts: Alert[] }) {
   return <>
-    <header className="spatial-head"><span className="eyebrow">园区整体</span><h3>信阳经济技术开发区</h3><em className={alerts.length ? "warn" : "ok"}>{alerts.length ? `${alerts.length} 项园区级预警` : "运行正常"}</em></header>
-    <p className="spatial-muted">预算、评价指标等园区级预警无法落到单个企业，列在左侧清单中；同比异常类预警按主要贡献企业显示在地图上。</p>
-    {alerts.length ? alerts.map((a) => <Evidence key={a.id} alert={a} />) : <p className="spatial-muted">当前筛选下没有园区级预警。</p>}
+    <header className="spatial-head"><span className="eyebrow">园区整体</span><h3>信阳经济技术开发区</h3><em className={alerts.length ? "warn" : "ok"}>{alerts.length ? `${alerts.length} 项园区级问题` : "运行正常"}</em></header>
+    <p className="spatial-muted">预算、评价指标与数据缺口等园区级问题无法落到单个企业，列在左侧清单中，并在“策略生成”中由排放最大的三家企业承接。</p>
+    {alerts.length ? alerts.map((a) => <Evidence key={a.id} alert={a} />) : <p className="spatial-muted">当前筛选下没有园区级问题。</p>}
   </>;
 }

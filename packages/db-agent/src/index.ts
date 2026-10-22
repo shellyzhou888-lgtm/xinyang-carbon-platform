@@ -5,6 +5,7 @@ export { loadConfig, REPO_ROOT, type AgentConfig } from "./config.js";
 export { closePool, initPool, ping } from "./db.js";
 export { getParkOverview, type ParkOverview } from "./overview.js";
 export { getIndicatorBoard, type IndicatorBoardRow } from "./indicator-board.js";
+export { getDiagnosisLoop, LOOP_CHECKS, type DiagnosisLoop, type LoopFinding, type LoopStrategy, type LoopCheck } from "./diagnosis-loop.js";
 export { getProductChains, type ProductChain, type ProductChainStage, type LcaSummary } from "./product-chain.js";
 export { logMessage } from "./audit.js";
 export { governanceIdle, runGovernance, triggerGovernance, type GovernanceTrigger } from "./governance.js";

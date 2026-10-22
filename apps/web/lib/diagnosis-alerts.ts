@@ -1,17 +1,18 @@
+/** The four diagnosis dimensions (same as the closed-loop check rules). */
 export const ALERT_GROUPS = [
-  { key: "target", label: "预算与目标", hint: "预算超限、年度指标偏离", color: "#f3b34c" },
-  { key: "deviation", label: "同比异常", hint: "能耗与碳排变化超过阈值", color: "#ee8171" },
-  { key: "efficiency", label: "企业能效", hint: "重点企业单位产值能耗或排放", color: "#9c88f2" },
-  { key: "quality", label: "数据与其他", hint: "缺报、口径及其他规则", color: "#70a9ef" },
+  { key: "total", label: "总量", hint: "预算、同比变化", color: "#f3b34c" },
+  { key: "intensity", label: "强度", hint: "单位产值能耗", color: "#ee8171" },
+  { key: "structure", label: "结构", hint: "外购电依赖、绿电比例", color: "#70a9ef" },
+  { key: "indicator", label: "指标与数据", hint: "评价指标提升空间与数据缺口", color: "#9c88f2" },
 ] as const;
 
 export type AlertGroupKey = typeof ALERT_GROUPS[number]["key"];
 
 export function alertGroup(ruleCode: string): AlertGroupKey {
-  if (/BUDGET|INDICATOR|TARGET/.test(ruleCode)) return "target";
-  if (/DEVIATION|YOY|CHANGE/.test(ruleCode)) return "deviation";
-  if (/INTENSITY|EFFICIENCY/.test(ruleCode)) return "efficiency";
-  return "quality";
+  if (/BUDGET|DEVIATION|YOY|CHANGE/.test(ruleCode)) return "total";
+  if (/INTENSITY|EFFICIENCY/.test(ruleCode)) return "intensity";
+  if (/GRID|STRUCTURE|GREEN/.test(ruleCode)) return "structure";
+  return "indicator";
 }
 
 export function alertSeverity(severity: string) {
