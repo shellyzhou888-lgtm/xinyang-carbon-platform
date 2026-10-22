@@ -1,0 +1,15 @@
+{
+  "blender_version": "4.5.9 LTS",
+  "blender_download": "https://download.blender.org/release/Blender4.5/blender-4.5.9-windows-x64.zip",
+  "official_sha256": "41da973b9bf95bb312cbeff4d1982feb13259b43c821686b9bafea4dfe5477cf",
+  "download_sha256_verified": true,
+  "mcp_repository": "https://github.com/ahujasid/blender-mcp",
+  "mcp_package": "mcp-for-blender==2.2.2",
+  "addon_protocol": 14,
+  "installed_addon_sha256": "229ee114f0504b486bdd24bbc8b08fa9b22112f5e831ef8b2e9cc507e9ccbbfe",
+  "transport": "official MCP Python SDK stdio ClientSession -> upstream MCP server -> upstream Blender addon",
+  "endpoint": "127.0.0.1:9876",
+  "safe_mode": true,
+  "telemetry": false,
+  "paid_generation_services_used": false
+}
