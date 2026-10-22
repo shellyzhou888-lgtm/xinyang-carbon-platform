@@ -28,6 +28,9 @@ const ZONE_MAX_ZOOM = 17.6;
  * marker in the panorama; logos and honour plates appear once a zone is opened at building scale.
  * `left` / `right` are floating panels laid over the map edges (they stack below the map on narrow screens).
  */
+/** Planning-zone boundary colour (overview and single-zone view). */
+const ZONE_BOUNDARY = "#ff3b4f";
+
 export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right }: {
   year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode;
 }) {
@@ -168,8 +171,8 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       const mask = new AMap.Polygon({ path: [outer, ...rings], fillColor: isLight() ? "#f1f3ee" : "#0c0d10", fillOpacity: 0.62, strokeWeight: 0, zIndex: 55, bubble: true });
       mask.setMap(map); polygons.current.push(mask);
       for (const ring of rings) {
-        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: "#ffffff", strokeOpacity: 0.22, strokeWeight: 10, zIndex: 61, bubble: true });
-        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: "#ffffff", strokeOpacity: 0.95, strokeWeight: 2.5, zIndex: 62, bubble: true });
+        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: ZONE_BOUNDARY, strokeOpacity: 0.25, strokeWeight: 12, zIndex: 61, bubble: true });
+        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: ZONE_BOUNDARY, strokeOpacity: 1, strokeWeight: 4, zIndex: 62, bubble: true });
         glow.setMap(map); line.setMap(map); polygons.current.push(glow, line);
       }
       return;
@@ -178,9 +181,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     for (const feature of zoneFeatures) {
       const key = feature.properties.id as Exclude<ZoneKey, "all">;
       for (const rings of feature.geometry.coordinates) {
-        // Boundaries are white on every zone; the light fill keeps each zone's colour.
-        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: "#ffffff",
-          strokeOpacity: 0.9, strokeWeight: 2, zIndex: 60, cursor: "pointer" });
+        // Boundaries are bold red on every zone; the light fill keeps each zone's colour.
+        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: ZONE_BOUNDARY,
+          strokeOpacity: 1, strokeWeight: 4, zIndex: 60, cursor: "pointer" });
         polygon.on("click", () => openZone(key));
         polygon.setMap(map);
         polygons.current.push(polygon);
