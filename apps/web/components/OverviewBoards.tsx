@@ -90,7 +90,7 @@ export function IndicatorBoard({ rows, year }: { rows: ParkOverview["achieved"];
   if (!rows.length) return null;
   return <section className="indicator-board glass" aria-label={`${year} 年绿色工业园区评价达标指标`}>
     <div className="indicator-hero">
-      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达到绿色工业园区<br />评价要求 2026 年指标</small></strong>
+      <strong className="indicator-count"><CountUp value={rows.length} digits={0} /><small>项达到绿色工业园区评价要求 2026 年指标</small></strong>
     </div>
     <ol className="indicator-summary-list">
       {rows.map((row, index) => <motion.li key={row.code} title={`${row.name} · 引领值 ${row.comparator === "<=" || row.comparator === "<" ? "≤" : "≥"} ${fmt(row.benchmark, 2)}${row.unit || ""}`}

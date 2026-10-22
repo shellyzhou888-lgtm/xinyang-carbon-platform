@@ -1426,3 +1426,5 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .honor-rows .honor-dot { flex: none; width: 10px; height: 10px; margin: 0 4px 0 6px; border-radius: 50%; background: var(--honor); box-shadow: 0 0 0 3px color-mix(in srgb, var(--honor) 22%, transparent), 0 0 10px color-mix(in srgb, var(--honor) 60%, transparent); }
 .honor-rows .honor-phrase { white-space: pre-line; font-size: 13px; line-height: 1.3; }
 .honor-rows .honor-count { color: var(--honor); }
+/* Achieved-count caption stays on one line beside the large number. */
+.overview-screen .indicator-count small { white-space: nowrap; font-size: 13px; letter-spacing: 0; }
