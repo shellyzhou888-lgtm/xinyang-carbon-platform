@@ -58,17 +58,7 @@ def voice_marks(canvas: Image.Image, phase: float, kind: str) -> None:
                 angles = (-65, 65) if side > 0 else (115, 245)
                 arc(center_x, center_y, radius, *angles, alpha)
     else:
-        # Three dark particles drift into the bottle in a seamless cycle.
-        for offset in (0.0, 0.33, 0.66):
-            progress = (phase / (2 * math.pi) + offset) % 1.0
-            x = round(507 - 35 * progress)
-            y = round(392 - 17 * progress + 3 * math.sin(phase + offset * 6))
-            alpha = round(160 * math.sin(math.pi * progress))
-            radius = round(4 - 2 * progress)
-            for dx in range(-radius, radius + 1):
-                for dy in range(-radius, radius + 1):
-                    if dx * dx + dy * dy <= radius * radius:
-                        canvas.putpixel((x + dx, y + dy), (37, 67, 60, alpha))
+        # The cloud has empty hands; retain only the voice pulse accent.
         for radius in (17, 28):
             pulse = max(0.0, math.sin(phase - radius / 24))
             alpha = round(105 * pulse)

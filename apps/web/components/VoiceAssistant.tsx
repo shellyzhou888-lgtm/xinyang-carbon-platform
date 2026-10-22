@@ -84,7 +84,7 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
             }
             .xy-character-button::before {
               inset:0; border:0; border-radius:0;
-              background:center / contain no-repeat url('/mascots/carbon-cloud/animation.gif');
+              background:center / contain no-repeat url('/mascots/carbon-cloud/animation.gif?v=0.44.1');
               z-index:2;
             }
             .xy-character-button::after { display:none; }
@@ -96,7 +96,7 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
               .xy-widget[data-state=mic_off] .xy-status[data-error=false] { display:none; }
             }
             @media (prefers-reduced-motion:reduce) {
-              .xy-character-button::before { background-image:url('/mascots/carbon-cloud/poster.png'); }
+              .xy-character-button::before { background-image:url('/mascots/carbon-cloud/poster.png?v=0.44.1'); }
             }
           `;
           shadow.appendChild(style);
