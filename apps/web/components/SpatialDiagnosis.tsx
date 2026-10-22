@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CarbonManagementData, EnterpriseMonthly, ManagementData } from "@xinyang/db-agent";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { BOUNDARY, fmt, SECTOR_ZONE, shortName, smoothRing, useParkMap, zonePoints, zonePolygons, type ZoneKey } from "@/lib/park-map";
+import { BOUNDARY, conePin, fmt, SECTOR_ZONE, shortName, smoothRing, useParkMap, zonePoints, zonePolygons, type ZoneKey } from "@/lib/park-map";
 import { ALERT_GROUPS, alertGroup, alertSeverity, type AlertGroupKey } from "@/lib/diagnosis-alerts";
 
 type Alert = ManagementData["alerts"][number];
@@ -27,12 +27,6 @@ const alertTargets = (alert: Alert): string[] => {
   const list = contributors(alert).filter((c) => (c.share_pct ?? 100) >= 10).map((c) => c.node);
   return list.length ? list : [PARK];
 };
-
-/** Enterprise dot: size by emissions, colour by its worst alert; selected gets a white ring. */
-function dot(color: string, size: number, selected: boolean) {
-  const r = size / 2, pad = selected ? 4 : 2, d = size + pad * 2;
-  return { image: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${d}" height="${d}"><circle cx="${d / 2}" cy="${d / 2}" r="${r}" fill="${color}" fill-opacity=".92" ${selected ? `stroke="#fff" stroke-width="3"` : ""}/></svg>`), size: [d, d] as [number, number] };
-}
 
 /**
  * Spatial diagnosis: the park map is the base layer. Each enterprise sits at its real location, sized by emissions;
@@ -122,21 +116,23 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     const top = Math.max(1, ...sites.map((s) => s.co2));
     for (const s of sites) {
       const color = s.worst ? SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] : "#2ee8a5";
-      const icon = dot(color, 10 + Math.sqrt(s.co2 / top) * 18, s.code === selected);
-      const marker = new AMap.LabelMarker({ position: s.at, zIndex: s.code === selected ? 5 : s.worst ? 4 : 3, icon: { image: icon.image, size: icon.size, anchor: "center" },
-        text: s.worst || s.code === selected ? { content: shortName(s.name), direction: "top", offset: [0, -6], style: { fontSize: 12, fillColor: "#fff", strokeColor: "rgba(10,12,16,.85)", strokeWidth: 3, fontWeight: 600 } } : undefined });
+      // Cone pin (size by emissions, white when selected) standing on its location; the ripple below marks the spot.
+      const icon = conePin(s.code === selected ? "#ffffff" : color, Math.round(20 + Math.sqrt(s.co2 / top) * 14));
+      const marker = new AMap.LabelMarker({ position: s.at, zIndex: s.code === selected ? 5 : s.worst ? 4 : 3, icon: { image: icon.image, size: icon.size, anchor: "bottom-center" },
+        text: s.worst || s.code === selected ? { content: shortName(s.name), direction: "top", offset: [0, -2], style: { fontSize: 12, fillColor: "#fff", strokeColor: "rgba(10,12,16,.85)", strokeWidth: 3, fontWeight: 600 } } : undefined });
       marker.on("click", () => setSelected(s.code));
       layer.current.add(marker);
     }
   }, [ready, handle, sites, selected]);
   useEffect(() => () => { layer.current = null; ripple.current = null; }, []);
 
-  // Alerts light up where they occur: an L7 ripple in the alert colour.
+  // A ripple under every enterprise cone, in its alert colour (green when it has none); alerts ripple larger.
   useEffect(() => {
     const scene = handle.current?.scene;
     if (!l7Ready || !scene) return;
     const data = [
-      ...sites.filter((s) => s.worst).map((s) => ({ lng: s.at[0], lat: s.at[1], color: SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] })),
+      ...sites.map((s) => ({ lng: s.at[0], lat: s.at[1], size: s.worst ? 46 : 28,
+        color: s.worst ? SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] : "#2ee8a5" })),
     ];
     if (ripple.current) { ripple.current.setData(data); return; }
     if (!data.length) return;
@@ -144,7 +140,7 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     import("@antv/l7-layers").then(({ PointLayer }) => {
       if (disposed || !handle.current?.scene) return;
       ripple.current = new PointLayer({ name: "diagnosis-ripple", zIndex: 4, blend: "additive" }).source(data, { parser: { type: "json", x: "lng", y: "lat" } })
-        .shape("circle").size(46).color("color", (c: string) => c).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 });
+        .shape("circle").size("size", (v: number) => v).color("color", (c: string) => c).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 });
       handle.current.scene.addLayer(ripple.current);
     }).catch((reason) => console.warn("[diagnosis] ripple layer unavailable", reason));
     return () => { disposed = true; };

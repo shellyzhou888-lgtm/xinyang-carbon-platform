@@ -24,18 +24,21 @@ function zoneGrid(): Position[] {
   return points;
 }
 
-/** Card with a stem and anchor dot, anchored at the dot (bottom-centre). */
+/** Card on a stem ending in a cone pin (same marker as the flow maps), anchored at the cone tip (bottom-centre). */
 function stemCard(title: string, rows: [string, string][], accent: string) {
   const card = infoCard(title, rows, accent);
-  const [w, h] = card.size, stem = 46;
+  const [w, h] = card.size, stem = 50;
   const { element, ctx } = canvas(w, h + stem);
   return new Promise<{ image: string; size: [number, number] }>((resolve) => {
     const img = new Image();
     img.onload = () => {
       ctx.drawImage(img, 0, 0, w, h);
-      ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(w / 2, h); ctx.lineTo(w / 2, h + stem - 6); ctx.stroke();
-      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(w / 2, h + stem - 5, 4, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#111"; ctx.lineWidth = 1.5; ctx.stroke();
+      const x = w / 2, tip = h + stem - 1, top = tip - 22;
+      ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x, h); ctx.lineTo(x, top); ctx.stroke();
+      // Cone: gradient body, light elliptical cap.
+      const g = ctx.createLinearGradient(0, top, 0, tip); g.addColorStop(0, accent); g.addColorStop(1, accent + "99");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 9, top); ctx.lineTo(x + 9, top); ctx.lineTo(x, tip); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.beginPath(); ctx.ellipse(x, top, 8, 2.4, 0, 0, Math.PI * 2); ctx.fill();
       resolve({ image: element.toDataURL("image/png"), size: [w, h + stem] });
     };
     img.src = card.image;
@@ -56,6 +59,7 @@ export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year
   const { handle, ready, l7Ready, error, retry } = useParkMap(container, { pitch: 55, rotation: -12, zoom: 14.3, limit: HENAN_BOUNDS, zooms: [7, 19] });
   const dots = useRef<any>(null);
   const callouts = useRef<any>(null);
+  const ripples = useRef<any>(null);
   const months = useMemo(() => [...new Set(rows.map((row) => row.month))].sort(), [rows]);
   const [index, setIndex] = useState(() => Math.max(0, months.length - 1));
   // A different year starts at its last month.
@@ -145,7 +149,23 @@ export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year
     });
     return () => { disposed = true; };
   }, [ready, handle, ranking]);
-  useEffect(() => () => { callouts.current = null; }, []);
+  useEffect(() => () => { callouts.current = null; ripples.current = null; }, []);
+
+  // Ripple under each callout cone, in the callout colour.
+  useEffect(() => {
+    const scene = handle.current?.scene;
+    if (!l7Ready || !scene) return;
+    const data = ranking.slice(0, 3).map((row, i) => ({ lng: row.at[0], lat: row.at[1], color: RAMP[Math.max(2, 5 - i)] }));
+    if (ripples.current) { ripples.current.setData(data); return; }
+    let disposed = false;
+    import("@antv/l7-layers").then(({ PointLayer }) => {
+      if (disposed || !handle.current?.scene) return;
+      ripples.current = new PointLayer({ name: "energy-callout-ripple", zIndex: 6, blend: "additive" }).source(data, { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(30).color("color", (c: string) => c).animate({ enable: true, speed: 0.7, rings: 3 }).style({ opacity: 0.9 });
+      handle.current.scene.addLayer(ripples.current);
+    }).catch((reason) => console.warn("[heat-twin] ripple layer unavailable", reason));
+    return () => { disposed = true; };
+  }, [l7Ready, handle, ranking]);
 
   // Timeline playback.
   useEffect(() => {
