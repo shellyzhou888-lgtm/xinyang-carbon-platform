@@ -1,0 +1,108 @@
+{
+  "version": "2.0",
+  "date": "2026-10-22",
+  "status": "awaiting_user_visual_approval",
+  "generator": "built-in image_gen.imagegen",
+  "purpose": "Reference-grounded second-round scene concepts before Blender MCP modeling",
+  "scene_truth_status": "Not yet approved; cannot drive production modeling until user approval",
+  "asset_truth_status": "No approved orthographic asset sheets or surveyed dimensions",
+  "modeling_tool_required": "Blender MCP",
+  "assets": [
+    {
+      "key": "01-green-home",
+      "name": "绿色家居",
+      "file": "01-green-home.png",
+      "references": [
+        {
+          "id": "M09",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/绿色家居/M09_家居片区_俯视屋顶与厂间道路.jpg"
+        },
+        {
+          "id": "S04-04",
+          "file": "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S04-04_现代筑美信阳一期航拍.jpg"
+        },
+        {
+          "id": "S36-10",
+          "file": "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S36-10_万华工艺塔与管廊.jpg"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Deliver a single wide 16:9 aerial architectural scene concept for a real industrial district in Xinyang, Henan. This is the SECOND review round, grounded in the attached authentic satellite screenshots and photographs, before any Blender model exists. It should be credible, calm, spatially readable and aesthetically composed, like a high quality architectural drone visualization, NOT an idealized marketing campus. Natural late-morning daylight, muted realistic industrial materials and green landscape, crisp roofs, clear readable shadows. Show foreground, middle ground and background together; emphasize whole-scene massing, road hierarchy, vacant ground and scale relationships before microscopic detail. Continuous terrain extending beyond the frame, no floating island, no tabletop, no cutaway base. Use the satellite reference only for approximate road orientation, relative grouping and proportion of built versus vacant land; ignore ALL UI, labels, red boundary lines, markers and charts. Do not copy watermarks or source lettering. No text, labels, logos, HUD, red boundary, neon, decorative title, or split panels. No invented exact survey accuracy. Do not fill empty parcels to make the scene look finished. Architectural irregularity should come from evidenced attached wings, short/long spans, height breaks, setbacks and plant volumes rather than deformed or wavy buildings. Do not include a schematic greybox inset; output one coherent full-color SCENE concept awaiting approval. Subject: Green home-furnishing manufacturing district. Input image 1 is the district satellite screenshot: use visible long industrial roof groups, intersecting grid roads, uneven development density and large undeveloped green parcels as layout cues. Image 2 is an authentic Modern Zhumei factory aerial: use its very long low grey/silver paired production halls, shallow multi-span metal roofs, repetitive roof strips, small red loading accents and road-front scale as building typology truth. Image 3 is authentic Wanhua process equipment: use the real hierarchy of lower halls, a few taller industrial process towers, pipes and attached service volumes ONLY as a localized plant cluster, not a dominant chemical refinery across the park. Composition: high three-quarter aerial around 50 degrees looking across multiple distinct compounds. Foreground a broad tree-lined local road, a concrete loading yard and a long production hall entering the frame; middle ground two to three contrasting factory compounds with long low metal roofs plus small office annexes, irregular plant/service volumes and purposeful gaps; background undeveloped green fields, ponds and a low distant settlement. Manufacturing buildings should remain mostly rational rectangles, with meaningful asymmetry caused by annexes, L-shaped connections, different hall lengths and roof levels. Keep substantial unbuilt land clearly visible. No repeated identical office towers, no resort landscaping, no grand central plaza, no dense high-rise city, no arbitrary solar panels.",
+      "transparent_background": false,
+      "width": 1672,
+      "height": 941,
+      "sha256": "5f2ef7d965d30e4b6036f54779c1995261dc06dd649e69eba35c4d867315e46d"
+    },
+    {
+      "key": "02-electronics",
+      "name": "电子信息",
+      "file": "02-electronics.png",
+      "references": [
+        {
+          "id": "M15",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/电子信息/M15_金牛片区_南北向产业走廊俯视.jpg"
+        },
+        {
+          "id": "M17",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/电子信息/M17_今上POI_双厂房与中间通道俯视.jpg"
+        },
+        {
+          "id": "M19",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/电子信息/M19_星原与螓杰POI周边_多翼楼群与中庭.jpg"
+        },
+        {
+          "id": "S21-01",
+          "file": "assets/site-photo-references/v2/02_电子信息/02_建筑结构/S21-01_今上厂房主立面与道路.jpg"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Deliver a single wide 16:9 aerial architectural scene concept for a real industrial district in Xinyang, Henan. This is the SECOND review round, grounded in the attached authentic satellite screenshots and photographs, before any Blender model exists. It should be credible, calm, spatially readable and aesthetically composed, like a high quality architectural drone visualization, NOT an idealized marketing campus. Natural late-morning daylight, muted realistic industrial materials and green landscape, crisp roofs, clear readable shadows. Show foreground, middle ground and background together; emphasize whole-scene massing, road hierarchy, vacant ground and scale relationships before microscopic detail. Continuous terrain extending beyond the frame, no floating island, no tabletop, no cutaway base. Use the satellite reference only for approximate road orientation, relative grouping and proportion of built versus vacant land; ignore ALL UI, labels, red boundary lines, markers and charts. Do not copy watermarks or source lettering. No text, labels, logos, HUD, red boundary, neon, decorative title, or split panels. No invented exact survey accuracy. Do not fill empty parcels to make the scene look finished. Architectural irregularity should come from evidenced attached wings, short/long spans, height breaks, setbacks and plant volumes rather than deformed or wavy buildings. Do not include a schematic greybox inset; output one coherent full-color SCENE concept awaiting approval. Subject: Electronics manufacturing district at Jinniu. Input 1 satellite screenshot supplies an ELONGATED NORTH-SOUTH industrial corridor with a main arterial along one side and short perpendicular access roads; retain the narrow/long organization, scattered greenery and vacant plots. Input 2 is the Jinshang POI satellite: use the pair of very long low manufacturing halls with a central service lane as a distinctive anchor. Input 3 is the Xingyuan/Qinjie area satellite: use a SEPARATE cluster of compact multi-wing light manufacturing blocks around courts, do not merge it into the long halls. Input 4 is Jinshang ground-level facade: white/silver corrugated cladding, low canopy/red trim, paved operational forecourt, striped road markings, shallow industrial roof. Compose a high oblique aerial along the corridor so the whole depth reads: foreground paired halls and loading/access yard, middle ground compact multi-wing 3-to-5-storey manufacturing blocks with different wings and courtyards and some secondary low halls, background larger logistics sheds clearly separated by road and green gaps. Existing asymmetrical layout, roof HVAC/service boxes modest, road-access hierarchy visible. Keep at least one large vacant green plot. Do not render a symmetrical business park, do not assign every building the same height, no skyscrapers or futuristic cleanroom shells, no wholesale plaza redesign.",
+      "transparent_background": false,
+      "width": 1672,
+      "height": 940,
+      "sha256": "9df546b3a908909c675547fb7647cd3abe846152e9ce558480aed616aee2773e"
+    },
+    {
+      "key": "03-innovation-community",
+      "name": "科创部落",
+      "file": "03-innovation-community.png",
+      "references": [
+        {
+          "id": "M03",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/科创部落/M03_七组团与北湖岸线_全屏俯视.jpg"
+        },
+        {
+          "id": "M04",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/科创部落/M04_北湖岸线与组团_旋转40度.jpg"
+        },
+        {
+          "id": "S40-05",
+          "file": "assets/site-photo-references/v2/03_科创部落_北湖环境/01_整体体量/S40-05_北湖湖岸与活动场地航拍.jpg"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Deliver a single wide 16:9 aerial architectural scene concept for a real industrial district in Xinyang, Henan. This is the SECOND review round, grounded in the attached authentic satellite screenshots and photographs, before any Blender model exists. It should be credible, calm, spatially readable and aesthetically composed, like a high quality architectural drone visualization, NOT an idealized marketing campus. Natural late-morning daylight, muted realistic industrial materials and green landscape, crisp roofs, clear readable shadows. Show foreground, middle ground and background together; emphasize whole-scene massing, road hierarchy, vacant ground and scale relationships before microscopic detail. Continuous terrain extending beyond the frame, no floating island, no tabletop, no cutaway base. Use the satellite reference only for approximate road orientation, relative grouping and proportion of built versus vacant land; ignore ALL UI, labels, red boundary lines, markers and charts. Do not copy watermarks or source lettering. No text, labels, logos, HUD, red boundary, neon, decorative title, or split panels. No invented exact survey accuracy. Do not fill empty parcels to make the scene look finished. Architectural irregularity should come from evidenced attached wings, short/long spans, height breaks, setbacks and plant volumes rather than deformed or wavy buildings. Do not include a schematic greybox inset; output one coherent full-color SCENE concept awaiting approval. Subject: Beihu innovation-community site CONTEXT concept, intentionally based on visible existing landscape rather than invented completed headquarters. Input 1 and 2 are satellite views of the SAME site: water along the lower/right edge, irregular deeply indented shoreline, forest, fields, ponds, branching modest rural roads, sparse small settlement roofs. The seven red planning polygons are approximately registered and some overlap water: IGNORE THE RED POLYGONS COMPLETELY; do not turn them into building footprints or islands. Input 3 is an authentic Beihu shoreline aerial: use the low wooded horizon, calm lake, irregular grassy public bank and modest shoreline path for natural local character. Produce an elevated aerial at roughly 45 degrees with the lake occupying the right/front third, land extending into background, a continuous curved shoreline and several small coves. Foreground lake surface and a real-scale winding shore path, middle ground irregular wooded and grassy open land intersected by modest branching roads and only a FEW small low-rise rural buildings where visible; background low wooded terrain and scattered settlement. Preserve substantial open land and a believable village/forest/water transition. No fictional seven completed campuses, no invented research towers, no new signature buildings, no buildings standing in water, no regular seven identical islands or courtyards. This scene is a landscape-and-massing reference for a future concept; visual interest comes from shoreline, varied land cover and sparse low roof groupings, not from filling the area with unverified architecture.",
+      "transparent_background": false,
+      "width": 1672,
+      "height": 941,
+      "sha256": "0d136dae8d602977f1aa4e1df8aaeae8b99b7f3d16b00729466d340d746e0a3e"
+    },
+    {
+      "key": "04-research",
+      "name": "科创研发",
+      "file": "04-research.png",
+      "references": [
+        {
+          "id": "M06",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/科创研发/M06_研发片区_俯视道路与屋顶.jpg"
+        },
+        {
+          "id": "M07",
+          "file": "assets/site-photo-references/v2/06_高德卫星截图/科创研发/M07_研发片区_旋转40度整体.jpg"
+        }
+      ],
+      "prompt": "Use case: stylized-concept. Deliver a single wide 16:9 aerial architectural scene concept for a real industrial district in Xinyang, Henan. This is the SECOND review round, grounded in the attached authentic satellite screenshots and photographs, before any Blender model exists. It should be credible, calm, spatially readable and aesthetically composed, like a high quality architectural drone visualization, NOT an idealized marketing campus. Natural late-morning daylight, muted realistic industrial materials and green landscape, crisp roofs, clear readable shadows. Show foreground, middle ground and background together; emphasize whole-scene massing, road hierarchy, vacant ground and scale relationships before microscopic detail. Continuous terrain extending beyond the frame, no floating island, no tabletop, no cutaway base. Use the satellite reference only for approximate road orientation, relative grouping and proportion of built versus vacant land; ignore ALL UI, labels, red boundary lines, markers and charts. Do not copy watermarks or source lettering. No text, labels, logos, HUD, red boundary, neon, decorative title, or split panels. No invented exact survey accuracy. Do not fill empty parcels to make the scene look finished. Architectural irregularity should come from evidenced attached wings, short/long spans, height breaks, setbacks and plant volumes rather than deformed or wavy buildings. Do not include a schematic greybox inset; output one coherent full-color SCENE concept awaiting approval. Subject: Research-development planning district, shown as a credible PARTLY DEVELOPED existing mixed site, not a finished dense research campus. Inputs 1 and 2 are alternate views of the SAME site; use them for the relative placement of a broad north-south arterial to the right, perpendicular cross roads, a few existing low and mid-rise blocks in the middle/east, water patches, large vacant green and bare-earth parcels toward the west/south, and a distant denser urban edge. Ignore website UI and red boundary. IMPORTANT: do not insert the separately collected Yangshan Wisdom Island tower because its exact relationship to this polygon remains unverified. Compose a wide high oblique aerial across the whole area. Foreground open grass/bare development land with a drainage pond and an access road; middle ground a small number of existing rectilinear blocks including one low multi-wing courtyard group and one compact cluster of simple midrise mixed-use/manufacturing-looking buildings, with connecting local streets and uneven setbacks; background the wide arterial, low commercial/industrial roof clusters and distant urban edge. Preserve visibly more unbuilt ground than buildings. Make building groups varied through different wing lengths, courtyards, attached low podiums and offset service volumes, with restrained grey/cream facades. No generic forest of identical office towers, no futuristic lab facades, no giant civic plaza, no invented landmark, no central perfect landscape axis. This image establishes approximate whole-scene massing and visual direction awaiting user confirmation, not asset orthographic truth.",
+      "transparent_background": false,
+      "width": 1672,
+      "height": 941,
+      "sha256": "58d69cfd84752865177f6078f03e3ddf0d8a63afa9b4f26602991b1f27fbd067"
+    }
+  ]
+}

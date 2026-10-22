@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-22",
+  "generator": "built-in image_gen.imagegen",
+  "boards": [
+    {
+      "key": "01-green-home-details",
+      "zone": "绿色家居",
+      "type": "细节板",
+      "asset": "家居生产厂房代表单体",
+      "status": "参考驱动的类型概念；背侧面、附楼和尺寸待核",
+      "base_asset": "01-green-home-views",
+      "refs": [
+        "S04-04"
+      ],
+      "panels": [
+        "装卸门与防撞柱",
+        "采光带与檐沟",
+        "办公附楼与厂房连接",
+        "服务附房与疏散设施"
+      ],
+      "prompt": "Use case: architectural detail concept. Make ONE high-resolution LANDSCAPE 2x2 presentation board containing FOUR LARGE CLOSE-UP ARCHITECTURAL DETAIL RENDERS of the SAME asset shown in input image 1. These must be building-level CLOSE views, never another aerial panorama and never four views of the whole building. Each detail fills its panel with only enough surrounding building to locate it. Preserve the asset's form, materials, color, window rhythm, wing placement, entrance position and floor heights from input 1. Use source photos as supporting type/material references only; preserve the selected asset identity. Realistic physically based materials, crisp joints, plausible supports, soft daylight, readable construction layers, off-white sheet and fine panel gutters. Clean typography, only the title and FOUR captions specified below. No logos, brand lettering, fake dimensional values, scale bars, full-site masterplan or floating exploded magic. These are visual design hypotheses, not construction-certified details. Small footer exactly 'PROVISIONAL DETAIL CONCEPT - VERIFY BEFORE MODELING'. Title exactly 'GREEN HOME | WORKSHOP DETAILS'. Top-left '01 LOADING PORTAL': a tight oblique ground-level close-up of ONE red industrial roll-up loading portal with the small weather canopy, silver corrugated-panel jambs, concrete plinth, yellow-black protective bollards and a short strip of truck apron; door and edge construction dominate. Top-right '02 ROOF AND DRAINAGE': a close elevated roof-edge view of a shallow metal roof span and ONE linear skylight meeting its upstand, eaves flashing, exposed gutter and downpipe, no view of entire hall. Bottom-left '03 OFFICE CONNECTION': close three-quarter view of the two-storey office annex meeting the much taller blank workshop wall, blue-grey window mullions, flat-roof parapet, facade seam and recessed entrance, showing purposeful offset volumes. Bottom-right '04 SERVICE ANNEX': close ground-level view of the low utility annex at the rear-right, service door, external escape ladder/stair zone, protective railing and compact plant screened or placed against the wall. Don't turn the workshop into a refinery or add giant silos. All four details must belong to the attached four-span workshop asset.",
+      "file": "01-green-home-details.png"
+    },
+    {
+      "key": "02-electronics-details",
+      "zone": "电子信息",
+      "type": "细节板",
+      "asset": "电子制造车间代表单体",
+      "status": "今上实拍驱动的类型概念；背侧面、屋顶与尺寸待核",
+      "base_asset": "02-electronics-views",
+      "refs": [
+        "S21-01"
+      ],
+      "panels": [
+        "入口台阶与红边雨棚",
+        "金属板与窗墙接缝",
+        "后勤服务与疏散门",
+        "屋顶女儿墙与设备"
+      ],
+      "prompt": "Use case: architectural detail concept. Make ONE high-resolution LANDSCAPE 2x2 presentation board containing FOUR LARGE CLOSE-UP ARCHITECTURAL DETAIL RENDERS of the SAME asset shown in input image 1. These must be building-level CLOSE views, never another aerial panorama and never four views of the whole building. Each detail fills its panel with only enough surrounding building to locate it. Preserve the asset's form, materials, color, window rhythm, wing placement, entrance position and floor heights from input 1. Use source photos as supporting type/material references only; preserve the selected asset identity. Realistic physically based materials, crisp joints, plausible supports, soft daylight, readable construction layers, off-white sheet and fine panel gutters. Clean typography, only the title and FOUR captions specified below. No logos, brand lettering, fake dimensional values, scale bars, full-site masterplan or floating exploded magic. These are visual design hypotheses, not construction-certified details. Small footer exactly 'PROVISIONAL DETAIL CONCEPT - VERIFY BEFORE MODELING'. Title exactly 'ELECTRONICS | HALL DETAILS'. Top-left '01 ENTRANCE AND CANOPY': tight eye-level oblique entry view with broad short concrete steps, dark blue-grey recessed glass entrance, the thin continuous RED-EDGED metal canopy and its posts/brace connections, silver corrugated wall above. Top-right '02 FACADE JUNCTION': close view of the long hall's metal wall panel seams, base plinth, a strip-window reveal, a louver and the canopy-to-wall flashing; show readable practical manufacturing facade layers. Bottom-left '03 REAR SERVICE BAY': close rear corner with the small lower service wing, utility door, emergency egress door, protective bollards, restrained external pipework and the hall rising behind, no duplicate public lobby. Bottom-right '04 ROOF SERVICE EDGE': close elevated detail of flat/shallow grey roof, low parapet flashing, modest compact HVAC units and safe access area near the rear wing; no vast rooftop garden, no arbitrary solar farm. Preserve the exact low industrial height hierarchy and canopy vocabulary from the asset.",
+      "file": "02-electronics-details.png"
+    },
+    {
+      "key": "03-innovation-community-details",
+      "zone": "科创部落",
+      "type": "细节板",
+      "asset": "北湖低层院落科创单元设计提案",
+      "status": "新设计提案；不是已建成科创建筑",
+      "base_asset": "03-innovation-community-views",
+      "refs": [
+        "S39-04"
+      ],
+      "panels": [
+        "院落入口与石阶",
+        "木廊与玻璃翼连接",
+        "坡屋面与檐口",
+        "石基与铺装排水"
+      ],
+      "prompt": "Use case: architectural detail concept. Make ONE high-resolution LANDSCAPE 2x2 presentation board containing FOUR LARGE CLOSE-UP ARCHITECTURAL DETAIL RENDERS of the SAME asset shown in input image 1. These must be building-level CLOSE views, never another aerial panorama and never four views of the whole building. Each detail fills its panel with only enough surrounding building to locate it. Preserve the asset's form, materials, color, window rhythm, wing placement, entrance position and floor heights from input 1. Use source photos as supporting type/material references only; preserve the selected asset identity. Realistic physically based materials, crisp joints, plausible supports, soft daylight, readable construction layers, off-white sheet and fine panel gutters. Clean typography, only the title and FOUR captions specified below. No logos, brand lettering, fake dimensional values, scale bars, full-site masterplan or floating exploded magic. These are visual design hypotheses, not construction-certified details. Small footer exactly 'PROVISIONAL DETAIL CONCEPT - VERIFY BEFORE MODELING'. Title exactly 'BEIHU | COURTYARD UNIT DETAILS'. Add a small subtitle 'NEW DESIGN PROPOSAL'. Top-left '01 COURTYARD ENTRY': tight human-scale view toward the warm-white main-bar entrance, timber-framed door, small projecting rain hood, broad grey stone steps, handrail if required and dark stone base; crop out most of the upper building. Top-right '02 COLONNADE AND GLAZING': close three-quarter view along the timber colonnade where the single-storey glazed wing meets the taller white main bar, readable post bases, slender window mullions, soffit and paving joint; NOT a whole courtyard panorama. Bottom-left '03 EAVES AND ROOF': close upper-wall detail of the grey tiled shallow pitched roof, straight eave, gutter/downpipe and one upper window, warm off-white plaster and subtle timber trim, no fanciful roof form. Bottom-right '04 TERRACE AND DRAINAGE': close low view of stone plinth, external door threshold, courtyard gravel/paving transition, small linear drain and planted edge; stone course and threshold should be visible. Retain the SAME L-shaped two-storey plus one-storey proposal. It is not a photographed existing innovation center.",
+      "file": "03-innovation-community-details.png"
+    },
+    {
+      "key": "04-research-details",
+      "zone": "科创研发",
+      "type": "细节板",
+      "asset": "羊山智慧岛主楼与裙房资产研究",
+      "status": "正面照片驱动；背侧面和屋顶为推定，片区坐标归属待核",
+      "base_asset": "04-research-views",
+      "refs": [
+        "S32-08"
+      ],
+      "panels": [
+        "主入口雨棚与玻璃门厅",
+        "主塔与裙房退台连接",
+        "竖向构件与幕墙分格",
+        "屋顶女儿墙与设备屏"
+      ],
+      "prompt": "Use case: architectural detail concept. Make ONE high-resolution LANDSCAPE 2x2 presentation board containing FOUR LARGE CLOSE-UP ARCHITECTURAL DETAIL RENDERS of the SAME asset shown in input image 1. These must be building-level CLOSE views, never another aerial panorama and never four views of the whole building. Each detail fills its panel with only enough surrounding building to locate it. Preserve the asset's form, materials, color, window rhythm, wing placement, entrance position and floor heights from input 1. Use source photos as supporting type/material references only; preserve the selected asset identity. Realistic physically based materials, crisp joints, plausible supports, soft daylight, readable construction layers, off-white sheet and fine panel gutters. Clean typography, only the title and FOUR captions specified below. No logos, brand lettering, fake dimensional values, scale bars, full-site masterplan or floating exploded magic. These are visual design hypotheses, not construction-certified details. Small footer exactly 'PROVISIONAL DETAIL CONCEPT - VERIFY BEFORE MODELING'. Title exactly 'RESEARCH | TOWER AND PODIUM DETAILS'. Top-left '01 MAIN ENTRANCE': close street-level oblique view of the authentic-looking broad rectangular projecting entrance canopy, beige clad piers, tension/support elements and glazed door lobby from the photograph and selected asset; remove all signage. Top-right '02 TOWER PODIUM STEP': close elevated three-quarter detail where the slender tower rises from the stepped low podium roof, showing offset volumes, parapet coping, a maintenance door and facade joint, no entire tower or skyline. Bottom-left '03 VERTICAL FACADE': close perpendicular facade view spanning only two or three floors with pale beige/gold vertical piers, blue-grey curtain-wall mullions, spandrels and seals, with material joints sharply readable; no whole building view. Bottom-right '04 PROVISIONAL ROOF EDGE': close roof-corner study with beige parapet, coping/flashing, a few compact service units behind a simple screen and an access hatch. Roof/back details are explicitly proposed due to missing field evidence; mark this panel with small 'PROVISIONAL'. Do not add garden roofs, connecting skybridges, an invented glass atrium or a new campus.",
+      "file": "04-research-details.png"
+    }
+  ]
+}

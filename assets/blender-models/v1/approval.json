@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-22",
+  "user_instruction": "我觉得可以，你可以开始建模，色调需要统一",
+  "status": "用户确认概念方向并授权开始建模；要求统一色调",
+  "scene_truth": "assets/modeling-concepts/v2/",
+  "asset_design_basis": "assets/building-concepts/v1/",
+  "asset_truth_resolution": "将概念多视图解释为一套一致的三维网格；家居代表厂房锁定四跨屋顶，实际正交相机检查正背左右顶；不把AI图中的透视残留当成几何依据",
+  "dimension_status": "全部尺寸为建模推定，未测绘、待核",
+  "scene_scope": "四个参考驱动的场景研究样区，不等于全园区逐栋测绘或完整规划边界复原",
+  "research_asset": "羊山智慧岛主楼与裙房单独交付资产，不强行定位至研发片区",
+  "community_asset": "用户批准的低层院落设计提案，不冒称现存已建科创楼",
+  "required_transport": "所有场景操作、工程保存、渲染、模型导出通过真实 Blender MCP execute_blender_code 完成"
+}

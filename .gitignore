@@ -33,3 +33,7 @@ apps/web/public/xiaoyun/
 # Python 虚拟环境与缓存（预测服务 packages/forecast/.venv；模型权重在用户目录的 HuggingFace 缓存）
 .venv/
 __pycache__/
+
+# Blender automatically retained save backups; the named checkpoints are tracked.
+assets/blender-models/**/*.blend1
+assets/blender-models/**/*.blend2

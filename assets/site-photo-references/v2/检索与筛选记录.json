@@ -1,0 +1,248 @@
+[
+  {
+    "source_id": "S01",
+    "downloaded_candidates": 7,
+    "error": "",
+    "selected": 5
+  },
+  {
+    "source_id": "S02",
+    "downloaded_candidates": 8,
+    "error": "",
+    "selected": 5
+  },
+  {
+    "source_id": "S03",
+    "downloaded_candidates": 4,
+    "error": "",
+    "selected": 1
+  },
+  {
+    "source_id": "S04",
+    "downloaded_candidates": 6,
+    "error": "",
+    "selected": 2
+  },
+  {
+    "source_id": "S05",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 403: Forbidden",
+    "selected": 0
+  },
+  {
+    "source_id": "S06",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 404: Not Found",
+    "selected": 0
+  },
+  {
+    "source_id": "S07",
+    "downloaded_candidates": 16,
+    "error": "",
+    "selected": 7
+  },
+  {
+    "source_id": "S08",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S09",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 404: Not Found",
+    "selected": 0
+  },
+  {
+    "source_id": "S10",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 404: Not Found",
+    "selected": 0
+  },
+  {
+    "source_id": "S11",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 404: Not Found",
+    "selected": 0
+  },
+  {
+    "source_id": "S12",
+    "downloaded_candidates": 3,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S13",
+    "downloaded_candidates": 0,
+    "error": "Remote end closed connection without response",
+    "selected": 0
+  },
+  {
+    "source_id": "S14",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 403: Forbidden",
+    "selected": 0
+  },
+  {
+    "source_id": "S15",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S16",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 404: Not Found",
+    "selected": 0
+  },
+  {
+    "source_id": "S17",
+    "downloaded_candidates": 0,
+    "error": "Remote end closed connection without response",
+    "selected": 0
+  },
+  {
+    "source_id": "S18",
+    "downloaded_candidates": 0,
+    "error": "HTTP Error 403: Forbidden",
+    "selected": 0
+  },
+  {
+    "source_id": "S19",
+    "downloaded_candidates": 0,
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+    "selected": 0
+  },
+  {
+    "source_id": "S20",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S21",
+    "downloaded_candidates": 5,
+    "error": "",
+    "selected": 4
+  },
+  {
+    "source_id": "S22",
+    "downloaded_candidates": 0,
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+    "selected": 0
+  },
+  {
+    "source_id": "S23",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S24",
+    "downloaded_candidates": 0,
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+    "selected": 0
+  },
+  {
+    "source_id": "S25",
+    "downloaded_candidates": 1,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S26",
+    "downloaded_candidates": 4,
+    "error": "",
+    "selected": 1
+  },
+  {
+    "source_id": "S27",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S28",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S29",
+    "downloaded_candidates": 0,
+    "error": "",
+    "selected": 0
+  },
+  {
+    "source_id": "S30",
+    "downloaded_candidates": 4,
+    "error": "",
+    "selected": 4
+  },
+  {
+    "source_id": "S31",
+    "downloaded_candidates": 5,
+    "error": "",
+    "selected": 4
+  },
+  {
+    "source_id": "S32",
+    "downloaded_candidates": 5,
+    "error": "",
+    "selected": 2
+  },
+  {
+    "source_id": "S33",
+    "downloaded_candidates": 0,
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+    "selected": 0
+  },
+  {
+    "source_id": "S34",
+    "downloaded_candidates": 15,
+    "error": "",
+    "selected": 10
+  },
+  {
+    "source_id": "S35",
+    "downloaded_candidates": 5,
+    "error": "",
+    "selected": 2
+  },
+  {
+    "source_id": "S36",
+    "downloaded_candidates": 7,
+    "error": "",
+    "selected": 3
+  },
+  {
+    "source_id": "S37",
+    "downloaded_candidates": 3,
+    "error": "",
+    "selected": 3
+  },
+  {
+    "source_id": "S38",
+    "downloaded_candidates": 0,
+    "error": "<urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1010)>",
+    "selected": 0
+  },
+  {
+    "source_id": "S39",
+    "downloaded_candidates": 2,
+    "error": "",
+    "selected": 2
+  },
+  {
+    "source_id": "S40",
+    "downloaded_candidates": 3,
+    "error": "",
+    "selected": 3
+  },
+  {
+    "source_id": "S41",
+    "downloaded_candidates": 8,
+    "error": "",
+    "selected": 2
+  }
+]

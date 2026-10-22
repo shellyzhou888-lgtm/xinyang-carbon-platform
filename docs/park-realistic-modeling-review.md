@@ -1,7 +1,11 @@
 # 园区四分区实景建模画稿 · 第一轮
 
+最新进展（2026-10-22）：用户确认开始建模并要求统一色调，已通过Blender MCP完成四区首轮灰模、结构细化、统一材质及模型导出，见[首轮模型说明](park-blender-model-v1.md)。下文为未通过的第一轮画稿历史记录。
+
 方案版本：v1.0 · 2026-10-21  
-状态：**第一轮画稿未通过用户评审，保留作对照；尚未开始 Blender 建模。** 2026-10-21 用户要求先补充真实照片，按照 SCENE TRUTH / ASSET TRUTH 和 macro to micro 流程重新推进。参见 [实景参考资料包](../assets/site-photo-references/v1/README.md) 与 [离线看图目录](../assets/site-photo-references/v1/index.html)。
+最新场景评审：[第二轮v2四区概念图](park-scene-concepts-v2-review.md)，以实拍与高德截图重画，待用户确认；三维建模必须使用Blender MCP。
+最新单体评审：[四园区建筑多视图与细节概念](park-building-concepts-review.md)，共8张图板、40个方向与局部画面，待用户确认。
+状态：**第一轮画稿未通过用户评审，保留作对照；尚未开始 Blender 建模。** 2026-10-21 用户要求先补充真实照片，按照 SCENE TRUTH / ASSET TRUTH 和 macro to micro 流程重新推进。2026-10-22 根据用户指示直接查看网站现有高德实景，补拍20张地图截图，与60张既有照片合成v2。参见 [新版实景参考资料包](../assets/site-photo-references/v2/README.md)、[离线看图目录](../assets/site-photo-references/v2/index.html) 和 [实景核对与灰模依据](site-reference-field-review.md)。
 
 ## 本轮确认什么
 
