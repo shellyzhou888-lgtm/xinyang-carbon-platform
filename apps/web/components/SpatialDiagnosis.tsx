@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CarbonManagementData, EnterpriseMonthly, ManagementData } from "@xinyang/db-agent";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { fmt, SECTOR_ZONE, shortName, useParkMap, zonePoints, zonePolygons, type ZoneKey } from "@/lib/park-map";
+import { BOUNDARY, fmt, SECTOR_ZONE, shortName, smoothRing, useParkMap, zonePoints, zonePolygons, type ZoneKey } from "@/lib/park-map";
 import { ALERT_GROUPS, alertGroup, alertSeverity, type AlertGroupKey } from "@/lib/diagnosis-alerts";
 
 type Alert = ManagementData["alerts"][number];
@@ -15,7 +15,6 @@ type Contributor = { node: string; name: string; share_pct?: number; delta?: num
 const PARK = "XYEDZ";
 /** The two industry zones holding the metered enterprises; the diagnosis opens one at building scale. */
 const DIAG_ZONES: { key: ZoneKey; label: string }[] = [{ key: "green-home", label: "绿色家居" }, { key: "electronics", label: "电子信息" }];
-const ZONE_BOUNDARY = "#ff3b4f";
 const SEVERITY_COLOR: Record<string, string> = { critical: "#ff4d5e", high: "#ff6b81", warning: "#ffab3d", medium: "#ffab3d", info: "#4cb4ff", low: "#4cb4ff" };
 const severityRank = (s: string) => ({ critical: 4, high: 3, warning: 2, medium: 2, info: 1, low: 1 } as Record<string, number>)[s] ?? 0;
 const contributors = (alert: Alert): Contributor[] => {
@@ -84,10 +83,12 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     const { AMap, map } = current;
     current.satellite.forEach((layer: any) => layer.show());
     outline.current.forEach((polygon) => polygon.setMap(null));
-    outline.current = zonePolygons(zone).map((ring) => {
-      const polygon = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: ZONE_BOUNDARY, strokeOpacity: 1, strokeWeight: 4, zIndex: 60, bubble: true });
-      polygon.setMap(map);
-      return polygon;
+    outline.current = zonePolygons(zone).flatMap((ring) => {
+      const path = smoothRing(ring);
+      const glow = new AMap.Polygon({ path, fillOpacity: 0, strokeColor: BOUNDARY.glow, strokeOpacity: 0.22, strokeWeight: 14, lineJoin: "round", zIndex: 59, bubble: true });
+      const line = new AMap.Polygon({ path, fillOpacity: 0, strokeColor: BOUNDARY.color, strokeOpacity: 1, strokeWeight: 3, lineJoin: "round", zIndex: 60, bubble: true });
+      glow.setMap(map); line.setMap(map);
+      return [glow, line];
     });
     let touched = false, timer = 0;
     // Frame the enterprises of the zone (not the whole outline, which includes woodland) so factories fill the view.

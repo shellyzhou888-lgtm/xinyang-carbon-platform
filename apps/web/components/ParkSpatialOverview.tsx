@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ChartData } from "@xinyang/db-agent";
-import { enterprises, geography, type EnterpriseFeature } from "@/lib/park-geography";
+import { enterprises, geography, type EnterpriseFeature, type Position } from "@/lib/park-geography";
 import { enterpriseBadge, enterpriseBrands } from "@/lib/enterprise-branding";
 import { FOCUS_EVENT, HONOR_KINDS, honorLevel, type HonorKind } from "@/lib/honors";
-import { conePin, fmt, isLight, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeature, zoneFeatures, zoneLabel, zonePoints, zonePolygons, ZONES, type ZoneKey } from "@/lib/park-map";
+import { BOUNDARY, conePin, fmt, isLight, smoothRing, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeature, zoneFeatures, zoneLabel, zonePoints, zonePolygons, ZONES, type ZoneKey } from "@/lib/park-map";
 import { HonorIcon } from "./HonorIcons";
 import Link from "next/link";
 
@@ -27,9 +27,6 @@ const ZONE_MAX_ZOOM = 17.6;
  * marker in the panorama; logos and honour plates appear once a zone is opened at building scale.
  * `left` / `right` are floating panels laid over the map edges (they stack below the map on narrow screens).
  */
-/** Planning-zone boundary colour (overview and single-zone view). */
-const ZONE_BOUNDARY = "#ff3b4f";
-
 /** Panorama enterprise dot: solid fluorescent lime, no outline (zone views use cone pins with a ripple instead). */
 const dotIcon = () => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="7" cy="7" r="5" fill="#d4f75c"/></svg>`);
@@ -201,8 +198,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       const mask = new AMap.Polygon({ path: [outer, ...rings], fillColor: isLight() ? "#f1f3ee" : "#0c0d10", fillOpacity: 0.62, strokeWeight: 0, zIndex: 55, bubble: true });
       mask.setMap(map); polygons.current.push(mask);
       for (const ring of rings) {
-        const glow = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: ZONE_BOUNDARY, strokeOpacity: 0.25, strokeWeight: 12, zIndex: 61, bubble: true });
-        const line = new AMap.Polygon({ path: ring, fillColor: color, fillOpacity: 0.06, strokeColor: ZONE_BOUNDARY, strokeOpacity: 1, strokeWeight: 4, zIndex: 62, bubble: true });
+        const path = smoothRing(ring);
+        const glow = new AMap.Polygon({ path, fillOpacity: 0, strokeColor: BOUNDARY.glow, strokeOpacity: 0.22, strokeWeight: 14, lineJoin: "round", zIndex: 61, bubble: true });
+        const line = new AMap.Polygon({ path, fillColor: BOUNDARY.color, fillOpacity: 0.05, strokeColor: BOUNDARY.color, strokeOpacity: 1, strokeWeight: 3, lineJoin: "round", zIndex: 62, bubble: true });
         glow.setMap(map); line.setMap(map); polygons.current.push(glow, line);
       }
       return;
@@ -211,9 +209,13 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     for (const feature of zoneFeatures) {
       const key = feature.properties.id as Exclude<ZoneKey, "all">;
       for (const rings of feature.geometry.coordinates) {
-        // Boundaries are bold red on every zone; the light fill keeps each zone's colour.
-        const polygon = new AMap.Polygon({ path: rings[0], fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: ZONE_BOUNDARY,
-          strokeOpacity: 1, strokeWeight: 4, zIndex: 60, cursor: "pointer" });
+        // Smooth fluorescent-yellow boundary with a soft glow; the light fill keeps each zone's colour.
+        const path = smoothRing(rings[0] as Position[]);
+        const halo = new AMap.Polygon({ path, fillOpacity: 0, strokeColor: BOUNDARY.glow, strokeOpacity: 0.2, strokeWeight: 12, lineJoin: "round", zIndex: 59, bubble: true });
+        halo.setMap(map);
+        polygons.current.push(halo);
+        const polygon = new AMap.Polygon({ path, fillColor: ZONE_COLOR[key], fillOpacity: 0.12, strokeColor: BOUNDARY.color,
+          strokeOpacity: 1, strokeWeight: 3, lineJoin: "round", zIndex: 60, cursor: "pointer" });
         polygon.on("click", () => openZone(key));
         polygon.setMap(map);
         polygons.current.push(polygon);

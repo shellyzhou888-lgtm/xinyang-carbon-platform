@@ -28,6 +28,27 @@ export const zoneFeature = (key: ZoneKey) => planning.features.find((feature) =>
 export const zonePolygons = (key: ZoneKey) => planning.features.filter((feature) => key === "all" || feature.properties.id === key)
   .flatMap((feature) => feature.geometry.coordinates.map((polygon) => polygon[0] as Position[]));
 export const zonePoints = (key: ZoneKey) => zonePolygons(key).flat();
+
+/** Fluorescent-yellow zone boundary (line, soft glow and inner fill tint). */
+export const BOUNDARY = { color: "#d4f75c", glow: "#d4f75c" };
+
+/**
+ * Smooth a closed ring with Chaikin corner cutting: every iteration replaces each corner with two points at 1/4 and
+ * 3/4 of its edges, so straight survey segments become a soft curve that still follows the planning outline closely.
+ */
+export function smoothRing(ring: Position[], iterations = 3): Position[] {
+  let pts = ring.length > 1 && ring[0][0] === ring[ring.length - 1][0] && ring[0][1] === ring[ring.length - 1][1] ? ring.slice(0, -1) : ring.slice();
+  if (pts.length < 3) return ring;
+  for (let k = 0; k < iterations; k++) {
+    const next: Position[] = [];
+    for (let i = 0; i < pts.length; i++) {
+      const a = pts[i], b = pts[(i + 1) % pts.length];
+      next.push([a[0] * 0.75 + b[0] * 0.25, a[1] * 0.75 + b[1] * 0.25], [a[0] * 0.25 + b[0] * 0.75, a[1] * 0.25 + b[1] * 0.75]);
+    }
+    pts = next;
+  }
+  return [...pts, pts[0]];
+}
 /** Centre of a zone's bounding box ("all" gives the park centre). */
 export function zoneHub(key: ZoneKey): Position {
   const points = zonePoints(key);
