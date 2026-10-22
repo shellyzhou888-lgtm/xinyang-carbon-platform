@@ -1647,3 +1647,12 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .spatial-zones button { border: 0; border-radius: 8px; background: transparent; color: var(--text-2); padding: 8px 12px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
 .spatial-zones button.on { background: var(--tint-strong); color: var(--accent-text); font-weight: 600; }
 .spatial-list li button.on { background: rgb(var(--ink) / .09); }
+
+/* v0.46.3 · sidebar: larger, bolder labels; brighter (less faded) text, icons and selected state; more opaque rail. */
+.rail { background: linear-gradient(180deg, rgb(var(--base) / .97), rgb(var(--base) / .92)); }
+.rail-item { font-size: 14px; font-weight: 700; letter-spacing: .02em; color: var(--text-2); gap: 5px; padding: 10px 0; }
+.rail-item svg { width: 22px; height: 22px; stroke-width: 2; }
+.rail-item:hover { color: var(--text); }
+.rail-active, :root[data-theme="light"] .rail-active { background: var(--tint-strong); }
+.rail-item.on, :root[data-theme="light"] .rail-item.on { color: var(--accent-text); }
+@media (max-width: 1180px) { .rail-item { font-size: 13px; } }
