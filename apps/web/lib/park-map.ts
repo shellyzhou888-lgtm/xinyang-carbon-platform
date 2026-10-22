@@ -64,14 +64,18 @@ const NUM = 'Bahnschrift, "DIN Alternate", "Segoe UI", sans-serif';
 const plate = () => isLight() ? { bg: "rgba(255,255,255,.92)", text: "#14181a", muted: "#5d666e" } : { bg: "rgba(14,15,19,.84)", text: "#f4f6f2", muted: "#9aa19b" };
 
 /** Zone name plate: name and planned area, no colour bar. */
+/** Compact one-line zone tag (name · area) drawn above the zone, so it does not cover the zone itself. */
 export function zoneLabel(name: string, area: number) {
   const { bg, text, muted } = plate();
-  const probe = canvas(1, 1).ctx; probe.font = `600 14px ${FONT}`;
-  const w = Math.max(132, Math.ceil(probe.measureText(name).width) + 28), h = 46;
+  const areaText = `${area.toFixed(2)} km²`;
+  const probe = canvas(1, 1).ctx;
+  probe.font = `600 13px ${FONT}`; const nameW = probe.measureText(name).width;
+  probe.font = `11px ${FONT}`; const areaW = probe.measureText(areaText).width;
+  const w = Math.ceil(nameW + areaW + 30), h = 26;
   const { element, ctx } = canvas(w, h);
-  ctx.fillStyle = bg; roundRect(ctx, 0, 0, w, h, 12); ctx.fill();
-  ctx.font = `600 14px ${FONT}`; ctx.fillStyle = text; ctx.fillText(name, 14, 20);
-  ctx.font = `12px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(`规划面积 ${area.toFixed(2)} km²`, 14, 36);
+  ctx.fillStyle = bg; roundRect(ctx, 0, 0, w, h, 13); ctx.fill();
+  ctx.font = `600 13px ${FONT}`; ctx.fillStyle = text; ctx.fillText(name, 11, 17.5);
+  ctx.font = `11px ${FONT}`; ctx.fillStyle = muted; ctx.fillText(areaText, 19 + nameW, 17.5);
   return { image: element.toDataURL("image/png"), size: [w, h] as [number, number] };
 }
 

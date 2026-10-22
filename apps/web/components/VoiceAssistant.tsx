@@ -36,7 +36,13 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
         }
         // Without a running backend the SDK would retry its WebSocket and flood the console;
         // the top-bar status pill already explains how to start it.
-        if (!(await probeVoice())) { if (!disposed) setStatus(""); return; }
+        // The backend may be started after the page opens: keep probing every 15 s until it answers.
+        while (!(await probeVoice(5000))) {
+          if (disposed) return;
+          setStatus("");
+          await new Promise((resolve) => window.setTimeout(resolve, 15_000));
+          if (disposed) return;
+        }
         const { createVoiceAssistant } = await import("@xiaoyun/voice");
         if (disposed) return;
         voiceRef.current = createVoiceAssistant({

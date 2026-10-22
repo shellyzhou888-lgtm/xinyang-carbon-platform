@@ -1527,3 +1527,21 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .milestone-photo { flex: none; width: 96px; height: 64px; object-fit: cover; border-radius: 9px; background: rgb(var(--ink) / .06); }
 .milestone-index { font-size: 11px; color: var(--accent-text); }
 .strategy-export svg { flex: none; }
+
+/* v0.44.4 · header band: a strip of the park photo behind the sticky top bar and page title on workspace pages,
+   fading into the page; darker on the left where the title sits so text stays legible. */
+.app:not([data-screen="overview"]) .app-main {
+  background:
+    linear-gradient(90deg, rgb(var(--base) / .88) 0%, rgb(var(--base) / .62) 38%, rgb(var(--base) / .38) 100%) top / 100% 240px no-repeat,
+    linear-gradient(180deg, transparent 0, transparent 150px, var(--bg) 240px) top / 100% 240px no-repeat,
+    url("/backgrounds/header-band.webp") center top / 100% 240px no-repeat,
+    var(--bg);
+}
+.app:not([data-screen="overview"]) .topbar { background: linear-gradient(180deg, rgb(var(--base) / .45), rgb(var(--base) / .12)); backdrop-filter: blur(6px) saturate(1.15); }
+:root[data-theme="light"] .app:not([data-screen="overview"]) .app-main {
+  background:
+    linear-gradient(90deg, rgb(var(--base) / .9) 0%, rgb(var(--base) / .55) 40%, rgb(var(--base) / .25) 100%) top / 100% 240px no-repeat,
+    linear-gradient(180deg, transparent 0, transparent 150px, var(--bg) 240px) top / 100% 240px no-repeat,
+    url("/backgrounds/header-band.webp") center top / 100% 240px no-repeat,
+    var(--bg);
+}

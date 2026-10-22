@@ -92,12 +92,28 @@ for (const e of A.enterprises) {
     const dieselT = (tce * (mix.DIESEL ?? 0)) / DSL;
 
     const base = shares(S[e.profile], from), gasS = shares(S.gas_heating, from), pvS = shares(S.pv, from);
+    // Optional within-year improvement (v2): energy use per unit of output falls linearly from January to December by
+    // `monthly_improvement_by_year`, and the green-power share ramps up through the year (`green_ramp`, ±); annual
+    // totals are kept by renormalising the monthly weights.
+    const imp: number = A.monthly_improvement_by_year?.[ys] ?? 0, ramp: number = A.green_ramp ?? 0;
+    const step = (i: number) => (from === 12 ? 0 : (i - (from - 1)) / (12 - from));
+    const effW = Array.from({ length: 12 }, (_, i) => (i + 1 >= from ? 1 + imp / 2 - imp * step(i) : 0));
+    const tilt = (sh: number[]) => { const t = sh.map((x, i) => x * effW[i]); const s = t.reduce((a, b) => a + b, 0) || 1; return t.map((x) => x / s); };
+    const baseE = tilt(base), gasE = tilt(gasS);
+    const greenW = Array.from({ length: 12 }, (_, i) => (i + 1 >= from ? 1 - ramp + 2 * ramp * step(i) : 0));
+    const elecTotal = grid + green;
     for (let m = from; m <= 12; m++) {
       const i = m - 1;
       const v = (x: number, sh: number[], d: number) => (x > 0 ? round(x * sh[i] * noise(2), d) : null);
+      // Split each month's grid + green electricity with the ramped green share (annual green total preserved).
+      const greenShareYear = elecTotal > 0 ? green / elecTotal : 0;
+      const wsum = baseE.reduce((a, x, k) => a + x * greenW[k], 0) || 1;
+      const gShare = Math.min(0.95, greenShareYear * greenW[i] / wsum);
+      const monthElec = elecTotal * baseE[i];
+      const g = (x: number, d: number) => (x > 0 ? round(x * noise(2), d) : null);
       monthly.push([e.credit, e.name, `${y}-${String(m).padStart(2, "0")}`,
-        v(grid, base, 0), v(green, base, 0), null, v(pvSelf, pvS, 0), v(pvFeed, pvS, 0),
-        v(gasM3, gasS, 0), v(heatGj, gasS, 1), null, v(dieselT, base, 3), null, null, null, null, null, NOTE]);
+        g(monthElec * (1 - gShare), 0), g(monthElec * gShare, 0), null, v(pvSelf, pvS, 0), v(pvFeed, pvS, 0),
+        v(gasM3, gasE, 0), v(heatGj, gasE, 1), null, v(dieselT, baseE, 3), null, null, null, null, null, NOTE]);
     }
   }
 }

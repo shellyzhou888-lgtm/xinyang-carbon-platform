@@ -50,6 +50,21 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
     return () => window.removeEventListener("keydown", close);
   }, [chatOpen]);
 
+  // The AMap SDK (loaded from its CDN) occasionally rejects internal promises with a bare `null` while tiles or layers are
+  // torn down; there is nothing to report and the dev overlay turned it into a full-screen "Runtime Error: null".
+  // Only that exact case is silenced; every rejection carrying a reason still surfaces normally.
+  useEffect(() => {
+    const ignoreNull = (event: PromiseRejectionEvent) => {
+      if (event.reason !== null) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      console.warn("[platform] ignored a promise rejected with null (third-party map SDK)");
+    };
+    // Capture phase runs before the Next.js dev overlay's own (bubble) listener on window.
+    window.addEventListener("unhandledrejection", ignoreNull, { capture: true });
+    return () => window.removeEventListener("unhandledrejection", ignoreNull, { capture: true });
+  }, []);
+
   return <div className="app" data-chat-open={chatOpen} data-screen={screen ? "overview" : undefined} data-module={path === "/energy" || path === "/carbon" || path === "/diagnosis" || path === "/admin/data" ? "workspace" : undefined}>
     <a className="skip-link" href="#workspace-content">跳转到主要内容</a>
     <aside className="rail" aria-label="主导航">

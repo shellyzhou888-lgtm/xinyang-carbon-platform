@@ -15,7 +15,17 @@ let poolUrl: string | undefined;
 /** Creates the shared pool once; later calls reuse it (the web app creates one agent per conversation). */
 export function initPool(connectionString: string) {
   poolUrl ??= connectionString;
-  pool ??= new pg.Pool({ connectionString, max: 6 });
+  // The database is reached through an SSH tunnel that can drop. Without these limits a pooled socket left dead by a
+  // dropped tunnel made the next query hang until the OS TCP timeout (minutes), stalling page renders:
+  //   idleTimeoutMillis  close idle connections early so stale sockets are not reused;
+  //   keepAlive          detect a silently dropped peer;
+  //   connectionTimeout  fail fast when the tunnel is down; query_timeout  a hung query errors instead of blocking.
+  if (!pool) {
+    pool = new pg.Pool({ connectionString, max: 8, idleTimeoutMillis: 20_000, connectionTimeoutMillis: 8_000,
+      keepAlive: true, keepAliveInitialDelayMillis: 10_000, query_timeout: 60_000 });
+    // A connection that dies while idle emits "error" on the pool; without a listener Node treats it as uncaught.
+    pool.on("error", (err) => console.warn("[db] idle connection dropped:", err.message));
+  }
   return pool;
 }
 
