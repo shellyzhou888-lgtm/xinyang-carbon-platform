@@ -1545,3 +1545,11 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
     url("/backgrounds/header-band.webp") center top / 100% 240px no-repeat,
     var(--bg);
 }
+
+/* Flow map: tools at the top right; the explanation panel opens below them on demand (collapsed by default). */
+.flowmap-tools { position: absolute; z-index: 6; top: 16px; right: 16px; display: flex; gap: 6px; padding: 4px; border-radius: 12px; background: rgb(var(--panel) / .88); box-shadow: var(--shadow-float); }
+.flowmap-tools button { display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 9px; background: transparent; color: var(--text-2); padding: 7px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+.flowmap-tools button:hover { background: var(--surface-3); color: var(--text); }
+.flowmap-tools button.on { background: var(--tint); color: var(--accent-text); }
+.flowmap-tools button i { width: 14px; height: 6px; border-radius: 3px; }
+.flowmap .flowmap-panel { top: 64px; max-height: calc(100% - 80px); }

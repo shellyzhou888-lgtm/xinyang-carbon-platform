@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { enterprises, type Position } from "@/lib/park-geography";
 import { canvas, conePin, fmt, frameParkTilted, HENAN_BOUNDS, infoCard, roundRect, SECTOR_ZONE, shortName, useParkMap, zoneFeature, zoneHub, type ZoneKey } from "@/lib/park-map";
 
@@ -57,6 +57,7 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
   const flowLayers = useRef<any[]>([]);
   const [only, setOnly] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
+  const [panelOpen, setPanelOpen] = useState(false);
 
   const network = useMemo(() => {
     const amount = (row: FlowMix) => mode === "energy" ? row.tce : row.co2_t;
@@ -85,11 +86,26 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
   }, [nodes, mix, alerts, mode]);
   const total = parkTotal ?? network.sites.reduce((a, s) => a + s.value, 0);
 
+  // Fixed default scale: the two industry zones measured on screen fill the map (the panel is collapsed by default, so
+  // the whole width is used); "全览节点" steps back. Until the user drags or zooms, the view is refitted whenever the
+  // map box changes size (the page fits itself to the window after the map has loaded).
   useEffect(() => {
-    const current = handle.current;
-    if (!ready || !current) return;
-    // Leave room on the right for the flow panel (avoid order: top, bottom, left, right).
-    frameParkTilted(current.map, current.AMap, { avoid: [60, 150, 40, 300], boost: showAll ? 0.15 : 1.4 });
+    const current = handle.current, element = container.current;
+    if (!ready || !current || !element) return;
+    let touched = false, timer = 0;
+    const frame = () => {
+      frameParkTilted(current.map, current.AMap, showAll ? { avoid: [70, 70, 40, 40], boost: 0.1 } : { avoid: [70, 60, 24, 24], fill: 1.02 });
+      // Default close-up (agreed scale): centred on the park hub, about 1.7x the both-zones fit so the lines read clearly;
+      // the electronics zone sits on the left and the green-home zone runs off to the right.
+      if (!showAll) { current.map.setZoom(current.map.getZoom() + 0.75, true); current.map.setCenter(zoneHub("all"), true); }
+    };
+    frame();
+    const mark = () => { touched = true; };
+    element.addEventListener("pointerdown", mark);
+    element.addEventListener("wheel", mark, { passive: true });
+    const observer = new ResizeObserver(() => { if (touched) return; window.clearTimeout(timer); timer = window.setTimeout(frame, 150); });
+    observer.observe(element);
+    return () => { observer.disconnect(); window.clearTimeout(timer); element.removeEventListener("pointerdown", mark); element.removeEventListener("wheel", mark); };
   }, [ready, handle, showAll]);
 
   // One set of layers per carrier (base arc, streaming particles, arrows), each with its own curve offset.
@@ -180,8 +196,15 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
     <div ref={container} className="twin-map" role="img" aria-label={`${style.label}网络互动地图`} />
     {!ready && !error && <div className="map-loading" role="status"><span className="spinner" />正在载入园区三维底图…</div>}
     {error && <div className="map-error" role="status">{error}<button type="button" className="btn-ghost small" onClick={retry}>重试</button></div>}
-    <aside className="flowmap-panel glass" aria-label="流向说明">
-      <div className="flowmap-panel-head"><span className="eyebrow">{style.label}说明</span><button type="button" className="flowmap-view" onClick={() => setShowAll(!showAll)}>{showAll ? "放大视角" : "全览节点"}</button></div>
+    <div className="flowmap-tools" role="group" aria-label="地图工具">
+      <button type="button" className={panelOpen ? "on" : ""} aria-pressed={panelOpen} aria-expanded={panelOpen} onClick={() => setPanelOpen((v) => !v)}>
+        <i style={{ background: only ? network.totals.find((c) => c.name === only)?.color : "linear-gradient(90deg,#4cb4ff,#ffab3d,#ff6b81)" }} />{only ?? "品种与企业"}
+      </button>
+      <button type="button" onClick={() => setShowAll(!showAll)}>{showAll ? "放大视角" : "全览节点"}</button>
+    </div>
+    <AnimatePresence>{panelOpen && <motion.aside key="panel" className="flowmap-panel glass" aria-label="流向说明"
+      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+      <div className="flowmap-panel-head"><span className="eyebrow">{style.label}说明</span><button type="button" className="flowmap-view" onClick={() => setPanelOpen(false)} aria-label="收起说明">收起</button></div>
       <p className="flowmap-direction">{style.direction}</p>
       <ol className="flowmap-carriers">
         <li><button type="button" className={only === null ? "on" : ""} onClick={() => setOnly(null)}><i style={{ background: "linear-gradient(90deg,#4cb4ff,#ffab3d,#ff6b81)" }} /><span>全部品种</span><b className="num">{fmt(carrierSum, 0)}<small>{style.unit}</small></b></button></li>
@@ -196,7 +219,7 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
           <i><u style={{ width: `${site.value / (visibleSites[0]?.value || 1) * 100}%`, background: style.card }} /></i></li>)}
       </ol>
       <small className="flowmap-note">线宽表示量，光点与箭头表示方向；点选品种只看该品种的流向。</small>
-    </aside>
+    </motion.aside>}</AnimatePresence>
     <div className="flowmap-legend glass">
       <span><i className="dot" style={{ ["--c" as string]: style.card }} />汇聚节点</span>
       {network.sites.some((s) => s.alert) && <span><i className="dot" style={{ ["--c" as string]: ALERT }} />存在未处理预警</span>}

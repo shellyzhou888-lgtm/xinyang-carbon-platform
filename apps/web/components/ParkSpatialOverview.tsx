@@ -6,7 +6,7 @@ import type { ChartData } from "@xinyang/db-agent";
 import { enterprises, geography, type EnterpriseFeature } from "@/lib/park-geography";
 import { enterpriseBadge, enterpriseBrands } from "@/lib/enterprise-branding";
 import { FOCUS_EVENT, HONOR_KINDS, honorLevel, type HonorKind } from "@/lib/honors";
-import { fmt, isLight, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeature, zoneFeatures, zoneLabel, zonePoints, zonePolygons, ZONES, type ZoneKey } from "@/lib/park-map";
+import { conePin, fmt, isLight, SECTOR_ZONE, shortName, trophyMarker, trophyPlate, useParkMap, ZONE_COLOR, zoneFeature, zoneFeatures, zoneLabel, zonePoints, zonePolygons, ZONES, type ZoneKey } from "@/lib/park-map";
 import { HonorIcon } from "./HonorIcons";
 import Link from "next/link";
 
@@ -30,17 +30,17 @@ const ZONE_MAX_ZOOM = 17.6;
 /** Planning-zone boundary colour (overview and single-zone view). */
 const ZONE_BOUNDARY = "#ff3b4f";
 
-/** Flat enterprise dot (no pointer or animation, so it never covers the map); the selected one is larger with a white ring. */
-const dotIcon = (color: string, on = false) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(on
-  ? `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"><circle cx="11" cy="11" r="9" fill="${color}" stroke="#fff" stroke-width="3"/></svg>`
-  : `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="8" cy="8" r="5.5" fill="${color}" stroke="#101114" stroke-width="2"/></svg>`);
+/** Panorama enterprise dot: solid fluorescent lime, no outline (zone views use cone pins with a ripple instead). */
+const dotIcon = () => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><circle cx="7" cy="7" r="5" fill="#d4f75c"/></svg>`);
 
 export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, metrics = EMPTY_ENTERPRISES, honors = EMPTY_HONORS, initialEnterprise, left, right }: {
   year: number; ranking?: ChartData["ranking"]; metrics?: MapEnterprise[]; honors?: MapHonor[]; initialEnterprise?: string; left?: React.ReactNode; right?: React.ReactNode;
 }) {
   const shell = useRef<HTMLElement>(null);
   const container = useRef<HTMLDivElement>(null);
-  const { handle, ready, error, retry } = useParkMap(container, { satellite: true, pitch: 45 });
+  const { handle, ready, l7Ready, error, retry } = useParkMap(container, { satellite: true, pitch: 45 });
+  const ripples = useRef<any>(null);
   const layers = useRef<Record<"pin" | "name" | "honor" | "area", any>>({} as never);
   const polygons = useRef<any[]>([]);
   const pick = useRef<(code: string) => void>(() => {});
@@ -109,7 +109,9 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
       const color = on ? "#ffffff" : ZONE_COLOR[zoneKey] ?? "#d4f75c";
       const marker = titles.length && !inZone
         ? (() => { const t = trophyMarker(30); return new AMap.LabelMarker({ position: [...feature.geometry.coordinates], zIndex: 3, icon: { image: t.image, size: t.size, anchor: "center" } }); })()
-        : new AMap.LabelMarker({ position: [...feature.geometry.coordinates], zIndex: on ? 3 : 1, icon: { image: dotIcon(color, on), size: on ? [22, 22] : [16, 16], anchor: "center" } });
+        : inZone || on
+          ? (() => { const cone = conePin(color, on ? 28 : 22); return new AMap.LabelMarker({ position: [...feature.geometry.coordinates], zIndex: on ? 3 : 1, icon: { image: cone.image, size: cone.size, anchor: "bottom-center" } }); })()
+          : new AMap.LabelMarker({ position: [...feature.geometry.coordinates], zIndex: 1, icon: { image: dotIcon(), size: [14, 14], anchor: "center" } });
       marker.on("click", () => pick.current(code));
       pin.add(marker);
       if (!labels || !(inZone || on)) continue;
@@ -132,6 +134,28 @@ export default function ParkSpatialOverview({ year, ranking = EMPTY_RANKING, met
     return () => { disposed = true; };
   }, [ready, handle, selected, labels, honors, zone]);
 
+
+  // Zone view only: an L7 ripple under each cone pin (the panorama keeps plain dots so nothing covers the map).
+  useEffect(() => {
+    const scene = handle.current?.scene;
+    if (!l7Ready || !scene) return;
+    const data = zone === "all" ? [] : enterprises.filter((feature) => SECTOR_ZONE[feature.properties.sector] === zone || feature.properties.code === selected)
+      .map((feature) => ({ lng: feature.geometry.coordinates[0], lat: feature.geometry.coordinates[1],
+        color: feature.properties.code === selected ? "#ffffff" : ZONE_COLOR[SECTOR_ZONE[feature.properties.sector] as Exclude<ZoneKey, "all">] ?? "#d4f75c" }));
+    if (ripples.current) { ripples.current.setData(data); return; }
+    if (!data.length) return;
+    let disposed = false;
+    import("@antv/l7-layers").then(({ PointLayer }) => {
+      if (disposed || !handle.current?.scene) return;
+      ripples.current = new PointLayer({ name: "enterprise-ripple", zIndex: 4, blend: "additive" })
+        .source(data, { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(26).color("color", (c: string) => c)
+        .animate({ enable: true, speed: 0.7, rings: 3 }).style({ opacity: 0.9 });
+      handle.current.scene.addLayer(ripples.current);
+    }).catch((reason) => console.warn("[overview] ripple layer unavailable", reason));
+    return () => { disposed = true; };
+  }, [l7Ready, handle, zone, selected]);
+  useEffect(() => () => { ripples.current = null; }, []);
 
   // Camera: the four zones on load; a zone opens at building scale around its enterprises.
   useEffect(() => {
