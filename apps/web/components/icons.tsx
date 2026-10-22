@@ -34,3 +34,8 @@ export const IconTiltUp = ({ size = 16, className }: IconProps) => <svg {...base
 export const IconTiltDown = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="m6 4 6 6 6-6m-12 6 6 6 6-6" /></svg>;
 export const IconSpreadsheet = ({ size = 18, className }: IconProps) => <svg {...base(size, className)}><rect x="3" y="2" width="18" height="20" rx="2" /><path d="M8 2v20M3 8h18M3 15h18M14 8v14" /></svg>;
 export const IconUpload = ({ size = 16, className }: IconProps) => <svg {...base(size, className)}><path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4" /></svg>;
+/** Solid, heavy download arrow (filled shaft and head over a tray), for primary export buttons. */
+export const IconDownloadSolid = ({ size = 18, className }: IconProps) => <svg width={size} height={size} viewBox="0 0 24 24" className={className} aria-hidden="true">
+  <path d="M10 2.5h4v8.6h3.6L12 17.2l-5.6-6.1H10z" fill="currentColor" />
+  <rect x="3" y="18.6" width="18" height="3" rx="1.5" fill="currentColor" />
+</svg>;

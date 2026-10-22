@@ -17,6 +17,9 @@ const ease = [0.22, 1, 0.36, 1] as const;
 const PHASE: Record<string, string> = { 原料获取: "#5cc8ff", 运输: "#9b87ff", 园区生产: "#ffab3d", 包装: "#2ee8a5", 分销: "#d4f75c" };
 const phaseColor = (phase: string) => PHASE[phase] ?? "#9aa3ad";
 const kg = (v: number) => fmt(v, v >= 100 ? 0 : v >= 10 ? 1 : v >= 1 ? 2 : 3);
+/** Product photos (AI-generated photorealistic illustrations, see 产品图片说明.md), matched by milestone product name. */
+const PRODUCT_IMAGE: [RegExp, string][] = [[/刨花板/, "/products/straw-board.webp"], [/衣柜/, "/products/wardrobe.webp"], [/LED|芯片|晶圆/, "/products/led-wafer.webp"], [/背光/, "/products/backlight-module.webp"]];
+const productImage = (name: string) => PRODUCT_IMAGE.find(([re]) => re.test(name))?.[1];
 const SOURCE: Record<string, string> = { tiangong: "天工 LCI · Brightway", park_factor: "园区核算因子", park_enterprise: "园区企业排放" };
 
 /**
@@ -69,8 +72,8 @@ export function ChainTrajectory({ chain }: { chain: ProductChain }) {
     <div className="trajectory-top">
       <div className="trajectory-products">
         {chain.milestones.map((m, i) => <motion.div key={m.after_stage} className="milestone" initial={reduce ? false : { opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.06 * i, duration: 0.4, ease }}>
-          <span className="milestone-step num">{String(i + 1).padStart(2, "0")}</span>
-          <div><b>{m.product}</b><small>{m.per}</small></div>
+          {productImage(m.product) ? <img className="milestone-photo" src={productImage(m.product)} alt={m.product} loading="lazy" /> : <span className="milestone-step num">{String(i + 1).padStart(2, "0")}</span>}
+          <div><span className="milestone-index num">{String(i + 1).padStart(2, "0")}</span><b>{m.product}</b><small>{m.per}</small></div>
           <strong className="num">{kg(m.cumulative_kgco2e)}<small>kgCO₂e</small></strong>
         </motion.div>)}
         <div className="milestone-route">{route.join(" → ")}<small>园区内流转</small></div>

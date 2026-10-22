@@ -1521,3 +1521,9 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .ind-board.lg .ind-trend { height: auto; aspect-ratio: 360 / 130; }
 .ind-trend-value { font-size: 10px; fill: var(--text-2); font-family: var(--font-num); }
 .ind-board.lg .ind-trend-year { font-size: 9px; }
+/* v0.44 · trajectory: product photos in milestone cards; the trajectory scrolls inside its panel on short windows. */
+.trajectory { overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; padding-right: 4px; }
+.milestone { padding: 8px 14px 8px 8px; }
+.milestone-photo { flex: none; width: 96px; height: 64px; object-fit: cover; border-radius: 9px; background: rgb(var(--ink) / .06); }
+.milestone-index { font-size: 11px; color: var(--accent-text); }
+.strategy-export svg { flex: none; }
