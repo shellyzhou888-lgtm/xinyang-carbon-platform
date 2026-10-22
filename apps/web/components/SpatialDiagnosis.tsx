@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import type { CarbonManagementData, EnterpriseMonthly, ManagementData } from "@xinyang/db-agent";
 import { enterprises, type Position } from "@/lib/park-geography";
-import { fmt, frameParkTilted, SECTOR_ZONE, shortName, useParkMap, zoneHub } from "@/lib/park-map";
+import { fmt, SECTOR_ZONE, shortName, useParkMap, zonePoints, zonePolygons, type ZoneKey } from "@/lib/park-map";
 import { ALERT_GROUPS, alertGroup, alertSeverity, type AlertGroupKey } from "@/lib/diagnosis-alerts";
 
 type Alert = ManagementData["alerts"][number];
@@ -13,6 +13,9 @@ type Plan = CarbonManagementData["plans"][number];
 type Contributor = { node: string; name: string; share_pct?: number; delta?: number };
 
 const PARK = "XYEDZ";
+/** The two industry zones holding the metered enterprises; the diagnosis opens one at building scale. */
+const DIAG_ZONES: { key: ZoneKey; label: string }[] = [{ key: "green-home", label: "绿色家居" }, { key: "electronics", label: "电子信息" }];
+const ZONE_BOUNDARY = "#ff3b4f";
 const SEVERITY_COLOR: Record<string, string> = { critical: "#ff4d5e", high: "#ff6b81", warning: "#ffab3d", medium: "#ffab3d", info: "#4cb4ff", low: "#4cb4ff" };
 const severityRank = (s: string) => ({ critical: 4, high: 3, warning: 2, medium: 2, info: 1, low: 1 } as Record<string, number>)[s] ?? 0;
 const contributors = (alert: Alert): Contributor[] => {
@@ -49,25 +52,55 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
   const shown = useMemo(() => alerts.filter((a) => (status === "all" || a.status === "open") && (!group || alertGroup(a.rule_code) === group))
     .sort((a, b) => severityRank(b.severity) - severityRank(a.severity)), [alerts, status, group]);
 
-  const sites = useMemo(() => enterprises.filter((f) => f.properties.metricBindingApproved).map((f) => {
+  const allSites = useMemo(() => enterprises.filter((f) => f.properties.metricBindingApproved).map((f) => {
     const r = ranking.find((row) => row.code === f.properties.code);
     const own = shown.filter((a) => alertTargets(a).includes(f.properties.code));
     const worst = own.reduce((w, a) => Math.max(w, severityRank(a.severity)), 0);
-    return { code: f.properties.code, name: f.properties.name, sector: f.properties.sector, at: f.geometry.coordinates as Position, co2: r?.co2_t ?? 0, intensity: r?.intensity ?? null, alerts: own, worst };
+    return { code: f.properties.code, name: f.properties.name, sector: f.properties.sector, zone: SECTOR_ZONE[f.properties.sector], at: f.geometry.coordinates as Position, co2: r?.co2_t ?? 0, intensity: r?.intensity ?? null, alerts: own, worst };
   }).filter((s) => s.co2 > 0), [ranking, shown]);
+  // Default zone: the one whose enterprises carry the most alerts.
+  const [zone, setZone] = useState<ZoneKey>(() => {
+    const count = (k: ZoneKey) => allSites.filter((s) => s.zone === k).reduce((n, s) => n + s.alerts.length, 0);
+    return count("electronics") > count("green-home") ? "electronics" : "green-home";
+  });
+  const sites = useMemo(() => allSites.filter((s) => s.zone === zone), [allSites, zone]);
+  const zoneAlerts = shown.filter((a) => alertTargets(a).some((c) => c === PARK || sites.some((s) => s.code === c)));
   const parkAlerts = shown.filter((a) => alertTargets(a).includes(PARK));
   const topSite = [...sites].sort((a, b) => b.worst - a.worst || b.co2 - a.co2)[0];
   const [selected, setSelected] = useState<string>(() => topSite?.code ?? PARK);
+  const switchZone = (key: ZoneKey) => {
+    setZone(key);
+    const top = [...allSites.filter((s) => s.zone === key)].sort((a, b) => b.worst - a.worst || b.co2 - a.co2)[0];
+    setSelected(top?.code ?? PARK);
+  };
   const site = sites.find((s) => s.code === selected);
 
-  // Satellite imagery as the base (a real-scene diagnosis); the park's zones are framed between the alert list and the
-  // detail panel, and refitted when the map box changes size until the user moves the map.
+  // Satellite imagery as the base; the active zone opens at building scale (tilted, close enough to read roofs and
+  // yards) between the alert list and the detail panel, refitted on resize until the user moves the map.
+  const outline = useRef<any[]>([]);
   useEffect(() => {
     const current = handle.current, element = container.current;
     if (!ready || !current || !element) return;
+    const { AMap, map } = current;
     current.satellite.forEach((layer: any) => layer.show());
+    outline.current.forEach((polygon) => polygon.setMap(null));
+    outline.current = zonePolygons(zone).map((ring) => {
+      const polygon = new AMap.Polygon({ path: ring, fillOpacity: 0, strokeColor: ZONE_BOUNDARY, strokeOpacity: 1, strokeWeight: 4, zIndex: 60, bubble: true });
+      polygon.setMap(map);
+      return polygon;
+    });
     let touched = false, timer = 0;
-    const frame = () => frameParkTilted(current.map, current.AMap, { avoid: [90, 40, 330, 380], fill: 0.98, rotation: 28, pitch: 46 });
+    // Frame the enterprises of the zone (not the whole outline, which includes woodland) so factories fill the view.
+    const points = enterprises.filter((f) => f.properties.metricBindingApproved && SECTOR_ZONE[f.properties.sector] === zone).map((f) => f.geometry.coordinates as Position);
+    const frame = () => {
+      const targets = (points.length >= 2 ? points : zonePoints(zone)).map((point) => new AMap.Marker({ position: point }));
+      map.setRotation(zone === "electronics" ? 0 : 20, true);
+      map.setPitch(0, true);
+      map.setFitView(targets, true, [150, 90, 360, 400], 17.8);
+      map.setPitch(55, true);
+      // The green-home enterprises are spread north to south; one extra step keeps the factories readable there.
+      map.setZoom(Math.min(17.8, map.getZoom() + (zone === "green-home" ? 0.65 : 0.3)), true);
+    };
     frame();
     const mark = () => { touched = true; };
     element.addEventListener("pointerdown", mark);
@@ -75,7 +108,8 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     const observer = new ResizeObserver(() => { if (touched) return; window.clearTimeout(timer); timer = window.setTimeout(frame, 150); });
     observer.observe(element);
     return () => { observer.disconnect(); window.clearTimeout(timer); element.removeEventListener("pointerdown", mark); element.removeEventListener("wheel", mark); };
-  }, [ready, handle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, handle, zone]);
 
   // Markers: every enterprise and the park hub; colour = worst alert, size = emissions.
   useEffect(() => {
@@ -93,12 +127,7 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
       marker.on("click", () => setSelected(s.code));
       layer.current.add(marker);
     }
-    const hub = dot(parkAlerts.length ? "#ffab3d" : "#d4f75c", 18, selected === PARK);
-    const park = new AMap.LabelMarker({ position: zoneHub("all"), zIndex: 6, icon: { image: hub.image, size: hub.size, anchor: "center" },
-      text: { content: parkAlerts.length ? `园区级 · ${parkAlerts.length} 项` : "园区", direction: "top", offset: [0, -6], style: { fontSize: 12, fillColor: "#fff", strokeColor: "rgba(10,12,16,.85)", strokeWidth: 3, fontWeight: 600 } } });
-    park.on("click", () => setSelected(PARK));
-    layer.current.add(park);
-  }, [ready, handle, sites, parkAlerts.length, selected]);
+  }, [ready, handle, sites, selected]);
   useEffect(() => () => { layer.current = null; ripple.current = null; }, []);
 
   // Alerts light up where they occur: an L7 ripple in the alert colour.
@@ -107,7 +136,6 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     if (!l7Ready || !scene) return;
     const data = [
       ...sites.filter((s) => s.worst).map((s) => ({ lng: s.at[0], lat: s.at[1], color: SEVERITY_COLOR[[...s.alerts].sort((a, b) => severityRank(b.severity) - severityRank(a.severity))[0].severity] })),
-      ...(parkAlerts.length ? [{ lng: zoneHub("all")[0], lat: zoneHub("all")[1], color: "#ffab3d" }] : []),
     ];
     if (ripple.current) { ripple.current.setData(data); return; }
     if (!data.length) return;
@@ -119,7 +147,7 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
       handle.current.scene.addLayer(ripple.current);
     }).catch((reason) => console.warn("[diagnosis] ripple layer unavailable", reason));
     return () => { disposed = true; };
-  }, [l7Ready, handle, sites, parkAlerts.length]);
+  }, [l7Ready, handle, sites]);
 
   // Selecting an object (after the first view) flies the camera to it.
   const firstSelection = useRef(true);
@@ -127,13 +155,12 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     const map = handle.current?.map;
     if (!ready || !map) return;
     if (firstSelection.current) { firstSelection.current = false; return; }
-    const at = selected === PARK ? zoneHub("all") : site?.at;
-    if (at) map.panTo(at, 600);
+    if (selected !== PARK && site?.at) map.panTo(site.at, 600);
   }, [ready, handle, selected, site?.at]);
 
   const openCount = alerts.filter((a) => a.status === "open").length;
   const high = shown.filter((a) => severityRank(a.severity) >= 3).length;
-  const involved = new Set(shown.flatMap(alertTargets).filter((c) => c !== PARK)).size;
+  const involved = new Set(shown.flatMap(alertTargets).filter((c) => sites.some((s) => s.code === c))).size;
   const lead = [...sites].sort((a, b) => b.co2 - a.co2)[0];
   return <div className="spatial">
     <div ref={container} className="spatial-map" role="img" aria-label="园区实景诊断地图" />
@@ -141,10 +168,11 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
     {error && <div className="map-error" role="status">{error}<button type="button" className="btn-ghost small" onClick={retry}>重试</button></div>}
 
     <div className="spatial-kpis">
+      <nav className="spatial-zones" aria-label="产业片区">{DIAG_ZONES.map((z) => <button key={z.key} type="button" className={zone === z.key ? "on" : ""} aria-pressed={zone === z.key} onClick={() => switchZone(z.key)}>{z.label}</button>)}</nav>
       <div><span>{year} 年预警</span><strong className="num">{alerts.length}</strong><small>待处理 {openCount}</small></div>
       <div><span>需优先处理</span><strong className="num">{high}</strong><small>高风险及紧急</small></div>
-      <div><span>涉及企业</span><strong className="num">{involved}</strong><small>按预警定位</small></div>
-      {lead && <div><span>最大排放企业</span><strong>{shortName(lead.name)}</strong><small>占园区 {fmt(parkCo2 ? lead.co2 / parkCo2 * 100 : 0, 1)}%</small></div>}
+      <div><span>本片区涉及企业</span><strong className="num">{involved}</strong><small>按预警定位</small></div>
+      {lead && <div><span>片区最大排放</span><strong>{shortName(lead.name)}</strong><small>占园区 {fmt(parkCo2 ? lead.co2 / parkCo2 * 100 : 0, 1)}%</small></div>}
     </div>
 
     <aside className="spatial-list" aria-label="预警清单">
@@ -156,13 +184,14 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
         const n = alerts.filter((a) => (status === "all" || a.status === "open") && alertGroup(a.rule_code) === g.key).length;
         return <button key={g.key} type="button" className={group === g.key ? "on" : ""} style={{ ["--g" as string]: g.color }} disabled={!n} onClick={() => setGroup(group === g.key ? null : g.key)}><i />{g.label}<b className="num">{n}</b></button>;
       })}</div>
-      <ol>{shown.length ? shown.map((a) => {
+      <ol>{zoneAlerts.length ? zoneAlerts.map((a) => {
         const targets = alertTargets(a);
         const on = targets.includes(selected);
-        return <li key={a.id}><button type="button" className={on ? "on" : ""} onClick={() => setSelected(targets[0])} style={{ ["--sev" as string]: SEVERITY_COLOR[a.severity] ?? "#9aa3ad" }}>
+        const pick = targets.find((c) => sites.some((s) => s.code === c)) ?? PARK;
+        return <li key={a.id}><button type="button" className={on ? "on" : ""} onClick={() => setSelected(pick)} style={{ ["--sev" as string]: SEVERITY_COLOR[a.severity] ?? "#9aa3ad" }}>
           <span className="sev">{alertSeverity(a.severity)}</span>
           <b>{a.rule_name}</b>
-          <small>{targets.map((c) => c === PARK ? "园区整体" : shortName(sites.find((s) => s.code === c)?.name ?? c)).join("、")}{a.period ? ` · ${a.period}` : ""}</small>
+          <small>{targets.map((c) => c === PARK ? "园区整体" : shortName(allSites.find((s) => s.code === c)?.name ?? c)).join("、")}{a.period ? ` · ${a.period}` : ""}</small>
         </button></li>;
       }) : <li className="spatial-empty">当前筛选下没有预警</li>}</ol>
     </aside>
@@ -222,7 +251,7 @@ function SiteDetail({ site, parkCo2, year, monthly, previous, plans }: {
 function ParkDetail({ alerts }: { alerts: Alert[] }) {
   return <>
     <header className="spatial-head"><span className="eyebrow">园区整体</span><h3>信阳经济技术开发区</h3><em className={alerts.length ? "warn" : "ok"}>{alerts.length ? `${alerts.length} 项园区级预警` : "运行正常"}</em></header>
-    <p className="spatial-muted">预算、评价指标等园区级预警无法落到单个企业，统一显示在园区中心；同比异常类预警按主要贡献企业显示在地图上。</p>
+    <p className="spatial-muted">预算、评价指标等园区级预警无法落到单个企业，列在左侧清单中；同比异常类预警按主要贡献企业显示在地图上。</p>
     {alerts.length ? alerts.map((a) => <Evidence key={a.id} alert={a} />) : <p className="spatial-muted">当前筛选下没有园区级预警。</p>}
   </>;
 }

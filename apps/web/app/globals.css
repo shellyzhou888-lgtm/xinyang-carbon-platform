@@ -1586,7 +1586,7 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .spatial-groups button:disabled { opacity: .4; cursor: default; }
 .spatial-list ol { list-style: none; margin: 0; padding: 0; display: grid; align-content: start; gap: 6px; flex: 1; min-height: 0; overflow: auto; scrollbar-width: thin; }
 .spatial-list li button { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; align-items: center; text-align: left; border: 0; border-radius: 10px;
-  background: rgb(var(--ink) / .035); color: var(--text); padding: 9px 10px; font: inherit; cursor: pointer; box-shadow: inset 3px 0 0 var(--sev); transition: background .15s; }
+  background: rgb(var(--ink) / .035); color: var(--text); padding: 9px 10px; font: inherit; cursor: pointer; transition: background .15s; }
 .spatial-list li button:hover { background: rgb(var(--ink) / .07); }
 .spatial-list li button.on { background: color-mix(in srgb, var(--sev) 14%, transparent); }
 .spatial-list li b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1617,7 +1617,7 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .spatial-bars i.up { background: linear-gradient(180deg, var(--carbon), rgb(var(--carbon-rgb) / .35)); }
 .spatial-bars u { position: absolute; left: -1px; right: -1px; height: 2px; margin-bottom: 12px; background: var(--text); opacity: .7; }
 .spatial-bars small { height: 12px; margin-top: 2px; font-size: 9px; text-align: center; color: var(--text-3); }
-.spatial-alert { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--ink) / .035); box-shadow: inset 3px 0 0 var(--sev); }
+.spatial-alert { display: grid; gap: 6px; padding: 10px 12px; border-radius: 10px; background: rgb(var(--ink) / .035); }
 .spatial-alert header { display: flex; align-items: center; gap: 8px; }
 .spatial-alert header b { flex: 1; font-size: 13px; }
 .spatial-alert header small { font-size: 11px; color: var(--text-3); }
@@ -1641,3 +1641,9 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
   .spatial-detail { width: auto; left: 14px; bottom: 330px; top: 90px; }
   .spatial-kpis { left: 14px; transform: none; flex-wrap: wrap; }
 }
+
+/* Real-scene diagnosis: zone switch inside the top bar; no coloured edge strips (severity is shown by its label). */
+.spatial-zones { display: flex; align-self: center; gap: 2px; padding: 3px; margin-right: 6px; border-radius: 10px; background: rgb(var(--ink) / .06); }
+.spatial-zones button { border: 0; border-radius: 8px; background: transparent; color: var(--text-2); padding: 8px 12px; font: inherit; font-size: 13px; cursor: pointer; white-space: nowrap; }
+.spatial-zones button.on { background: var(--tint-strong); color: var(--accent-text); font-weight: 600; }
+.spatial-list li button.on { background: rgb(var(--ink) / .09); }
