@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-22",
+  "generator": "built-in image_gen.imagegen",
+  "outputs": [
+    {
+      "key": "01-green-home-details",
+      "file": "01-green-home-details.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-3c2797ce-3f57-410a-941b-adc6d9d5aba5.png"
+    },
+    {
+      "key": "02-electronics-details",
+      "file": "02-electronics-details.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-72394baf-fe8c-48e7-9058-34511e2ad949.png"
+    },
+    {
+      "key": "03-innovation-community-details",
+      "file": "03-innovation-community-details.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-5b3fb7d0-ea32-4af7-98f4-8c1ccb517985.png"
+    },
+    {
+      "key": "04-research-details",
+      "file": "04-research-details.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-d45761e7-5e8f-47ff-a1af-e657e9a354f6.png"
+    },
+    {
+      "key": "01-green-home-views",
+      "file": "01-green-home-views.png",
+      "initial_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-f242d022-09fb-443d-a7a4-a9a917bea24d.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-a6baf4da-7326-4742-b4ca-36ccd9a8047a.png",
+      "projection_revision": true
+    },
+    {
+      "key": "02-electronics-views",
+      "file": "02-electronics-views.png",
+      "initial_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-da339b9d-d751-4844-96bb-71ba1d12e00a.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-ece72a26-83a3-4d42-a274-0c28c7811c33.png",
+      "projection_revision": true
+    },
+    {
+      "key": "03-innovation-community-views",
+      "file": "03-innovation-community-views.png",
+      "initial_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-4b61ed28-9ee6-41ea-9b9f-6e9675b95fce.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-792415ce-5261-4ac6-91ba-b4d9593bdb78.png",
+      "projection_revision": true
+    },
+    {
+      "key": "04-research-views",
+      "file": "04-research-views.png",
+      "initial_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-8323706d-edbd-411c-ad7b-862f578a9bf2.png",
+      "selected_output": "C:\\Users\\53472\\.codex\\generated_images\\01a1612d-23f7-7802-8afb-acd1c09b494c\\exec-8323706d-edbd-411c-ad7b-862f578a9bf2.png",
+      "projection_revision": false
+    }
+  ]
+}
