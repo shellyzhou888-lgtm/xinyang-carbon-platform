@@ -1,6 +1,6 @@
 # 网站与小云语音接入说明
 
-文档版本：v1.4（2026-10-21）
+文档版本：v1.5（2026-10-22）
 
 本文说明单个 Pi 总管 Agent 如何接入 Next.js 网站 `apps/web` 和小云语音助手（`@xiaoyun/voice`），识别业务板块并直接使用相关工具查询同一个数据库。
 
@@ -38,7 +38,7 @@
 
 前提：SSH 隧道已打开（localhost:15432），仓库根目录 `.env` 中已有 `DATABASE_URL` 与 `DEEPSEEK_API_KEY`。
 
-1. 安装依赖（首次）：在 `apps/web` 运行 `npm install`，然后运行 `npx xiaoyun init` 复制小云浏览器资源到 `public/xiaoyun` 并生成 `.env.xiaoyun`。
+1. 安装依赖（首次）：在 `apps/web` 运行 `npm install`。安装、开发启动和生产构建都会自动运行 `npm run voice:assets`，把小云浏览器资源复制到 `public/xiaoyun`；若需手动修复资源，可单独运行该命令。`.env.xiaoyun` 已存在时无需重新生成。
 2. 填写 `apps/web/.env.xiaoyun`（已被 .gitignore 忽略，不会上传）：
 
    | 键 | 值 |

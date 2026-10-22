@@ -6,9 +6,11 @@
   "description": "信阳经开区绿色园区能碳管理平台网站（Next.js）：总览、数据库 Agent 对话、小云语音",
   "scripts": {
     "build:agent": "npm run build --prefix ../../packages/db-agent",
-    "predev": "npm run build:agent",
+    "voice:assets": "node node_modules/@xiaoyun/voice/bin/xiaoyun.mjs assets public/xiaoyun",
+    "postinstall": "npm run voice:assets",
+    "predev": "npm run voice:assets && npm run build:agent",
     "dev": "next dev --port 3001",
-    "prebuild": "npm run build:agent",
+    "prebuild": "npm run voice:assets && npm run build:agent",
     "build": "next build",
     "start": "next start --port 3001",
     "typecheck": "tsc --noEmit",
