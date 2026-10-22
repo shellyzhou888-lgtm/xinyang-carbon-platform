@@ -1,0 +1,94 @@
+{
+  "GH": {
+    "nodes": 155,
+    "meshes": 106,
+    "materials": 12,
+    "bounds_y_up_local_m": {
+      "min": [
+        -2240.0,
+        -10.800000190734863,
+        -2125.0
+      ],
+      "max": [
+        2240.0,
+        34.03999999910593,
+        2195.0
+      ]
+    },
+    "all_layout_instances_present": true,
+    "zone_isolated": true,
+    "planning_reference_absent": true,
+    "external_resources": false,
+    "finite_accessors_and_buffer_ranges": true
+  },
+  "EI": {
+    "nodes": 172,
+    "meshes": 117,
+    "materials": 12,
+    "bounds_y_up_local_m": {
+      "min": [
+        -1190.0,
+        -10.800000190734863,
+        -2675.0
+      ],
+      "max": [
+        1190.0,
+        30.28000120073557,
+        2745.0
+      ]
+    },
+    "all_layout_instances_present": true,
+    "zone_isolated": true,
+    "planning_reference_absent": true,
+    "external_resources": false,
+    "finite_accessors_and_buffer_ranges": true
+  },
+  "IN": {
+    "nodes": 55,
+    "meshes": 45,
+    "materials": 13,
+    "bounds_y_up_local_m": {
+      "min": [
+        -940.0,
+        -10.800000190734863,
+        -925.0
+      ],
+      "max": [
+        940.0,
+        19.190000534057617,
+        995.0
+      ]
+    },
+    "all_layout_instances_present": true,
+    "zone_isolated": true,
+    "planning_reference_absent": true,
+    "external_resources": false,
+    "finite_accessors_and_buffer_ranges": true
+  },
+  "RD": {
+    "nodes": 98,
+    "meshes": 74,
+    "materials": 12,
+    "bounds_y_up_local_m": {
+      "min": [
+        -1140.0,
+        -10.800000190734863,
+        -1675.0
+      ],
+      "max": [
+        1140.0,
+        34.140000738203526,
+        1745.0
+      ]
+    },
+    "all_layout_instances_present": true,
+    "zone_isolated": true,
+    "planning_reference_absent": true,
+    "external_resources": false,
+    "finite_accessors_and_buffer_ranges": true
+  },
+  "scope": {
+    "building_groups": 148,
+    "not_surveyed": true
+  }
+}

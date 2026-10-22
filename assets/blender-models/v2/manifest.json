@@ -1,0 +1,164 @@
+[
+  {
+    "file": "assembly-greybox-v2.blend",
+    "bytes": 6923295,
+    "sha256": "4be055e320815948f5db0a23fd6ebdf2080fda182a99347974481cd454375672"
+  },
+  {
+    "file": "greybox/EI-overview.png",
+    "bytes": 727162,
+    "sha256": "234771df1fc543493150a823008c20b2e3e3bb2963d7b6f468198ac998555390",
+    "width": 1000,
+    "height": 750
+  },
+  {
+    "file": "greybox/GH-overview.png",
+    "bytes": 704127,
+    "sha256": "a0dedf7fa77f23729a6fa89274041c97596dbc007efec9d27e038621fecd28c8",
+    "width": 1000,
+    "height": 750
+  },
+  {
+    "file": "greybox/IN-overview.png",
+    "bytes": 723297,
+    "sha256": "256d0036ef53783e16d6510a3a3ad5fba7e8d6c95cd1bedf2f2cc5c6519e679f",
+    "width": 1000,
+    "height": 750
+  },
+  {
+    "file": "greybox/RD-overview.png",
+    "bytes": 722438,
+    "sha256": "c41ba2121c708a5469afbabe2b59a94a146a515bfcf775706588163b205cd900",
+    "width": 1000,
+    "height": 750
+  },
+  {
+    "file": "models/EI-complete-v2.blend",
+    "bytes": 10819895,
+    "sha256": "678713c976f25d4db775338dc6ade18872be0a65b383bb7a1f579a40ba83f6ea"
+  },
+  {
+    "file": "models/EI-complete-v2.glb",
+    "bytes": 7447480,
+    "sha256": "e2a91f569faec414616b3d15b84370fb074d3cebb97f5833d9f1deec0d49c092"
+  },
+  {
+    "file": "models/GH-complete-v2.blend",
+    "bytes": 12860246,
+    "sha256": "8a09a946d9341173242bfa7bdef3a249d289e8bb842647e5d245e40e755cb315"
+  },
+  {
+    "file": "models/GH-complete-v2.glb",
+    "bytes": 8663612,
+    "sha256": "859288439652cefe7e1eccb104b061c0ec57f94fcc017c5107af859ef1974765"
+  },
+  {
+    "file": "models/IN-complete-v2.blend",
+    "bytes": 4131249,
+    "sha256": "0fca421a30a4ca9b72d4ded5773349bd403c6c34642676edd97fd0a309406705"
+  },
+  {
+    "file": "models/IN-complete-v2.glb",
+    "bytes": 1968320,
+    "sha256": "695ad04f7a52d2460c30b707215aa6532b8091733c96cff0db65ba71cfafef1f"
+  },
+  {
+    "file": "models/RD-complete-v2.blend",
+    "bytes": 6666341,
+    "sha256": "84712eb0f3c568e2bf738f8eb11b31ec53860c2fd9e7967a5422d5e188be268e"
+  },
+  {
+    "file": "models/RD-complete-v2.glb",
+    "bytes": 4245024,
+    "sha256": "f93a235231462f82814544e558154d44e78051cef3bc094adec86bdde8f66940"
+  },
+  {
+    "file": "park-assemblies-v2.blend",
+    "bytes": 32076072,
+    "sha256": "9191de5a0f90cf2709a957910372f0674637e54ac834e6c69582d2ec278e8c78"
+  },
+  {
+    "file": "renders/EI-detail.png",
+    "bytes": 2300074,
+    "sha256": "f8a85cb886204aee3cc30eb1330c7fd9f1428970a82b349ed34c38d9ecbe679e",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/EI-overview.png",
+    "bytes": 2053626,
+    "sha256": "b2a567604486def53cb16c74bf1444009ba5b2ffe158827ed5492b8f51ad0b5c",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/EI-plan.png",
+    "bytes": 1786941,
+    "sha256": "8cf934bdca1d5cb3619df89d9378485982e881f364a545614dbb62f8f40fb745",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/GH-detail.png",
+    "bytes": 2230384,
+    "sha256": "78856758d9e304f9ddd3bea02afabbefb2d6b8b0ed98b48414b8c6385dc7ef06",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/GH-overview.png",
+    "bytes": 1926125,
+    "sha256": "08aa8512f36b00929a07ca1153c5c082250eae2b49c281aa706f2b01091e8aba",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/GH-plan.png",
+    "bytes": 1914394,
+    "sha256": "1c4448e932885e353f85db78a1db94a17ee3ea97e60fe271d7a3633e82fe04d6",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/IN-detail.png",
+    "bytes": 2006731,
+    "sha256": "d0ebce77f82a7c268a8893040ee85049abd3756015ba3d2cb4a7718a73d994c5",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/IN-overview.png",
+    "bytes": 1775102,
+    "sha256": "d65d09d4415836d9a71dd75d6aab1b4a94f2e6f1c23d7af9a72f1d65dc76d0f0",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/IN-plan.png",
+    "bytes": 1855378,
+    "sha256": "a6b066d05c2d4e7c38ad4b3f408c9aaaa3c26abf5c7bdaed57951aad8f72b258",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/RD-detail.png",
+    "bytes": 2273238,
+    "sha256": "0827c104257b2e76a2fd103cb5f73903cc869564d6900161e20a619afb1f1f23",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/RD-overview.png",
+    "bytes": 1941903,
+    "sha256": "42b5bf4e38ff29c031c5ce3bea062a9eb02d9e3bed5a04492c9ed8c03c65422f",
+    "width": 1600,
+    "height": 1100
+  },
+  {
+    "file": "renders/RD-plan.png",
+    "bytes": 1777824,
+    "sha256": "019b5ab80061c042570578228b27417214dbf97f3af764eea708695f99ee29be",
+    "width": 1600,
+    "height": 1100
+  }
+]

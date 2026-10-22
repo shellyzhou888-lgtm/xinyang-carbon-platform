@@ -1,0 +1,3250 @@
+{
+  "version": "v2",
+  "purpose": "four complete concept park assemblies from approved scene and asset directions",
+  "user_instruction": "帮我组装成每个园区的完整建模",
+  "source_model": "assets/blender-models/v1/park-unified-v1.blend",
+  "scene_truth": "assets/modeling-concepts/v2",
+  "asset_truth": "assets/building-concepts/v1; v1 same-mesh orthographic checks",
+  "disclaimer": "Complete scene organisation; not surveyed full inventory or site-registered as-built reconstruction.",
+  "zones": {
+    "GH": {
+      "id": "GH",
+      "name": "绿色家居产业园区",
+      "planning_id": "green-home",
+      "planning_area_km2": 7.97,
+      "display_origin_gcj02": [
+        114.12465785,
+        32.220336200000006
+      ],
+      "planning_rings_local_m": [
+        [
+          [
+            -1612.3,
+            1861.43
+          ],
+          [
+            -184.12,
+            1332.75
+          ],
+          [
+            -369.22,
+            917.97
+          ],
+          [
+            6.87,
+            1193.28
+          ],
+          [
+            832.48,
+            915.35
+          ],
+          [
+            972.17,
+            681.2
+          ],
+          [
+            1138.23,
+            688.5
+          ],
+          [
+            1187.9,
+            820.07
+          ],
+          [
+            1474.39,
+            610.85
+          ],
+          [
+            1774.46,
+            513.14
+          ],
+          [
+            1907.88,
+            1.4
+          ],
+          [
+            1903.22,
+            -313.06
+          ],
+          [
+            2045.35,
+            -602.61
+          ],
+          [
+            2008.27,
+            -1861.43
+          ],
+          [
+            1579.04,
+            -1769.38
+          ],
+          [
+            1441.78,
+            -1590.52
+          ],
+          [
+            1148.2,
+            -1640.4
+          ],
+          [
+            -103.39,
+            -1344.16
+          ],
+          [
+            163.42,
+            -685.36
+          ],
+          [
+            -443.21,
+            -342.3
+          ],
+          [
+            -621.02,
+            -923.21
+          ],
+          [
+            -1037.47,
+            -701.19
+          ],
+          [
+            -867.57,
+            -360.95
+          ],
+          [
+            -1349.71,
+            -326.69
+          ],
+          [
+            -1494.07,
+            -406.98
+          ],
+          [
+            -2045.35,
+            -61.49
+          ],
+          [
+            -1829.02,
+            484.1
+          ],
+          [
+            -2012.92,
+            882.67
+          ],
+          [
+            -1745.3,
+            1522.88
+          ],
+          [
+            -1612.3,
+            1861.43
+          ]
+        ]
+      ],
+      "buildings": [
+        {
+          "id": "GH_C01_H01",
+          "asset": "GH_B",
+          "x": -1475,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C01_H02",
+          "asset": "GH_A",
+          "x": -1200,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C01_H03",
+          "asset": "GH_A",
+          "x": -925,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C01_H04",
+          "asset": "GH_A",
+          "x": -1475,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C01_H05",
+          "asset": "GH_A",
+          "x": -1200,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C01_H06",
+          "asset": "GH_B",
+          "x": -925,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H01",
+          "asset": "GH_A",
+          "x": -450,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H02",
+          "asset": "GH_A",
+          "x": -175,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H03",
+          "asset": "GH_B",
+          "x": 100,
+          "y": -1150,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H04",
+          "asset": "GH_A",
+          "x": -450,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H05",
+          "asset": "GH_B",
+          "x": -175,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C02_H06",
+          "asset": "GH_A",
+          "x": 100,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H01",
+          "asset": "GH_A",
+          "x": -1475,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H02",
+          "asset": "GH_A",
+          "x": -1200,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H03",
+          "asset": "GH_B",
+          "x": -925,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H04",
+          "asset": "GH_A",
+          "x": -1475,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H05",
+          "asset": "GH_B",
+          "x": -1200,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C04_H06",
+          "asset": "GH_A",
+          "x": -925,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H01",
+          "asset": "GH_A",
+          "x": -450,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H02",
+          "asset": "GH_B",
+          "x": -175,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H03",
+          "asset": "GH_A",
+          "x": 100,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H04",
+          "asset": "GH_B",
+          "x": -450,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H05",
+          "asset": "GH_A",
+          "x": -175,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_H06",
+          "asset": "GH_A",
+          "x": 100,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C05_PROCESS",
+          "asset": "GH_P",
+          "x": 95,
+          "y": 100,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "process_equipment",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H01",
+          "asset": "GH_B",
+          "x": 650,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H02",
+          "asset": "GH_A",
+          "x": 925,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H03",
+          "asset": "GH_A",
+          "x": 1200,
+          "y": -250,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H04",
+          "asset": "GH_A",
+          "x": 650,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H05",
+          "asset": "GH_A",
+          "x": 925,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C06_H06",
+          "asset": "GH_B",
+          "x": 1200,
+          "y": -20,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H01",
+          "asset": "GH_A",
+          "x": -1475,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H02",
+          "asset": "GH_B",
+          "x": -1200,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H03",
+          "asset": "GH_A",
+          "x": -925,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H04",
+          "asset": "GH_B",
+          "x": -1475,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H05",
+          "asset": "GH_A",
+          "x": -1200,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C07_H06",
+          "asset": "GH_A",
+          "x": -925,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H01",
+          "asset": "GH_A",
+          "x": 650,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H02",
+          "asset": "GH_A",
+          "x": 925,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H03",
+          "asset": "GH_B",
+          "x": 1200,
+          "y": 700,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H04",
+          "asset": "GH_A",
+          "x": 650,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H05",
+          "asset": "GH_B",
+          "x": 925,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_C09_H06",
+          "asset": "GH_A",
+          "x": 1200,
+          "y": 930,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_00",
+          "asset": "GH_S",
+          "x": -1940,
+          "y": 1660,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_01",
+          "asset": "GH_S",
+          "x": -1500,
+          "y": 1715,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_02",
+          "asset": "GH_S",
+          "x": -1100,
+          "y": 1660,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_03",
+          "asset": "GH_S",
+          "x": -420,
+          "y": 1715,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_04",
+          "asset": "GH_S",
+          "x": -30,
+          "y": 1660,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_05",
+          "asset": "GH_S",
+          "x": 200,
+          "y": 1715,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_06",
+          "asset": "GH_S",
+          "x": 620,
+          "y": 1660,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_07",
+          "asset": "GH_S",
+          "x": 1030,
+          "y": 1715,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_08",
+          "asset": "GH_S",
+          "x": 1320,
+          "y": 1660,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "GH_CONTEXT_09",
+          "asset": "GH_S",
+          "x": 1840,
+          "y": 1715,
+          "rotation_deg": 0,
+          "scale": 0.7,
+          "role": "background",
+          "status": "concept placement, dimensions unmeasured"
+        }
+      ],
+      "roads": [
+        {
+          "id": "GH_NS_0",
+          "points": [
+            [
+              -1700,
+              -1900
+            ],
+            [
+              -1700,
+              1900
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_NS_1",
+          "points": [
+            [
+              -700,
+              -1900
+            ],
+            [
+              -700,
+              1900
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_NS_2",
+          "points": [
+            [
+              350,
+              -1900
+            ],
+            [
+              350,
+              1900
+            ]
+          ],
+          "width": 34,
+          "role": "primary"
+        },
+        {
+          "id": "GH_NS_3",
+          "points": [
+            [
+              1500,
+              -1900
+            ],
+            [
+              1500,
+              1900
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_EW_0",
+          "points": [
+            [
+              -2050,
+              -1450
+            ],
+            [
+              2050,
+              -1450
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_EW_1",
+          "points": [
+            [
+              -2050,
+              -600
+            ],
+            [
+              2050,
+              -600
+            ]
+          ],
+          "width": 36,
+          "role": "primary"
+        },
+        {
+          "id": "GH_EW_2",
+          "points": [
+            [
+              -2050,
+              350
+            ],
+            [
+              2050,
+              350
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_EW_3",
+          "points": [
+            [
+              -2050,
+              1300
+            ],
+            [
+              2050,
+              1300
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "GH_C01_entry",
+          "points": [
+            [
+              -1200,
+              -1450
+            ],
+            [
+              -1200,
+              -1315.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C02_entry",
+          "points": [
+            [
+              -175,
+              -1450
+            ],
+            [
+              -175,
+              -1315.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C03_entry",
+          "points": [
+            [
+              925,
+              -1450
+            ],
+            [
+              925,
+              -1315.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C04_entry",
+          "points": [
+            [
+              -1200,
+              -600
+            ],
+            [
+              -1200,
+              -415.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C05_entry",
+          "points": [
+            [
+              -175,
+              -600
+            ],
+            [
+              -175,
+              -415.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C06_entry",
+          "points": [
+            [
+              925,
+              -600
+            ],
+            [
+              925,
+              -415.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C07_entry",
+          "points": [
+            [
+              -1200,
+              350
+            ],
+            [
+              -1200,
+              535.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C08_entry",
+          "points": [
+            [
+              -175,
+              350
+            ],
+            [
+              -175,
+              535.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "GH_C09_entry",
+          "points": [
+            [
+              925,
+              350
+            ],
+            [
+              925,
+              535.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        }
+      ],
+      "compounds": [
+        {
+          "id": "GH_C01",
+          "x": -1200,
+          "y": -1025,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C02",
+          "x": -175,
+          "y": -1025,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C03",
+          "x": 925,
+          "y": -1025,
+          "w": 850,
+          "d": 650,
+          "role": "reserve"
+        },
+        {
+          "id": "GH_C04",
+          "x": -1200,
+          "y": -125,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C05",
+          "x": -175,
+          "y": -125,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C06",
+          "x": 925,
+          "y": -125,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C07",
+          "x": -1200,
+          "y": 825,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        },
+        {
+          "id": "GH_C08",
+          "x": -175,
+          "y": 825,
+          "w": 850,
+          "d": 650,
+          "role": "reserve"
+        },
+        {
+          "id": "GH_C09",
+          "x": 925,
+          "y": 825,
+          "w": 850,
+          "d": 650,
+          "role": "industrial"
+        }
+      ],
+      "placement_status": "approved_scene_concept_assembly; NOT registered building footprints",
+      "planning_status": "approximate reference overlay; independent from concept layout; not legal/survey boundary",
+      "extent": [
+        4400,
+        4100
+      ]
+    },
+    "EI": {
+      "id": "EI",
+      "name": "电子信息产业园区",
+      "planning_id": "electronics",
+      "planning_area_km2": 4.83,
+      "display_origin_gcj02": [
+        114.0622315,
+        32.181188250000005
+      ],
+      "planning_rings_local_m": [
+        [
+          [
+            -942.0,
+            2330.1
+          ],
+          [
+            -610.57,
+            2363.15
+          ],
+          [
+            -466.75,
+            2036.66
+          ],
+          [
+            -260.46,
+            1971.76
+          ],
+          [
+            -262.9,
+            2027.13
+          ],
+          [
+            237.91,
+            1993.67
+          ],
+          [
+            361.85,
+            1277.98
+          ],
+          [
+            769.56,
+            1258.92
+          ],
+          [
+            920.28,
+            -65.94
+          ],
+          [
+            953.76,
+            -1248.15
+          ],
+          [
+            836.34,
+            -2363.15
+          ],
+          [
+            64.12,
+            -2045.66
+          ],
+          [
+            17.26,
+            -1400.32
+          ],
+          [
+            10.56,
+            -827.23
+          ],
+          [
+            -90.66,
+            -628.24
+          ],
+          [
+            -111.76,
+            -148.31
+          ],
+          [
+            -333.26,
+            -158.05
+          ],
+          [
+            -363.89,
+            118.02
+          ],
+          [
+            -568.55,
+            146.0
+          ],
+          [
+            -635.89,
+            -4.9
+          ],
+          [
+            -825.34,
+            97.73
+          ],
+          [
+            -750.1,
+            489.4
+          ],
+          [
+            -550.3,
+            572.15
+          ],
+          [
+            -653.95,
+            826.5
+          ],
+          [
+            -843.62,
+            1354.42
+          ],
+          [
+            -953.76,
+            1756.38
+          ],
+          [
+            -942.0,
+            2330.1
+          ]
+        ]
+      ],
+      "buildings": [
+        {
+          "id": "EI_C01_H1",
+          "asset": "EI_A",
+          "x": -640,
+          "y": -1850,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C01_H2",
+          "asset": "EI_A",
+          "x": -410,
+          "y": -1850,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C01_H3",
+          "asset": "EI_A",
+          "x": -640,
+          "y": -1550,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C01_H4",
+          "asset": "EI_A",
+          "x": -410,
+          "y": -1550,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C02_H1",
+          "asset": "EI_A",
+          "x": 5,
+          "y": -1850,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C02_H2",
+          "asset": "EI_A",
+          "x": 235,
+          "y": -1850,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C02_H3",
+          "asset": "EI_A",
+          "x": 5,
+          "y": -1550,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C02_H4",
+          "asset": "EI_A",
+          "x": 235,
+          "y": -1550,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M1",
+          "asset": "EI_M",
+          "x": -675,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M2",
+          "asset": "EI_M",
+          "x": -525,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M3",
+          "asset": "EI_M",
+          "x": -375,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M4",
+          "asset": "EI_M",
+          "x": -675,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M5",
+          "asset": "EI_M",
+          "x": -525,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C03_M6",
+          "asset": "EI_M",
+          "x": -375,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M1",
+          "asset": "EI_M",
+          "x": -30,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M2",
+          "asset": "EI_M",
+          "x": 120,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M3",
+          "asset": "EI_M",
+          "x": 270,
+          "y": -920,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M4",
+          "asset": "EI_M",
+          "x": -30,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M5",
+          "asset": "EI_M",
+          "x": 120,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C04_M6",
+          "asset": "EI_M",
+          "x": 270,
+          "y": -630,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M1",
+          "asset": "EI_M",
+          "x": -675,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M2",
+          "asset": "EI_M",
+          "x": -525,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M3",
+          "asset": "EI_M",
+          "x": -375,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M4",
+          "asset": "EI_M",
+          "x": -675,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M5",
+          "asset": "EI_M",
+          "x": -525,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C05_M6",
+          "asset": "EI_M",
+          "x": -375,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M1",
+          "asset": "EI_M",
+          "x": -30,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M2",
+          "asset": "EI_M",
+          "x": 120,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M3",
+          "asset": "EI_M",
+          "x": 270,
+          "y": 30,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M4",
+          "asset": "EI_M",
+          "x": -30,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M5",
+          "asset": "EI_M",
+          "x": 120,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C06_M6",
+          "asset": "EI_M",
+          "x": 270,
+          "y": 320,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M1",
+          "asset": "EI_M",
+          "x": -675,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M2",
+          "asset": "EI_M",
+          "x": -525,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M3",
+          "asset": "EI_M",
+          "x": -375,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M4",
+          "asset": "EI_M",
+          "x": -675,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M5",
+          "asset": "EI_M",
+          "x": -525,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C07_M6",
+          "asset": "EI_M",
+          "x": -375,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M1",
+          "asset": "EI_M",
+          "x": -30,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M2",
+          "asset": "EI_M",
+          "x": 120,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M3",
+          "asset": "EI_M",
+          "x": 270,
+          "y": 980,
+          "rotation_deg": 0,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M4",
+          "asset": "EI_M",
+          "x": -30,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M5",
+          "asset": "EI_M",
+          "x": 120,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1.08,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C08_M6",
+          "asset": "EI_M",
+          "x": 270,
+          "y": 1270,
+          "rotation_deg": 180,
+          "scale": 1,
+          "role": "multiwing_court",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C09_H1",
+          "asset": "EI_A",
+          "x": -640,
+          "y": 1790,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C09_H2",
+          "asset": "EI_A",
+          "x": -410,
+          "y": 1790,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C09_H3",
+          "asset": "EI_A",
+          "x": -640,
+          "y": 2090,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C09_H4",
+          "asset": "EI_A",
+          "x": -410,
+          "y": 2090,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C10_H1",
+          "asset": "EI_A",
+          "x": 5,
+          "y": 1790,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C10_H2",
+          "asset": "EI_A",
+          "x": 235,
+          "y": 1790,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C10_H3",
+          "asset": "EI_A",
+          "x": 5,
+          "y": 2090,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_C10_H4",
+          "asset": "EI_A",
+          "x": 235,
+          "y": 2090,
+          "rotation_deg": 0,
+          "scale": 0.86,
+          "role": "production",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_EAST_0",
+          "asset": "EI_A",
+          "x": 675,
+          "y": -1750,
+          "rotation_deg": 90,
+          "scale": 0.85,
+          "role": "secondary_workshop",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_EAST_1",
+          "asset": "EI_A",
+          "x": 675,
+          "y": -870,
+          "rotation_deg": 90,
+          "scale": 0.85,
+          "role": "secondary_workshop",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_EAST_2",
+          "asset": "EI_A",
+          "x": 675,
+          "y": 10,
+          "rotation_deg": 90,
+          "scale": 0.85,
+          "role": "secondary_workshop",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_EAST_3",
+          "asset": "EI_A",
+          "x": 675,
+          "y": 890,
+          "rotation_deg": 90,
+          "scale": 0.85,
+          "role": "secondary_workshop",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "EI_EAST_4",
+          "asset": "EI_A",
+          "x": 675,
+          "y": 1770,
+          "rotation_deg": 90,
+          "scale": 0.85,
+          "role": "secondary_workshop",
+          "status": "concept placement, dimensions unmeasured"
+        }
+      ],
+      "roads": [
+        {
+          "id": "EI_NS_0",
+          "points": [
+            [
+              -820,
+              -2450
+            ],
+            [
+              -820,
+              2450
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_NS_1",
+          "points": [
+            [
+              -230,
+              -2450
+            ],
+            [
+              -230,
+              2450
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_NS_2",
+          "points": [
+            [
+              470,
+              -2450
+            ],
+            [
+              470,
+              2450
+            ]
+          ],
+          "width": 34,
+          "role": "primary"
+        },
+        {
+          "id": "EI_NS_3",
+          "points": [
+            [
+              880,
+              -2450
+            ],
+            [
+              880,
+              2450
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_0",
+          "points": [
+            [
+              -1030,
+              -2150
+            ],
+            [
+              1030,
+              -2150
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_1",
+          "points": [
+            [
+              -1030,
+              -1250
+            ],
+            [
+              1030,
+              -1250
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_2",
+          "points": [
+            [
+              -1030,
+              -300
+            ],
+            [
+              1030,
+              -300
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_3",
+          "points": [
+            [
+              -1030,
+              650
+            ],
+            [
+              1030,
+              650
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_4",
+          "points": [
+            [
+              -1030,
+              1600
+            ],
+            [
+              1030,
+              1600
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_EW_5",
+          "points": [
+            [
+              -1030,
+              2280
+            ],
+            [
+              1030,
+              2280
+            ]
+          ],
+          "width": 26,
+          "role": "secondary"
+        },
+        {
+          "id": "EI_C01_entry",
+          "points": [
+            [
+              -525,
+              -2150
+            ],
+            [
+              -525,
+              -2015.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C02_entry",
+          "points": [
+            [
+              120,
+              -2150
+            ],
+            [
+              120,
+              -2015.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C03_entry",
+          "points": [
+            [
+              -525,
+              -1250
+            ],
+            [
+              -525,
+              -1090.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C04_entry",
+          "points": [
+            [
+              120,
+              -1250
+            ],
+            [
+              120,
+              -1090.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C05_entry",
+          "points": [
+            [
+              -525,
+              -300
+            ],
+            [
+              -525,
+              -140.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C06_entry",
+          "points": [
+            [
+              120,
+              -300
+            ],
+            [
+              120,
+              -140.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C07_entry",
+          "points": [
+            [
+              -525,
+              650
+            ],
+            [
+              -525,
+              810.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C08_entry",
+          "points": [
+            [
+              120,
+              650
+            ],
+            [
+              120,
+              810.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C09_entry",
+          "points": [
+            [
+              -525,
+              1600
+            ],
+            [
+              -525,
+              1735.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "EI_C10_entry",
+          "points": [
+            [
+              120,
+              1600
+            ],
+            [
+              120,
+              1735.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        }
+      ],
+      "compounds": [
+        {
+          "id": "EI_C01",
+          "x": -525,
+          "y": -1700,
+          "w": 490,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C02",
+          "x": 120,
+          "y": -1700,
+          "w": 580,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C03",
+          "x": -525,
+          "y": -775,
+          "w": 490,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C04",
+          "x": 120,
+          "y": -775,
+          "w": 580,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C05",
+          "x": -525,
+          "y": 175,
+          "w": 490,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C06",
+          "x": 120,
+          "y": 175,
+          "w": 580,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C07",
+          "x": -525,
+          "y": 1125,
+          "w": 490,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C08",
+          "x": 120,
+          "y": 1125,
+          "w": 580,
+          "d": 700,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C09",
+          "x": -525,
+          "y": 1940,
+          "w": 490,
+          "d": 480,
+          "role": "industrial"
+        },
+        {
+          "id": "EI_C10",
+          "x": 120,
+          "y": 1940,
+          "w": 580,
+          "d": 480,
+          "role": "industrial"
+        }
+      ],
+      "placement_status": "approved_scene_concept_assembly; NOT registered building footprints",
+      "planning_status": "approximate reference overlay; independent from concept layout; not legal/survey boundary",
+      "extent": [
+        2300,
+        5200
+      ]
+    },
+    "IN": {
+      "id": "IN",
+      "name": "科创部落",
+      "planning_id": "innovation-community",
+      "planning_area_km2": 0.37,
+      "display_origin_gcj02": [
+        114.08957925,
+        32.196984549999996
+      ],
+      "planning_rings_local_m": [
+        [
+          [
+            -677.37,
+            308.27
+          ],
+          [
+            -479.23,
+            427.92
+          ],
+          [
+            -378.84,
+            247.44
+          ],
+          [
+            -576.98,
+            127.78
+          ],
+          [
+            -677.37,
+            308.27
+          ]
+        ],
+        [
+          [
+            -445.57,
+            503.36
+          ],
+          [
+            -283.53,
+            602.93
+          ],
+          [
+            -163.87,
+            404.81
+          ],
+          [
+            -344.37,
+            304.42
+          ],
+          [
+            -445.57,
+            503.36
+          ]
+        ],
+        [
+          [
+            -159.82,
+            312.54
+          ],
+          [
+            40.76,
+            376.82
+          ],
+          [
+            123.5,
+            177.07
+          ],
+          [
+            -56.99,
+            76.68
+          ],
+          [
+            -159.82,
+            312.54
+          ]
+        ],
+        [
+          [
+            114.58,
+            380.06
+          ],
+          [
+            280.68,
+            387.36
+          ],
+          [
+            381.88,
+            188.42
+          ],
+          [
+            238.3,
+            89.66
+          ],
+          [
+            114.58,
+            380.06
+          ]
+        ],
+        [
+          [
+            -454.07,
+            -144.18
+          ],
+          [
+            -291.23,
+            -63.06
+          ],
+          [
+            -177.24,
+            -132.01
+          ],
+          [
+            -242.14,
+            -338.26
+          ],
+          [
+            -388.97,
+            -363.21
+          ],
+          [
+            -454.07,
+            -144.18
+          ]
+        ],
+        [
+          [
+            -84.97,
+            -127.95
+          ],
+          [
+            59.42,
+            -47.64
+          ],
+          [
+            176.64,
+            -190.41
+          ],
+          [
+            55.57,
+            -380.65
+          ],
+          [
+            46.85,
+            -602.93
+          ],
+          [
+            -104.03,
+            -535.6
+          ],
+          [
+            -112.14,
+            -351.04
+          ],
+          [
+            -84.97,
+            -127.95
+          ]
+        ],
+        [
+          [
+            388.37,
+            40.79
+          ],
+          [
+            557.71,
+            -25.73
+          ],
+          [
+            677.37,
+            -223.87
+          ],
+          [
+            592.39,
+            -394.02
+          ],
+          [
+            424.67,
+            -364.42
+          ],
+          [
+            360.38,
+            -163.85
+          ],
+          [
+            388.37,
+            40.79
+          ]
+        ]
+      ],
+      "buildings": [
+        {
+          "id": "IN_COURT_01",
+          "asset": "IN_A",
+          "x": -150,
+          "y": -435,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "approved_courtyard_design_proposal",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_COURT_02",
+          "asset": "IN_A",
+          "x": -390,
+          "y": -25,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "approved_courtyard_design_proposal",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_COURT_03",
+          "asset": "IN_A",
+          "x": -180,
+          "y": 360,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "approved_courtyard_design_proposal",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_00",
+          "asset": "IN_S",
+          "x": -700,
+          "y": 610,
+          "rotation_deg": 90,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_01",
+          "asset": "IN_S",
+          "x": -610,
+          "y": 580,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_02",
+          "asset": "IN_S",
+          "x": -660,
+          "y": 470,
+          "rotation_deg": 90,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_03",
+          "asset": "IN_S",
+          "x": -350,
+          "y": 650,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_04",
+          "asset": "IN_S",
+          "x": -260,
+          "y": 600,
+          "rotation_deg": 90,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_05",
+          "asset": "IN_S",
+          "x": -170,
+          "y": 680,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_06",
+          "asset": "IN_S",
+          "x": -740,
+          "y": 200,
+          "rotation_deg": 90,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_07",
+          "asset": "IN_S",
+          "x": -730,
+          "y": 90,
+          "rotation_deg": 0,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "IN_VILLAGE_08",
+          "asset": "IN_S",
+          "x": -720,
+          "y": -20,
+          "rotation_deg": 90,
+          "scale": 1,
+          "role": "low_rise_context",
+          "status": "concept placement, dimensions unmeasured"
+        }
+      ],
+      "roads": [
+        {
+          "id": "IN_rural",
+          "points": [
+            [
+              -730,
+              -800
+            ],
+            [
+              -620,
+              -560
+            ],
+            [
+              -650,
+              -320
+            ],
+            [
+              -505,
+              -70
+            ],
+            [
+              -540,
+              180
+            ],
+            [
+              -420,
+              420
+            ],
+            [
+              -470,
+              800
+            ]
+          ],
+          "width": 9,
+          "role": "rural"
+        },
+        {
+          "id": "IN_shore_path",
+          "points": [
+            [
+              -100,
+              -800
+            ],
+            [
+              10,
+              -680
+            ],
+            [
+              -15,
+              -550
+            ],
+            [
+              150,
+              -440
+            ],
+            [
+              105,
+              -300
+            ],
+            [
+              220,
+              -180
+            ],
+            [
+              150,
+              -40
+            ],
+            [
+              260,
+              105
+            ],
+            [
+              210,
+              250
+            ],
+            [
+              350,
+              390
+            ],
+            [
+              300,
+              540
+            ],
+            [
+              380,
+              800
+            ]
+          ],
+          "width": 4,
+          "role": "pedestrian"
+        },
+        {
+          "id": "IN_branch_0",
+          "points": [
+            [
+              -630,
+              -480
+            ],
+            [
+              -150,
+              -480
+            ],
+            [
+              90,
+              -480
+            ]
+          ],
+          "width": 5,
+          "role": "access"
+        },
+        {
+          "id": "IN_branch_1",
+          "points": [
+            [
+              -505,
+              -70
+            ],
+            [
+              -390,
+              -70
+            ],
+            [
+              165,
+              -70
+            ]
+          ],
+          "width": 5,
+          "role": "access"
+        },
+        {
+          "id": "IN_branch_2",
+          "points": [
+            [
+              -472.5,
+              315
+            ],
+            [
+              -180,
+              315
+            ],
+            [
+              275,
+              315
+            ]
+          ],
+          "width": 5,
+          "role": "access"
+        },
+        {
+          "id": "IN_north_village",
+          "points": [
+            [
+              -437.5,
+              600
+            ],
+            [
+              -745,
+              600
+            ]
+          ],
+          "width": 5,
+          "role": "access"
+        },
+        {
+          "id": "IN_north_east_village",
+          "points": [
+            [
+              -443,
+              650
+            ],
+            [
+              -170,
+              650
+            ]
+          ],
+          "width": 4,
+          "role": "access"
+        },
+        {
+          "id": "IN_west_village",
+          "points": [
+            [
+              -530,
+              130
+            ],
+            [
+              -745,
+              130
+            ]
+          ],
+          "width": 5,
+          "role": "access"
+        }
+      ],
+      "compounds": [],
+      "placement_status": "approved_scene_concept_assembly; NOT registered building footprints",
+      "planning_status": "approximate reference overlay; independent from concept layout; not legal/survey boundary",
+      "extent": [
+        1800,
+        1700
+      ],
+      "shoreline": [
+        [
+          -60,
+          -800
+        ],
+        [
+          50,
+          -680
+        ],
+        [
+          25,
+          -550
+        ],
+        [
+          190,
+          -440
+        ],
+        [
+          145,
+          -300
+        ],
+        [
+          260,
+          -180
+        ],
+        [
+          190,
+          -40
+        ],
+        [
+          300,
+          105
+        ],
+        [
+          250,
+          250
+        ],
+        [
+          390,
+          390
+        ],
+        [
+          340,
+          540
+        ],
+        [
+          420,
+          800
+        ]
+      ]
+    },
+    "RD": {
+      "id": "RD",
+      "name": "科创研发片区",
+      "planning_id": "research",
+      "planning_area_km2": 2.39,
+      "display_origin_gcj02": [
+        114.12698119999999,
+        32.18818005
+      ],
+      "planning_rings_local_m": [
+        [
+          [
+            198.95,
+            1315.41
+          ],
+          [
+            837.04,
+            1103.08
+          ],
+          [
+            811.49,
+            843.09
+          ],
+          [
+            657.55,
+            558.95
+          ],
+          [
+            688.99,
+            264.47
+          ],
+          [
+            487.79,
+            -206.68
+          ],
+          [
+            163.69,
+            -405.87
+          ],
+          [
+            -97.14,
+            -361.86
+          ],
+          [
+            -149.87,
+            -845.01
+          ],
+          [
+            -119.24,
+            -1121.08
+          ],
+          [
+            -332.61,
+            -1315.41
+          ],
+          [
+            -815.73,
+            -1262.67
+          ],
+          [
+            -617.78,
+            -717.64
+          ],
+          [
+            -536.86,
+            -455.17
+          ],
+          [
+            -837.04,
+            -357.41
+          ],
+          [
+            -704.2,
+            406.62
+          ],
+          [
+            -686.76,
+            851.19
+          ],
+          [
+            -509.5,
+            1025.39
+          ],
+          [
+            -141.78,
+            653.25
+          ],
+          [
+            56.98,
+            1179.74
+          ],
+          [
+            198.95,
+            1315.41
+          ]
+        ]
+      ],
+      "buildings": [
+        {
+          "id": "RD_C01_B1",
+          "asset": "RD_B",
+          "x": -355.0,
+          "y": 340,
+          "rotation_deg": 180,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C01_B2",
+          "asset": "RD_A",
+          "x": -185.0,
+          "y": 340,
+          "rotation_deg": 0,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C01_B3",
+          "asset": "RD_B",
+          "x": -355.0,
+          "y": 565,
+          "rotation_deg": 180,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C02_B1",
+          "asset": "RD_B",
+          "x": 365.0,
+          "y": 340,
+          "rotation_deg": 180,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C02_B2",
+          "asset": "RD_A",
+          "x": 535.0,
+          "y": 340,
+          "rotation_deg": 0,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C02_B3",
+          "asset": "RD_B",
+          "x": 365.0,
+          "y": 565,
+          "rotation_deg": 180,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C03_B1",
+          "asset": "RD_B",
+          "x": -355.0,
+          "y": 1070,
+          "rotation_deg": 180,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C03_B2",
+          "asset": "RD_A",
+          "x": -185.0,
+          "y": 1070,
+          "rotation_deg": 0,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C03_B3",
+          "asset": "RD_B",
+          "x": -355.0,
+          "y": 1295,
+          "rotation_deg": 180,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C04_B1",
+          "asset": "RD_B",
+          "x": 355.0,
+          "y": 1090,
+          "rotation_deg": 180,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C04_B2",
+          "asset": "RD_A",
+          "x": 525.0,
+          "y": 1090,
+          "rotation_deg": 0,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C04_B3",
+          "asset": "RD_B",
+          "x": 355.0,
+          "y": 1315,
+          "rotation_deg": 180,
+          "scale": 1.0,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C05_B1",
+          "asset": "RD_B",
+          "x": -915.0,
+          "y": 340,
+          "rotation_deg": 180,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_C05_B2",
+          "asset": "RD_A",
+          "x": -745.0,
+          "y": 340,
+          "rotation_deg": 0,
+          "scale": 1.1,
+          "role": "research_block",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_00",
+          "asset": "RD_A",
+          "x": -940,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_01",
+          "asset": "RD_A",
+          "x": -810,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_02",
+          "asset": "RD_A",
+          "x": -680,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_03",
+          "asset": "RD_A",
+          "x": -490,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_04",
+          "asset": "RD_A",
+          "x": -345,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_05",
+          "asset": "RD_A",
+          "x": -200,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_06",
+          "asset": "RD_A",
+          "x": -55,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_07",
+          "asset": "RD_A",
+          "x": 170,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_08",
+          "asset": "RD_A",
+          "x": 315,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_09",
+          "asset": "RD_A",
+          "x": 460,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_10",
+          "asset": "RD_A",
+          "x": 605,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 1.15,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        },
+        {
+          "id": "RD_CITY_11",
+          "asset": "RD_A",
+          "x": 750,
+          "y": 1510,
+          "rotation_deg": 0,
+          "scale": 0.8,
+          "role": "distant_city_context",
+          "status": "concept placement, dimensions unmeasured"
+        }
+      ],
+      "roads": [
+        {
+          "id": "RD_NS_0",
+          "points": [
+            [
+              -600,
+              -1500
+            ],
+            [
+              -600,
+              1500
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "RD_NS_1",
+          "points": [
+            [
+              60,
+              -1500
+            ],
+            [
+              60,
+              1500
+            ]
+          ],
+          "width": 24,
+          "role": "secondary"
+        },
+        {
+          "id": "RD_NS_2",
+          "points": [
+            [
+              850,
+              -1500
+            ],
+            [
+              850,
+              1500
+            ]
+          ],
+          "width": 40,
+          "role": "primary"
+        },
+        {
+          "id": "RD_EW_0",
+          "points": [
+            [
+              -1010,
+              -900
+            ],
+            [
+              1020,
+              -900
+            ]
+          ],
+          "width": 28,
+          "role": "secondary"
+        },
+        {
+          "id": "RD_EW_1",
+          "points": [
+            [
+              -1010,
+              0
+            ],
+            [
+              1020,
+              0
+            ]
+          ],
+          "width": 28,
+          "role": "secondary"
+        },
+        {
+          "id": "RD_EW_2",
+          "points": [
+            [
+              -1010,
+              900
+            ],
+            [
+              1020,
+              900
+            ]
+          ],
+          "width": 28,
+          "role": "secondary"
+        },
+        {
+          "id": "RD_C01_entry",
+          "points": [
+            [
+              -270,
+              0
+            ],
+            [
+              -270,
+              195.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "RD_C02_entry",
+          "points": [
+            [
+              450,
+              0
+            ],
+            [
+              450,
+              195.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "RD_C03_entry",
+          "points": [
+            [
+              -270,
+              900
+            ],
+            [
+              -270,
+              1010.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "RD_C04_entry",
+          "points": [
+            [
+              440,
+              900
+            ],
+            [
+              440,
+              1030.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        },
+        {
+          "id": "RD_C05_entry",
+          "points": [
+            [
+              -830,
+              0
+            ],
+            [
+              -830,
+              280.0
+            ]
+          ],
+          "width": 14,
+          "role": "access"
+        }
+      ],
+      "compounds": [
+        {
+          "id": "RD_C01",
+          "x": -270,
+          "y": 450,
+          "w": 500,
+          "d": 580,
+          "role": "research_court"
+        },
+        {
+          "id": "RD_C02",
+          "x": 450,
+          "y": 450,
+          "w": 500,
+          "d": 580,
+          "role": "research_court"
+        },
+        {
+          "id": "RD_C03",
+          "x": -270,
+          "y": 1180,
+          "w": 500,
+          "d": 410,
+          "role": "research_court"
+        },
+        {
+          "id": "RD_C04",
+          "x": 440,
+          "y": 1200,
+          "w": 500,
+          "d": 410,
+          "role": "research_court"
+        },
+        {
+          "id": "RD_C05",
+          "x": -830,
+          "y": 450,
+          "w": 330,
+          "d": 410,
+          "role": "research_court"
+        }
+      ],
+      "placement_status": "approved_scene_concept_assembly; NOT registered building footprints",
+      "planning_status": "approximate reference overlay; independent from concept layout; not legal/survey boundary",
+      "extent": [
+        2200,
+        3200
+      ],
+      "ponds": [
+        {
+          "x": -860,
+          "y": -1160,
+          "rx": 170,
+          "ry": 120
+        },
+        {
+          "x": 400,
+          "y": -1280,
+          "rx": 170,
+          "ry": 100
+        }
+      ]
+    }
+  }
+}

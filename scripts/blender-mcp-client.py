@@ -27,6 +27,10 @@ async def main():
     parser.add_argument("--define", default="{}", help="JSON constants prepended to the tool source")
     parser.add_argument("--arguments", default="{}")
     parser.add_argument("--label", required=True)
+    parser.add_argument("--output-dir", type=Path, default=ROOT / "assets/blender-models/v1")
+    parser.add_argument("--audit-dir", type=Path, default=ROOT / "storage/tooling/blender-mcp/audit")
+    parser.add_argument("--user-prompt", default=USER_PROMPT)
+    parser.add_argument("--data", type=Path, help="JSON scene specification passed as the LAYOUT constant")
     opts = parser.parse_args()
     params = StdioServerParameters(
         command=opts.uvx,
@@ -37,12 +41,14 @@ async def main():
     arguments = json.loads(opts.arguments)
     if opts.code:
         prefix = opts.library.read_text(encoding="utf-8") + "\n" if opts.library else ""
-        prefix += f"OUT = {str(ROOT / 'assets/blender-models/v1').replace(chr(92), '/') + '/'!r}\n"
+        prefix += f"OUT = {opts.output_dir.resolve().as_posix() + '/'!r}\n"
+        if opts.data:
+            prefix += f"LAYOUT = {json.loads(opts.data.read_text(encoding='utf-8'))!r}\n"
         for name, value in json.loads(opts.define).items():
             if not name.isidentifier() or name.startswith('_'):
                 raise ValueError("Invalid constant name")
             prefix += f"{name} = {value!r}\n"
-        arguments = {"code": prefix + opts.code.read_text(encoding="utf-8"), "user_prompt": USER_PROMPT}
+        arguments = {"code": prefix + opts.code.read_text(encoding="utf-8"), "user_prompt": opts.user_prompt}
     async with stdio_client(params) as (read, write):
         async with ClientSession(read, write) as session:
             initialized = await session.initialize()
@@ -60,7 +66,7 @@ async def main():
                 "package": "mcp-for-blender==2.2.2", "tool": opts.tool,
                 "arguments": arguments, "result": result.model_dump(mode="json"),
             }
-            audit_dir = ROOT / "storage/tooling/blender-mcp/audit"
+            audit_dir = opts.audit_dir
             audit_dir.mkdir(parents=True, exist_ok=True)
             (audit_dir / f"{opts.label}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
             texts = [block.text for block in result.content if block.type == "text"]

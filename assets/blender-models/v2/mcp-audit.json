@@ -1,0 +1,762 @@
+[
+  {
+    "at": "2026-10-22T14:19:15.730266+00:00",
+    "label": "v2-00-connection",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6dbb656aba0ef31384c42f29306a6ffb8270f53293eaf378cf285f5efb2ae57c",
+    "result_text": [
+      "Code executed successfully: {\"blender\": \"4.5.9 LTS\", \"background\": false, \"file\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v1\\\\park-unified-v1.blend\", \"objects\": 1149, \"mcp_running\": true}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:22:24.255881+00:00",
+    "label": "v2-01-greybox",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "ac671a1bb8d63153ac17471ecc93ae36fb457fe5ed84ec07865e7bf765f70c38",
+    "result_text": [
+      "Code executed successfully: Info: Deleted 2311 data-block(s)\nInfo: Saved as \"assembly-greybox-v2.blend\"\n{\"stage\": \"all_four_complete_park_greyboxes\", \"building_groups\": {\"GH\": 53, \"EI\": 57, \"IN\": 12, \"RD\": 26}, \"scenes\": [\"ASSEMBLY_EI\", \"ASSEMBLY_GH\", \"ASSEMBLY_IN\", \"ASSEMBLY_RD\"], \"asset_prototypes\": [\"GH_A\", \"GH_B\", \"GH_S\", \"GH_P\", \"EI_A\", \"EI_M\", \"IN_A\", \"IN_S\", \"RD_A\", \"RD_B\"], \"objects\": 330}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:24:36.901133+00:00",
+    "label": "v2-02-macro",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "754acfd10f94d357951b57fc1ab4b9402f819e03d897414e7b7d9c3abbb0f01f",
+    "result_text": [
+      "Code executed successfully: Info: Saved as \"assembly-greybox-v2.blend\"\n{\"stage\": \"four_complete_park_greyboxes_rendered\", \"objects\": 338, \"review_scope\": \"all buildings, road hierarchy, compounds, reserve land, lake, foreground-middle-background vegetation\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:28:55.980180+00:00",
+    "label": "v2-02b-normalization",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "failed",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "28d4262873e34e8afc85095c519f9b5d8cea86ac984203966b4ec177c5f7455c",
+    "result_text": [
+      "Error executing code: Communication error with Blender: {\"exception_type\": \"AttributeError\", \"message\": \"'NoneType' object has no attribute 'scene'\", \"traceback\": \"Traceback (most recent call last):\\n  File \\\"C:\\\\Users\\\\53472\\\\AppData\\\\Roaming\\\\Blender Foundation\\\\Blender\\\\4.5\\\\scripts\\\\addons\\\\blender_mcp.py\\\", line 2296, in execute_code\\n    exec(code, namespace)\\n  File \\\"<string>\\\", line 208, in <module>\\n  File \\\"<string>\\\", line 27, in activate\\nAttributeError: 'NoneType' object has no attribute 'scene'\\n\"}"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:31:46.162403+00:00",
+    "label": "v2-02b-normalization-fixed",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "failed",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "995449cc66a916ec6b478aa1112eba159d280dd32eef30627469701f69fc8e5e",
+    "result_text": [
+      "Rejected by safe mode - line 177: unknown name 'BOUNDS'; only allowlisted builtins, imported modules, and names bound in this script may be used\n\nBLENDER_MCP_SAFE_MODE is enabled: scripts may only import bpy, bmesh, mathutils, and pure-python stdlib modules. No eval/exec/open, no os/subprocess/network access, no handlers/timers/drivers, no class or property registration, and no loading of external .blend datablocks. Blender operators for rendering, saving, and import/export ARE allowed. Rewrite the script within these limits; only the user can disable safe mode."
+    ]
+  },
+  {
+    "at": "2026-10-22T14:35:48.683772+00:00",
+    "label": "v2-02b-normalization-success",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "8fb71e204a2bb31020dc2a9f9e397c3210af294df88f99bb4c9c0de2ce099f53",
+    "result_text": [
+      "Code executed successfully: Info: Saved as \"assembly-greybox-v2.blend\"\n{\"before\": {\"GH_A\": [[-119.0, 119.0], [-58.79998779296875, 54.5], [0.0, 13.84000015258789]], \"GH_B\": [[-114.0, 114.0], [-65.79998779296875, 61.5], [0.0, 14.84000015258789]], \"GH_S\": [[-56.5, 56.5], [-35.80000305175781, 31.5], [0.0, 11.0]], \"GH_P\": [[-39.0, 30.0], [-11.0, 11.0], [0.0, 34.0]], \"EI_A\": [[-98.0, 98.0], [-79.79998779296875, 75.5], [0.0, 12.03499984741211]], \"EI_M\": [[-52.850006103515625, 41.5], [-34.5, 34.5], [0.0, 28.0]], \"IN_A\": [[-28.0, 48.0], [-56.0, 12.0], [0.0, 10.229999542236328]], \"IN_S\": [[-13.20001220703125, 13.20001220703125], [-7.29998779296875, 7.29998779296875], [0.0, 8.130000114440918]], \"RD_A\": [[-51.350006103515625, 39.0], [-30.0, 30.0], [0.0, 29.0]], \"RD_B\": [[-57.850006103515625, 45.5], [-31.0, 31.0], [0.0, 31.0]]}, \"corrected\": {\"GH_A\": [[-119.0, 119.0], [-58.79998779296875, 54.5], [0.0, 13.84000015258789]], \"GH_B\": [[-114.0, 114.0], [-65.79998779296875, 61.5], [0.0, 14.84000015258789]], \"GH_S\": [[-56.5, 56.5], [-35.80000305175781, 31.5], [0.0, 11.0]], \"GH_P\": [[-39.0, 30.0], [-11.0, 11.0], [0.0, 34.0]], \"EI_A\": [[-98.0, 98.0], [-79.79998779296875, 75.5], [0.0, 12.03499984741211]], \"EI_M\": [[-52.850006103515625, 41.5], [-34.5, 34.5], [0.0, 28.0]], \"IN_A\": [[-28.0, 48.0], [-56.0, 12.0], [0.0, 10.229999542236328]], \"IN_S\": [[-13.20001220703125, 13.20001220703125], [-7.29998779296875, 7.29998779296875], [0.0, 8.130000114440918]], \"RD_A\": [[-51.350006103515625, 39.0], [-30.0, 30.0], [0.0, 29.0]], \"RD_B\": [[-57.850006103515625, 45.5], [-31.0, 31.0], [0.0, 31.0]]}, \"review\": \"source TRS normalization and all four macro layouts rerendered\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:36:58.623273+00:00",
+    "label": "v2-02c-resume",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "failed",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "da9567fded60c97ebdfb88e3f5b063346388524c8f4d6a88dfe8bc5c69449726",
+    "result_text": [
+      "Rejected by safe mode - line 4: unknown name 'bpy'; only allowlisted builtins, imported modules, and names bound in this script may be used\n\nBLENDER_MCP_SAFE_MODE is enabled: scripts may only import bpy, bmesh, mathutils, and pure-python stdlib modules. No eval/exec/open, no os/subprocess/network access, no handlers/timers/drivers, no class or property registration, and no loading of external .blend datablocks. Blender operators for rendering, saving, and import/export ARE allowed. Rewrite the script within these limits; only the user can disable safe mode."
+    ]
+  },
+  {
+    "at": "2026-10-22T14:37:31.228524+00:00",
+    "label": "v2-02c-resume-success",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "8c1e232a63cff2bc478228d11e743365be424ed2d5a5193c2c0c0c12ed1e88a6",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:37:58.082374+00:00",
+    "label": "v2-03-assembled",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "01b6dc70dae685cc58297b52010faec8f1bf5604aff3b5b0ddfe09306ed00d53",
+    "result_text": [
+      "Code executed successfully: Info: Saved as \"park-assemblies-v2.blend\"\n{\"assembly\": {\"GH\": {\"building_groups\": 53, \"compounds\": 9, \"road_routes\": 17, \"new_street_trees\": 1828}, \"EI\": {\"building_groups\": 57, \"compounds\": 10, \"road_routes\": 20, \"new_street_trees\": 1738}, \"IN\": {\"building_groups\": 12, \"compounds\": 0, \"road_routes\": 8, \"new_street_trees\": 157}, \"RD\": {\"building_groups\": 26, \"compounds\": 5, \"road_routes\": 11, \"new_street_trees\": 869}}, \"objects\": 508, \"scenes\": [\"ASSEMBLY_EI\", \"ASSEMBLY_GH\", \"ASSEMBLY_IN\", \"ASSEMBLY_RD\"]}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:40:01.197495+00:00",
+    "label": "v2-04-GH-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "9defb216193177028cdadecc9370c5f73a4a8e548417e314c9cfd9c8752756a8",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"GH\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/GH-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:40:43.372344+00:00",
+    "label": "v2-04-EI-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "b7482195a0906e4d22e556ddd4453c99b54b5a3cb094be60140f4767a9bc6ec8",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"EI\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/EI-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:41:21.365671+00:00",
+    "label": "v2-04-IN-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "08f115613fbf84667841bb3ff7003d3d4b7f7d47aa5aa80f82d5314e4a360572",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"IN\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/IN-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:42:05.829413+00:00",
+    "label": "v2-04-RD-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "018501ba9ebecef637165ef378e190fde6408911586ed163d835b0829faefbbb",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"RD\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/RD-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:44:51.800002+00:00",
+    "label": "v2-05-layout-review",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "cb0aee7a406e98f73e02110e9e8c6c8658f32961174c17f8d1ec7006687d1af1",
+    "result_text": [
+      "Code executed successfully: Info: Saved as \"park-assemblies-v2.blend\"\n{\"public_road_building_overlap\": [], \"scene_objects\": 516, \"planning_references_excluded\": true, \"review\": \"all instances inside study extent; vegetation on land clear of roads/buildings/water\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:50:23.825706+00:00",
+    "label": "v2-04-final-GH-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "faee4ef7c935cdbd2453963f4c07c0184bd1846ad6bdbf1c0a48abdfa7f7036a",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"GH\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/GH-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:51:07.537910+00:00",
+    "label": "v2-04-final-GH-detail",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "e0674a533a123e9fe749490cd9641d69961b0f307cf24c76e8f66994e45edfac",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"GH\", \"view\": \"detail\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/GH-detail.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:51:48.152975+00:00",
+    "label": "v2-04-final-GH-plan",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "76e217862a7af9eb644ceed17f59a6d94101f8b83a8a58a75b26c72f23e65662",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"GH\", \"view\": \"plan\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/GH-plan.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:52:19.573170+00:00",
+    "label": "v2-04-final-EI-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "7e852aeeb33f7ba5c940563a7e8c5b55a8244147156a27c85d996da3c29f36aa",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"EI\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/EI-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:53:05.624798+00:00",
+    "label": "v2-04-final-EI-detail",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "189426f831d6b26a2171693499ba823513ab94f4a1db3342fae15921af1cb8dc",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"EI\", \"view\": \"detail\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/EI-detail.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:53:48.831145+00:00",
+    "label": "v2-04-final-EI-plan",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "58170f0da54f21bfca5d468c64f310f2078a18d4ef5f2eb03d339d152de75a92",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"EI\", \"view\": \"plan\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/EI-plan.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:54:23.874394+00:00",
+    "label": "v2-04-final-IN-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "bcaaaeff6aef9aaaeaad2c70fc9f45ac03bf6d825e3c070200654861920b89c7",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"IN\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/IN-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:55:13.390849+00:00",
+    "label": "v2-04-final-IN-detail",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "700c273d86e29192e808f9cfcb77c9231121d1a603796fc4ed1f153c2760872a",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"IN\", \"view\": \"detail\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/IN-detail.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:56:00.678079+00:00",
+    "label": "v2-04-final-IN-plan",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "9eede664116f4d3e91aba39536ff32070ce2095392f73d9a51781a40cf99a897",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"IN\", \"view\": \"plan\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/IN-plan.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:56:44.655415+00:00",
+    "label": "v2-04-final-RD-overview",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "0210719f82b162f31d274f034480c86ad00e6fafaa026dd0eca98264aedb2dc2",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"RD\", \"view\": \"overview\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/RD-overview.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:57:37.705947+00:00",
+    "label": "v2-04-final-RD-detail",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "ba9239bbd355e4ebb90fd66c27ed6e9c363f31fc01d201e835c009f124e58775",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"RD\", \"view\": \"detail\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/RD-detail.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:58:49.583005+00:00",
+    "label": "v2-04-final-RD-plan",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "2c8ffe586bd98be81ae9554f8d84ded15cb3bb45d21e87318700ad59db8fa688",
+    "result_text": [
+      "Code executed successfully: {\"zone\": \"RD\", \"view\": \"plan\", \"projection\": \"ORTHO\", \"file\": \"C:/Users/53472/Desktop/10.13\\u56ed\\u533a\\u78b3\\u5e73\\u53f0/assets/blender-models/v2/renders/RD-plan.png\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T14:59:16.180507+00:00",
+    "label": "v2-06-export",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "e3ab3d199426927b49f8558f7d4a60b1a83f46af1007b1e9157ad42f3a50a279",
+    "result_text": [
+      "Code executed successfully: INFO Draco mesh compression is available, use library at C:\\Users\\53472\\Desktop\\10.13园区碳平台\\storage\\tooling\\blender-mcp\\runtime\\blender-4.5.9-windows-x64\\4.5\\scripts\\addons_core\\io_scene_gltf2\\extern_draco.dll\n10:59:07 | INFO: Starting glTF 2.0 export\n10:59:07 | INFO: Extracting primitive: GH_BASE\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_TERRAIN\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_0_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_0\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_1_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_1\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_2_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_2\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_3_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_NS_3\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_0_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_0\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_1_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_1\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_2_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_2\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_3_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_EW_3\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C01_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C01_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C02_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C02_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C03_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C03_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C04_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C04_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C05_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C05_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C06_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C06_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C07_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C07_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C08_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C08_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C09_entry_verge\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C09_entry\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C01_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C02_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C03_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C04_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C05_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C06_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C07_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C08_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C09_YARD\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_COMPOUND_BOUNDARIES\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C03_soil_track\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_C08_soil_track\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_0\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_1\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_2\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_3\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_4\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_FIELD_5\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_MACRO_WOODLAND.002\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_MACRO_WOODLAND_trunks.002\n10:59:07 | INFO: Primitives created: 1\n10:59:07 | INFO: Extracting primitive: GH_AVENUE_COURT_TREES.001\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_AVENUE_COURT_TREES_trunks.001\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_PERIPHERAL_WOODS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_PERIPHERAL_WOODS_trunks\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: ASM_ASSET_GH_B\n10:59:08 | INFO: Primitives created: 6\n10:59:08 | INFO: Extracting primitive: ASM_ASSET_GH_A\n10:59:08 | INFO: Primitives created: 6\n10:59:08 | INFO: Extracting primitive: ASM_ASSET_GH_P\n10:59:08 | INFO: Primitives created: 3\n10:59:08 | INFO: Extracting primitive: ASM_ASSET_GH_S\n10:59:08 | INFO: Primitives created: 6\n10:59:08 | INFO: Extracting primitive: GH_ROAD_MARKINGS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_ROAD_LIGHTS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C01_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C01_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C01_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C01_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C01_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C02_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C02_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C02_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C02_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C02_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C04_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C04_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C04_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C04_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C04_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C05_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C05_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C05_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C05_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C05_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C06_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C06_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C06_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C06_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C06_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C07_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C07_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C07_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C07_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C07_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C09_FIRE_LOOP\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C09_CROSS_AISLE\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C09_ENTRY_LINK\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C09_AISLE_0\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_C09_AISLE_1\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_GATEHOUSES_PORTALS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_GATEHOUSE_GLASS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_PARKED_CARS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_CAR_GLASS\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: GH_PARKING_STRIPES\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Extracting primitive: RD_TERRAIN\n10:59:08 | INFO: Primitives created: 1\n10:59:08 | INFO: Finished glTF 2.0 export in 1.308072805404663 s\n\n10:59:09 | INFO: Starting glTF 2.0 export\n10:59:09 | INFO: Extracting primitive: EI_BASE\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_TERRAIN\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_0_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_0\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_1_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_1\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_2_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_2\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_3_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_NS_3\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_0_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_0\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_1_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_1\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_2_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_2\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_3_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_3\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_4_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_4\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_5_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_EW_5\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C01_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C01_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C02_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C02_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C03_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C03_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C04_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C04_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C05_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C05_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C06_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C06_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C07_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C07_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C08_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C08_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C09_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C09_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C10_entry_verge\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C10_entry\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C01_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C02_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C03_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C04_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C05_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C06_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C07_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C08_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C09_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_C10_YARD\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_COMPOUND_BOUNDARIES\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_MACRO_WOODLAND.002\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_MACRO_WOODLAND_trunks.002\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_AVENUE_COURT_TREES.001\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_AVENUE_COURT_TREES_trunks.001\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_PERIPHERAL_WOODS\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: EI_PERIPHERAL_WOODS_trunks\n10:59:09 | INFO: Primitives created: 1\n10:59:09 | INFO: Extracting primitive: ASM_ASSET_EI_A\n10:59:09 | INFO: Primitives created: 6\n10:59:09 | INFO: Extracting primitive: ASM_ASSET_EI_M\n10:59:09 | INFO: Primitives created: 5\n10:59:09 | INFO: Extracting primitive: EI_ROAD_MARKINGS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_ROAD_LIGHTS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C01_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C01_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C01_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C01_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C02_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C02_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C02_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C02_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C03_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C03_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C03_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C03_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C03_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C04_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C04_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C04_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C04_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C04_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C05_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C05_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C05_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C05_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C05_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C06_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C06_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C06_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C06_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C06_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C07_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C07_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C07_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C07_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C07_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C08_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C08_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C08_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C08_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C08_AISLE_1\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C09_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C09_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C09_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C09_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C10_FIRE_LOOP\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C10_CROSS_AISLE\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C10_ENTRY_LINK\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_C10_AISLE_0\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_GATEHOUSES_PORTALS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_GATEHOUSE_GLASS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_PARKED_CARS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_CAR_GLASS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_PARKING_STRIPES\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_RAIL_BED\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_RAILS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: EI_RAIL_SLEEPERS\n10:59:10 | INFO: Primitives created: 1\n10:59:10 | INFO: Extracting primitive: RD_TERRAIN\n10:59:10 | INFO: Primitives created: 1\n10:59:11 | INFO: Finished glTF 2.0 export in 2.3842480182647705 s\n\n10:59:13 | INFO: Starting glTF 2.0 export\n10:59:13 | INFO: Extracting primitive: IN_BASE\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_TERRAIN\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_LAKE\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_BANK\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_rural_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_rural\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_shore_path_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_shore_path\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_0_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_0\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_1_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_1\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_2_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_branch_2\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_north_village_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_north_village\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_north_east_village_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_north_east_village\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_west_village_verge\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_west_village\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_VIEWING_DECK_0\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_VIEWING_DECK_1\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_VIEWING_DECK_2\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_VIEWING_DECK_3\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_0\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_1\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_2\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_3\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_4\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_FIELD_5\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_MACRO_WOODLAND.002\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_MACRO_WOODLAND_trunks.002\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_AVENUE_COURT_TREES.001\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_AVENUE_COURT_TREES_trunks.001\n10:59:13 | INFO: Primitives created: 1\n10:59:13 | INFO: Extracting primitive: IN_PERIPHERAL_WOODS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_PERIPHERAL_WOODS_trunks\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: ASM_ASSET_IN_A\n10:59:14 | INFO: Primitives created: 9\n10:59:14 | INFO: Extracting primitive: ASM_ASSET_IN_S\n10:59:14 | INFO: Primitives created: 3\n10:59:14 | INFO: Extracting primitive: IN_COURT_LINK_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_COURT_LINK_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_COURT_LINK_2\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_DECK_LINK_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_DECK_LINK_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_DECK_LINK_2\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: IN_DECK_LINK_3\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_TERRAIN\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Finished glTF 2.0 export in 0.41909360885620117 s\n\n10:59:14 | INFO: Starting glTF 2.0 export\n10:59:14 | INFO: Extracting primitive: RD_BASE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_TERRAIN\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_POND_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_POND_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_0_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_1_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_2_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_NS_2\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_0_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_1_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_2_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_EW_2\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_entry_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_entry\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_entry_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_entry\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_entry_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_entry\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_entry_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_entry\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_entry_verge\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_entry\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_YARD\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_YARD\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_YARD\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_YARD\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_YARD\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_COMPOUND_BOUNDARIES\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_1\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_2\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_3\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_4\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_RESERVE_FIELD_5\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_UNPAVED_TRACK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_MACRO_WOODLAND.002\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_MACRO_WOODLAND_trunks.002\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_AVENUE_COURT_TREES.001\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_AVENUE_COURT_TREES_trunks.001\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_PERIPHERAL_WOODS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_PERIPHERAL_WOODS_trunks\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: ASM_ASSET_RD_B\n10:59:14 | INFO: Primitives created: 5\n10:59:14 | INFO: Extracting primitive: ASM_ASSET_RD_A\n10:59:14 | INFO: Primitives created: 5\n10:59:14 | INFO: Extracting primitive: RD_ROAD_MARKINGS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_ROAD_LIGHTS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_FIRE_LOOP\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_CROSS_AISLE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_ENTRY_LINK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C01_AISLE_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_FIRE_LOOP\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_CROSS_AISLE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_ENTRY_LINK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C02_AISLE_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_FIRE_LOOP\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_CROSS_AISLE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_ENTRY_LINK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C03_AISLE_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_FIRE_LOOP\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_CROSS_AISLE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_ENTRY_LINK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C04_AISLE_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_FIRE_LOOP\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_CROSS_AISLE\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_ENTRY_LINK\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_C05_AISLE_0\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_GATEHOUSES_PORTALS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_GATEHOUSE_GLASS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_PARKED_CARS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_CAR_GLASS\n10:59:14 | INFO: Primitives created: 1\n10:59:14 | INFO: Extracting primitive: RD_PARKING_STRIPES\n10:59:14 | INFO: Primitives created: 1\n10:59:15 | INFO: Finished glTF 2.0 export in 0.7285807132720947 s\n\nInfo: Saved as \"park-assemblies-v2.blend\"\n{\"reports\": [{\"zone\": \"GH\", \"buildings\": 53, \"compounds\": 9, \"road_routes\": 17, \"extent_m\": [4400, 4100], \"export_mesh_objects\": 155, \"geometry_vertices_before_instancing\": 390570, \"unique_meshes\": 106, \"tree_count\": 3234, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"EI\", \"buildings\": 57, \"compounds\": 10, \"road_routes\": 20, \"extent_m\": [2300, 5200], \"export_mesh_objects\": 172, \"geometry_vertices_before_instancing\": 306782, \"unique_meshes\": 117, \"tree_count\": 2512, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"IN\", \"buildings\": 12, \"compounds\": 0, \"road_routes\": 8, \"extent_m\": [1800, 1700], \"export_mesh_objects\": 55, \"geometry_vertices_before_instancing\": 46420, \"unique_meshes\": 45, \"tree_count\": 975, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"RD\", \"buildings\": 26, \"compounds\": 5, \"road_routes\": 11, \"extent_m\": [2200, 3200], \"export_mesh_objects\": 98, \"geometry_vertices_before_instancing\": 153388, \"unique_meshes\": 74, \"tree_count\": 1487, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}], \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\park-assemblies-v2.blend\", \"scenes\": [\"ASSEMBLY_EI\", \"ASSEMBLY_GH\", \"ASSEMBLY_IN\", \"ASSEMBLY_RD\"]}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:04:08.895920+00:00",
+    "label": "v2-05b-water-review",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "9dfd865baeb004b1fcf08515b797ea3f86c079b139e57dbed37b553a4e9ffa47",
+    "result_text": [
+      "Code executed successfully: Info: Saved as \"park-assemblies-v2.blend\"\n{\"water_public_road_overlap\": [], \"action\": \"pond and riparian trees set clear of public road; no unverified bridge invented\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:06:38.194339+00:00",
+    "label": "v2-06-export-final",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "1396d56284ee03ac418bff1999d4efe44b6f014cc59182d4212409b85fc54c66",
+    "result_text": [
+      "Code executed successfully: 11:06:29 | INFO: Starting glTF 2.0 export\n11:06:29 | INFO: Extracting primitive: GH_BASE\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_TERRAIN\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_0_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_0\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_1_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_1\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_2_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_2\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_3_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_NS_3\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_0_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_0\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_1_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_1\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_2_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_2\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_3_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_EW_3\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C01_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C01_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C02_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C02_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C03_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C03_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C04_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C04_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C05_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C05_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C06_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C06_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C07_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C07_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C08_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C08_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C09_entry_verge\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C09_entry\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C01_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C02_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C03_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C04_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C05_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C06_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C07_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C08_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C09_YARD\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_COMPOUND_BOUNDARIES\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C03_soil_track\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_C08_soil_track\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_0\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_1\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_2\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_3\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_4\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_FIELD_5\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_MACRO_WOODLAND.002\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_MACRO_WOODLAND_trunks.002\n11:06:29 | INFO: Primitives created: 1\n11:06:29 | INFO: Extracting primitive: GH_AVENUE_COURT_TREES.001\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_AVENUE_COURT_TREES_trunks.001\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_PERIPHERAL_WOODS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_PERIPHERAL_WOODS_trunks\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: ASM_ASSET_GH_B\n11:06:30 | INFO: Primitives created: 6\n11:06:30 | INFO: Extracting primitive: ASM_ASSET_GH_A\n11:06:30 | INFO: Primitives created: 6\n11:06:30 | INFO: Extracting primitive: ASM_ASSET_GH_P\n11:06:30 | INFO: Primitives created: 3\n11:06:30 | INFO: Extracting primitive: ASM_ASSET_GH_S\n11:06:30 | INFO: Primitives created: 6\n11:06:30 | INFO: Extracting primitive: GH_ROAD_MARKINGS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_ROAD_LIGHTS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C01_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C01_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C01_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C01_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C01_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C02_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C02_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C02_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C02_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C02_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C04_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C04_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C04_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C04_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C04_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C05_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C05_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C05_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C05_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C05_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C06_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C06_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C06_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C06_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C06_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C07_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C07_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C07_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C07_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C07_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C09_FIRE_LOOP\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C09_CROSS_AISLE\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C09_ENTRY_LINK\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C09_AISLE_0\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_C09_AISLE_1\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_GATEHOUSES_PORTALS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_GATEHOUSE_GLASS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_PARKED_CARS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_CAR_GLASS\n11:06:30 | INFO: Primitives created: 1\n11:06:30 | INFO: Extracting primitive: GH_PARKING_STRIPES\n11:06:30 | INFO: Primitives created: 1\n11:06:31 | INFO: Finished glTF 2.0 export in 1.9784119129180908 s\n\n11:06:31 | INFO: Starting glTF 2.0 export\n11:06:31 | INFO: Extracting primitive: EI_BASE\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_TERRAIN\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_0_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_0\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_1_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_1\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_2_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_2\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_3_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_NS_3\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_0_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_0\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_1_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_1\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_2_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_2\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_3_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_3\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_4_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_4\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_5_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_EW_5\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C01_entry_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C01_entry\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C02_entry_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C02_entry\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C03_entry_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C03_entry\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C04_entry_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C04_entry\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C05_entry_verge\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C05_entry\n11:06:31 | INFO: Primitives created: 1\n11:06:31 | INFO: Extracting primitive: EI_C06_entry_verge\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_entry\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_entry_verge\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_entry\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_entry_verge\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_entry\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_entry_verge\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_entry\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_entry_verge\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_entry\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C01_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C02_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_YARD\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_COMPOUND_BOUNDARIES\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_MACRO_WOODLAND.002\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_MACRO_WOODLAND_trunks.002\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_AVENUE_COURT_TREES.001\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_AVENUE_COURT_TREES_trunks.001\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_PERIPHERAL_WOODS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_PERIPHERAL_WOODS_trunks\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: ASM_ASSET_EI_A\n11:06:32 | INFO: Primitives created: 6\n11:06:32 | INFO: Extracting primitive: ASM_ASSET_EI_M\n11:06:32 | INFO: Primitives created: 5\n11:06:32 | INFO: Extracting primitive: EI_ROAD_MARKINGS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_ROAD_LIGHTS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C01_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C01_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C01_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C01_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C02_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C02_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C02_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C02_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C03_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C04_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C05_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C06_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C07_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C08_AISLE_1\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C09_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_FIRE_LOOP\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_CROSS_AISLE\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_ENTRY_LINK\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_C10_AISLE_0\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_GATEHOUSES_PORTALS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_GATEHOUSE_GLASS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_PARKED_CARS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_CAR_GLASS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_PARKING_STRIPES\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_RAIL_BED\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_RAILS\n11:06:32 | INFO: Primitives created: 1\n11:06:32 | INFO: Extracting primitive: EI_RAIL_SLEEPERS\n11:06:32 | INFO: Primitives created: 1\n11:06:33 | INFO: Finished glTF 2.0 export in 1.6188750267028809 s\n\n11:06:34 | INFO: Starting glTF 2.0 export\n11:06:34 | INFO: Extracting primitive: IN_BASE\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_TERRAIN\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_LAKE\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_BANK\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_rural_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_rural\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_shore_path_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_shore_path\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_0_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_0\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_1_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_1\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_2_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_branch_2\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_north_village_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_north_village\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_north_east_village_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_north_east_village\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_west_village_verge\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_west_village\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_VIEWING_DECK_0\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_VIEWING_DECK_1\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_VIEWING_DECK_2\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_VIEWING_DECK_3\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_0\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_1\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_2\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_3\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_4\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_FIELD_5\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_MACRO_WOODLAND.002\n11:06:34 | INFO: Primitives created: 1\n11:06:34 | INFO: Extracting primitive: IN_MACRO_WOODLAND_trunks.002\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_AVENUE_COURT_TREES.001\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_AVENUE_COURT_TREES_trunks.001\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_PERIPHERAL_WOODS\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_PERIPHERAL_WOODS_trunks\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: ASM_ASSET_IN_A\n11:06:35 | INFO: Primitives created: 9\n11:06:35 | INFO: Extracting primitive: ASM_ASSET_IN_S\n11:06:35 | INFO: Primitives created: 3\n11:06:35 | INFO: Extracting primitive: IN_COURT_LINK_0\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_COURT_LINK_1\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_COURT_LINK_2\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_DECK_LINK_0\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_DECK_LINK_1\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_DECK_LINK_2\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Extracting primitive: IN_DECK_LINK_3\n11:06:35 | INFO: Primitives created: 1\n11:06:35 | INFO: Finished glTF 2.0 export in 1.4523937702178955 s\n\n11:06:36 | INFO: Starting glTF 2.0 export\n11:06:36 | INFO: Extracting primitive: RD_BASE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_TERRAIN\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_POND_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_POND_1\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_0_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_1_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_1\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_2_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_NS_2\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_0_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_1_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_1\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_2_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_EW_2\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_entry_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_entry\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_entry_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_entry\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_entry_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_entry\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_entry_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_entry\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_entry_verge\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_entry\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_YARD\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_YARD\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_YARD\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_YARD\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_YARD\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_COMPOUND_BOUNDARIES\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_1\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_2\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_3\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_4\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_RESERVE_FIELD_5\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_UNPAVED_TRACK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_MACRO_WOODLAND.002\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_MACRO_WOODLAND_trunks.002\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_PERIPHERAL_WOODS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_PERIPHERAL_WOODS_trunks\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_AVENUE_COURT_TREES.002\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_AVENUE_COURT_TREES_trunks.002\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: ASM_ASSET_RD_B\n11:06:36 | INFO: Primitives created: 5\n11:06:36 | INFO: Extracting primitive: ASM_ASSET_RD_A\n11:06:36 | INFO: Primitives created: 5\n11:06:36 | INFO: Extracting primitive: RD_ROAD_MARKINGS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_ROAD_LIGHTS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_FIRE_LOOP\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_CROSS_AISLE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_ENTRY_LINK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C01_AISLE_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_FIRE_LOOP\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_CROSS_AISLE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_ENTRY_LINK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C02_AISLE_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_FIRE_LOOP\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_CROSS_AISLE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_ENTRY_LINK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C03_AISLE_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_FIRE_LOOP\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_CROSS_AISLE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_ENTRY_LINK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C04_AISLE_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_FIRE_LOOP\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_CROSS_AISLE\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_ENTRY_LINK\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_C05_AISLE_0\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_GATEHOUSES_PORTALS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_GATEHOUSE_GLASS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_PARKED_CARS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_CAR_GLASS\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Extracting primitive: RD_PARKING_STRIPES\n11:06:36 | INFO: Primitives created: 1\n11:06:36 | INFO: Finished glTF 2.0 export in 0.6454780101776123 s\n\nInfo: Saved as \"park-assemblies-v2.blend\"\n{\"reports\": [{\"zone\": \"GH\", \"buildings\": 53, \"compounds\": 9, \"road_routes\": 17, \"extent_m\": [4400, 4100], \"export_mesh_objects\": 155, \"geometry_vertices_before_instancing\": 390570, \"unique_meshes\": 106, \"tree_count\": 3234, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"EI\", \"buildings\": 57, \"compounds\": 10, \"road_routes\": 20, \"extent_m\": [2300, 5200], \"export_mesh_objects\": 172, \"geometry_vertices_before_instancing\": 306782, \"unique_meshes\": 117, \"tree_count\": 2512, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"IN\", \"buildings\": 12, \"compounds\": 0, \"road_routes\": 8, \"extent_m\": [1800, 1700], \"export_mesh_objects\": 55, \"geometry_vertices_before_instancing\": 46420, \"unique_meshes\": 45, \"tree_count\": 975, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, {\"zone\": \"RD\", \"buildings\": 26, \"compounds\": 5, \"road_routes\": 11, \"extent_m\": [2200, 3200], \"export_mesh_objects\": 98, \"geometry_vertices_before_instancing\": 153388, \"unique_meshes\": 74, \"tree_count\": 1487, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}], \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\park-assemblies-v2.blend\", \"scenes\": [\"ASSEMBLY_EI\", \"ASSEMBLY_GH\", \"ASSEMBLY_IN\", \"ASSEMBLY_RD\"]}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:07:19.029398+00:00",
+    "label": "v2-07-GH-open",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6ed15e80b93585f257faf60a0cf1be6f97ec821e6b40308b9554601d2b01dd21",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:07:33.317986+00:00",
+    "label": "v2-07-GH-standalone",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "a113fc2cd9edcfa21cc758590d195e800c25dd8c8c2a4f2aa9293e608b504159",
+    "result_text": [
+      "Code executed successfully: Info: Deleted 620 data-block(s)\nInfo: Saved as \"GH-complete-v2.blend\"\n{\"standalone\": \"GH\", \"scenes\": [\"ASSEMBLY_GH\"], \"objects\": 164, \"report\": {\"zone\": \"GH\", \"buildings\": 53, \"compounds\": 9, \"road_routes\": 17, \"extent_m\": [4400, 4100], \"export_mesh_objects\": 155, \"geometry_vertices_before_instancing\": 390570, \"unique_meshes\": 106, \"tree_count\": 3234, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\models\\\\GH-complete-v2.blend\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:07:44.759430+00:00",
+    "label": "v2-07-EI-open",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6ed15e80b93585f257faf60a0cf1be6f97ec821e6b40308b9554601d2b01dd21",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:07:58.021265+00:00",
+    "label": "v2-07-EI-standalone",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "a1d82976142991eab5551af0bc99c59389a9cb60a683d097c4e186d04dc22017",
+    "result_text": [
+      "Code executed successfully: Info: Deleted 596 data-block(s)\nInfo: Saved as \"EI-complete-v2.blend\"\n{\"standalone\": \"EI\", \"scenes\": [\"ASSEMBLY_EI\"], \"objects\": 179, \"report\": {\"zone\": \"EI\", \"buildings\": 57, \"compounds\": 10, \"road_routes\": 20, \"extent_m\": [2300, 5200], \"export_mesh_objects\": 172, \"geometry_vertices_before_instancing\": 306782, \"unique_meshes\": 117, \"tree_count\": 2512, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\models\\\\EI-complete-v2.blend\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:08:10.076695+00:00",
+    "label": "v2-07-IN-open",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6ed15e80b93585f257faf60a0cf1be6f97ec821e6b40308b9554601d2b01dd21",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:08:24.606277+00:00",
+    "label": "v2-07-IN-standalone",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "db0f2212b74a0ce14996d20c08130e10d4e75990b43db4d93066b0f1619e5e29",
+    "result_text": [
+      "Code executed successfully: Info: Deleted 771 data-block(s)\nInfo: Saved as \"IN-complete-v2.blend\"\n{\"standalone\": \"IN\", \"scenes\": [\"ASSEMBLY_IN\"], \"objects\": 68, \"report\": {\"zone\": \"IN\", \"buildings\": 12, \"compounds\": 0, \"road_routes\": 8, \"extent_m\": [1800, 1700], \"export_mesh_objects\": 55, \"geometry_vertices_before_instancing\": 46420, \"unique_meshes\": 45, \"tree_count\": 975, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\models\\\\IN-complete-v2.blend\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:08:41.308291+00:00",
+    "label": "v2-07-RD-open",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6ed15e80b93585f257faf60a0cf1be6f97ec821e6b40308b9554601d2b01dd21",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:09:02.539567+00:00",
+    "label": "v2-07-RD-standalone",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "2541d8ed4a4d66a951efb293e7ce15e8bb2eb139263a0e00f0149ad2c63457bc",
+    "result_text": [
+      "Code executed successfully: Info: Deleted 712 data-block(s)\nInfo: Saved as \"RD-complete-v2.blend\"\n{\"standalone\": \"RD\", \"scenes\": [\"ASSEMBLY_RD\"], \"objects\": 105, \"report\": {\"zone\": \"RD\", \"buildings\": 26, \"compounds\": 5, \"road_routes\": 11, \"extent_m\": [2200, 3200], \"export_mesh_objects\": 98, \"geometry_vertices_before_instancing\": 153388, \"unique_meshes\": 74, \"tree_count\": 1487, \"all_mesh_coordinates_finite\": true, \"all_meshes_have_materials\": true, \"georeferenced\": false, \"planning_reference_exported\": false}, \"saved\": \"C:\\\\Users\\\\53472\\\\Desktop\\\\10.13园区碳平台\\\\assets\\\\blender-models\\\\v2\\\\models\\\\RD-complete-v2.blend\"}\n"
+    ]
+  },
+  {
+    "at": "2026-10-22T15:10:34.373114+00:00",
+    "label": "v2-08-open-master",
+    "transport": "MCP stdio / official Python SDK ClientSession",
+    "server": {
+      "name": "MCP for Blender",
+      "title": null,
+      "version": "1.30.0",
+      "websiteUrl": null,
+      "icons": null
+    },
+    "tool": "execute_blender_code",
+    "package": "mcp-for-blender==2.2.2",
+    "status": "success",
+    "user_prompt": "帮我组装成每个园区的完整建模",
+    "code_sha256": "6ed15e80b93585f257faf60a0cf1be6f97ec821e6b40308b9554601d2b01dd21",
+    "result_text": [
+      "Code executed successfully: Opened saved project through Blender MCP; subsequent operations use a new tool call.\n"
+    ]
+  }
+]
