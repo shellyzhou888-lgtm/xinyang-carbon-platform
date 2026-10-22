@@ -1,7 +1,7 @@
 # 园区四分区实景建模画稿 · 第一轮
 
 方案版本：v1.0 · 2026-10-21  
-状态：**第一轮画稿未通过用户评审，保留作对照；尚未开始 Blender 建模。** 2026-10-21 用户要求先补充真实照片，按照 SCENE TRUTH / ASSET TRUTH 和 macro to micro 流程重新推进。参见 [实景参考资料包](../assets/site-photo-references/v1/README.md) 与 [离线看图目录](../assets/site-photo-references/v1/index.html)。
+状态：**第一轮画稿未通过用户评审，保留作对照；尚未开始 Blender 建模。** 2026-10-21 用户要求先补充真实照片，按照 SCENE TRUTH / ASSET TRUTH 和 macro to micro 流程重新推进。2026-10-22 根据用户指示直接查看网站现有高德实景，补拍20张地图截图，与60张既有照片合成v2。参见 [新版实景参考资料包](../assets/site-photo-references/v2/README.md)、[离线看图目录](../assets/site-photo-references/v2/index.html) 和 [实景核对与灰模依据](site-reference-field-review.md)。
 
 ## 本轮确认什么
 
