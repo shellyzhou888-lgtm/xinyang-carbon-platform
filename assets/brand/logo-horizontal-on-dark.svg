@@ -1,9 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 196" role="img" aria-label="信阳经开区能碳管理平台">
   <title>信阳经开区能碳管理平台</title>
   <g transform="translate(20 47) scale(0.52)"><g fill="none">
-    <path d="M147.5 48.5 A70 70 0 1 0 147.5 147.5" stroke="#36D499" stroke-width="19" stroke-linecap="round"/>
-    <path d="M90 129 C94 101 114 76 151 68 C153 104 131 129 90 129Z" fill="#80E4AD"/>
-    <path d="M101 118 C115 102 128 91 143 82" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+    <rect width="196" height="196" rx="45" fill="#0E9F6C"/>
+    <g transform="translate(31.36 31.36) scale(0.68)">
+      <path d="M147.5 48.5 A70 70 0 1 0 147.5 147.5" stroke="#FFFFFF" stroke-width="19" stroke-linecap="round"/>
+      <path d="M90 129 C94 101 114 76 151 68 C153 104 131 129 90 129Z" fill="#FFFFFF"/>
+      <path d="M101 118 C115 102 128 91 143 82" stroke="#0E9F6C" stroke-width="5" stroke-linecap="round"/>
+    </g>
   </g></g>
   <path d="M2012 1245H614V1473H1150Q1114 1560 1068 1657L1366 1711Q1415 1619 1476 1473H2012ZM376 1697 640 1627Q565 1387 486 1178V-269H232V614Q161 484 88 375Q66 535 24 751Q208 1095 376 1697ZM1896 921H696V1135H1896ZM1896 605H696V819H1896ZM692 -269V499H1896V-269H1622V-165H966V-269ZM1622 263H966V71H1622Z" fill="#F4F8F6" transform="translate(145.000 128) scale(0.03125000 -0.03125000)"/>
   <path d="M656 865Q834 661 834 325Q834 151 738.0 70.0Q642 -11 422 -11Q408 153 374 285Q420 279 454 279Q570 279 570 375Q570 629 392 835Q470 1097 540 1389H366V-271H106V1621H810V1429Q740 1159 656 865ZM1928 -263H1658V-131H1158V-263H888V1589H1928ZM1158 857H1658V1337H1158ZM1158 121H1658V605H1158Z" fill="#F4F8F6" transform="translate(210.200 128) scale(0.03125000 -0.03125000)"/>
