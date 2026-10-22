@@ -1,17 +1,19 @@
-import { charts, management, overview, carbonManagement, carbonAsset, enterpriseEnergyMix, footprintComparison } from "@/lib/server";
+import { charts, management, overview, carbonManagement, carbonAsset, enterpriseEnergyMix, footprintComparison, indicatorBoard, productChains } from "@/lib/server";
 import { selectedYear } from "@/lib/workspace";
-import { AchievedIndicators, DataError, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { DataError, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs } from "@/components/MotionParts";
 import { AnnualComboChart, ContributionList, KpiCard } from "@/components/InsightParts";
 import SectionPager from "@/components/SectionPager";
+import { IndicatorScales } from "@/components/IndicatorScales";
 import { CarbonMarket, FootprintRefs, Roadmap } from "@/components/CarbonDataSections";
 import { CarbonBudgetGauge, ChangeWaterfall, EmitterQuadrant, ExposureView, FootprintView, ReductionValue, ScopeSplit } from "@/components/CarbonViews";
 import FlowNetworkMap from "@/components/FlowNetworkMap";
+import { ChainTrajectory, LcaMethod } from "@/components/ProductTrajectory";
 import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
 
-const TABS = [["analysis", "碳排放分析"], ["flow", "碳流网络"], ["asset", "碳资产"]] as const;
+const TABS = [["analysis", "碳排放分析"], ["flow", "碳流网络"], ["asset", "碳资产"], ["product", "产品碳足迹"]] as const;
 type Tab = (typeof TABS)[number][0];
 
 export default async function Carbon({ searchParams }: { searchParams: Promise<{ year?: string; tab?: string }> }) {
@@ -22,12 +24,14 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   let mix: Awaited<ReturnType<typeof enterpriseEnergyMix>> = [];
   let asset: Awaited<ReturnType<typeof carbonAsset>> | null = null, footprint: Awaited<ReturnType<typeof footprintComparison>> | null = null;
   let chart: Awaited<ReturnType<typeof charts>> | null = null;
+  let board: Awaited<ReturnType<typeof indicatorBoard>> = [];
+  let product: Awaited<ReturnType<typeof productChains>> | null = null;
   try {
-    [data, detail, extended, chart, previous, mix, asset, footprint] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
+    [data, detail, extended, chart, previous, mix, asset, footprint, board, product] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
       tab === "analysis" && year > 2021 ? management(year - 1) : Promise.resolve(null),
       tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([]),
       tab === "asset" ? carbonAsset(2021, year + 1) : Promise.resolve(null),
-      tab === "asset" ? footprintComparison(year) : Promise.resolve(null)]);
+      tab === "asset" ? footprintComparison(year) : Promise.resolve(null), tab === "analysis" ? indicatorBoard(year) : Promise.resolve([]), tab === "product" ? productChains() : Promise.resolve(null)]);
   } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const annual = detail?.annual || [];
   const row = (y: number) => annual.find((item) => item.year === y);
@@ -39,7 +43,6 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const shortName = (name: string) => name.replace(/（[^）]*）/g, "");
   const structure = (list: typeof detail) => (list?.carbonStructure || []).map((item) => ({ name: item.name, value: item.co2_t }));
   const parkAsset = asset?.rows.find((item) => item.node_code === "XYEDZ" && item.year === year);
-  const achievedAny = !!data?.achieved.some((item) => ["I17", "I18", "I19"].includes(item.code));
   const tabs = <LinkTabs id="carbon" label="碳排管理模块" active={tab} items={TABS.map(([key, label]) => ({ key, label, href: `/carbon?year=${year}${key === "analysis" ? "" : `&tab=${key}`}` }))} />;
 
   return <div className="fit-screen">
@@ -59,7 +62,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <KpiCard label="前三大排放企业占比" value={data?.co2_t ? top3 / data.co2_t * 100 : null} unit="%" digits={1} tone="accent" foot={ranking.slice(0, 3).map((item) => shortName(item.name)).join("、")} delay={0.15} />
     </div>
 
-    {tab === "analysis" && <SectionPager lead={tabs} labels={["排放与范围", "变化归因", "企业定位", "预算与达峰", ...(achievedAny ? ["达标表现"] : [])]}>
+    {tab === "analysis" && <SectionPager lead={tabs} labels={["排放与范围", "变化归因", "企业定位", "预算与达峰", "指标表现"]}>
       <div className="view-split">
         <Panel className="panel-fill" title="近年排放量与碳强度" subtitle="柱为二氧化碳排放量，折线为单位工业增加值 CO₂（两轴均从 0 起）">
           <AnnualComboChart years={annual.map((item) => item.year)} totals={annual.map((item) => item.co2_t)} intensity={annual.map((item) => intensityOf(item.year))}
@@ -86,7 +89,9 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
         </Panel>
         <Roadmap data={extended} />
       </div>
-      <AchievedIndicators data={data} codes={["I17", "I18", "I19"]} title="碳排放达标表现" />
+      <Panel className="view-fill" title="碳排放指标" subtitle="《绿色工业园区评价要求》碳排放类指标：要求逐年下降，图为 2021 年以来的变化">
+        <IndicatorScales rows={board.filter((row) => ["I17", "I18", "I19"].includes(row.code))} year={year} columns={3} large />
+      </Panel>
     </SectionPager>}
 
     {tab === "flow" && <SectionPager lead={tabs} labels={["碳流地图"]}>
@@ -97,7 +102,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       </Panel>
     </SectionPager>}
 
-    {tab === "asset" && <SectionPager lead={tabs} labels={["碳成本敞口", "减排资产化", "碳市场行情", "产品碳足迹"]}>
+    {tab === "asset" && <SectionPager lead={tabs} labels={["碳成本敞口", "减排资产化", "碳市场行情", "足迹对标"]}>
       <Panel className="view-fill" title="碳成本敞口" subtitle="按全国碳市场年均价折算的园区碳排放价值；虚框柱为基准预测排放">
         <ExposureView asset={asset} year={year} />
       </Panel>
@@ -111,6 +116,16 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
         </Panel>
         <FootprintRefs data={extended} />
       </div>
+    </SectionPager>}
+
+    {tab === "product" && <SectionPager lead={tabs} labels={[...(product?.chains ?? []).map((chain) => chain.name), "天工数据与方法"]}>
+      {(product?.chains ?? []).map((chain) => <Panel key={chain.code} className="view-fill" title={`${chain.name} · 产品碳轨迹`}
+        subtitle={`功能单位：${chain.functional_unit}；园区生产段取 ${chain.year} 年企业排放，物料清单与产量为模拟值，背景因子取天工 LCI（Brightway 计算）`}>
+        <ChainTrajectory chain={chain} />
+      </Panel>)}
+      {product?.lca ? <Panel className="view-fill" title="天工 LCI 背景数据与计算方法" subtitle="背景过程由 Brightway 2.5 递归计算，结果写回园区数据库，网页只读取结果">
+        <LcaMethod lca={product.lca} rule={product.chains[0]?.factor_rule ?? null} />
+      </Panel> : <Panel className="view-fill" title="天工 LCI 背景数据"><p className="panel-note">尚未导入天工数据，请在 packages/lca 运行 tiangong_lca.py --write 与 product_chains.py --write。</p></Panel>}
     </SectionPager>}
   </div>;
 }

@@ -1,0 +1,98 @@
+{
+  "purpose": "园区产品全生命周期（碳轨迹）试点的模拟物料清单、产量与运输距离；企业提供真实数据后替换。背景排放因子取天工 LCI（20261019 版）经 Brightway 2.5 计算的结果，园区生产段取园区数据库中企业的范围一+二排放。",
+  "generated_on": "2026-10-22",
+  "year": 2025,
+  "factor_rule": "优先采用 Brightway 递归结果；当结果大于 100 kgCO2e/kg 且超过天工严格版结果 50 倍（多为单位换算问题）时改用天工严格版结果，并在阶段说明中注明",
+  "simulated_outputs": {
+    "E_WANHUA": { "value": 760000, "unit": "m3", "product": "无醛秸秆刨花板", "basis": "园区数据库 2025 年产品产量（模拟值）" },
+    "E_ZHUMEI": { "value": 120000, "unit": "套", "product": "定制衣柜", "basis": "2025 年产值 5 亿元 ÷ 均价约 4,200 元/套（模拟）" },
+    "E_JINSHANG": { "value": 1500000, "unit": "万颗", "product": "LED 芯片", "basis": "2025 年产值 10 亿元，约 150 亿颗芯片（模拟）" },
+    "E_GUMAI": { "value": 22500000, "unit": "套", "product": "背光模组", "basis": "2025 年产值 18 亿元 ÷ 均价约 80 元/套（模拟）" }
+  },
+  "chains": [
+    {
+      "code": "HOME",
+      "name": "绿色家居产业链",
+      "industry": "绿色家居",
+      "functional_unit": "1 套定制衣柜（约 0.25 m³ 无醛秸秆刨花板，成品约 180 kg）",
+      "milestones": [
+        { "after_stage": "WANHUA_MAKE", "product": "无醛秸秆刨花板", "per": "0.25 m³（1 套衣柜用量）" },
+        { "after_stage": "ZHUMEI_MAKE", "product": "定制衣柜", "per": "1 套" }
+      ],
+      "stages": [
+        { "code": "STRAW", "phase": "原料获取", "name": "秸秆收集与打捆", "amount": 0.4, "unit": "kg 柴油",
+          "factor": { "kind": "park_factor", "energy": "DIESEL", "value": 3.0959, "unit": "kgCO2/kg" },
+          "note": "每 m³ 板材约 680 kg 干秸秆，田间收集与打捆约耗柴油 2.3 L/t；按 0.25 m³ 折算 0.4 kg 柴油，因子取园区核算采用的柴油排放因子" },
+        { "code": "STRAW_TRUCK", "phase": "运输", "name": "秸秆运至万华禾香", "amount": 10.2, "unit": "t·km",
+          "factor": { "kind": "tiangong", "process": "e39b52de", "unit": "kgCO2e/t·km" },
+          "note": "170 kg 秸秆 × 60 km 收集半径" },
+        { "code": "BINDER", "phase": "原料获取", "name": "无醛胶黏剂（MDI）", "amount": 5.5, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "49f8b4d3", "unit": "kgCO2e/kg" },
+          "note": "施胶量约 22 kg/m³；天工未收录 MDI，以环氧树脂生产过程代替" },
+        { "code": "WANHUA_MAKE", "phase": "园区生产", "name": "万华禾香 · 刨花板连续压机生产", "enterprise": "E_WANHUA", "amount": 0.25, "unit": "m3",
+          "factor": { "kind": "park_enterprise", "enterprise": "E_WANHUA" },
+          "note": "企业 2025 年范围一+二排放 ÷ 板材产量" },
+        { "code": "BOARD_TRUCK", "phase": "运输", "name": "板材运至现代筑美（园区内）", "amount": 0.98, "unit": "t·km",
+          "factor": { "kind": "tiangong", "process": "e39b52de", "unit": "kgCO2e/t·km" },
+          "note": "约 163 kg 板材 × 6 km（羊山片区内）" },
+        { "code": "HARDWARE", "phase": "原料获取", "name": "五金配件（铰链、导轨）", "amount": 3.5, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "21795ee4", "unit": "kgCO2e/kg" },
+          "note": "钢制五金约 3.5 kg/套，取热轧钢卷生产过程" },
+        { "code": "COATING", "phase": "原料获取", "name": "封边条与涂装（诺源涂料）", "amount": 1.2, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "60af6c08", "unit": "kgCO2e/kg" },
+          "note": "PVC 封边条与水性涂料约 1.2 kg/套，取聚氯乙烯树脂过程" },
+        { "code": "ZHUMEI_MAKE", "phase": "园区生产", "name": "现代筑美 · 开料、封边、打孔与组装", "enterprise": "E_ZHUMEI", "amount": 1, "unit": "套",
+          "factor": { "kind": "park_enterprise", "enterprise": "E_ZHUMEI" },
+          "note": "企业 2025 年范围一+二排放 ÷ 衣柜产量" },
+        { "code": "PACK", "phase": "包装", "name": "瓦楞纸箱包装", "amount": 9, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "d3954d8b", "unit": "kgCO2e/kg" },
+          "note": "约 9 kg 纸箱/套" },
+        { "code": "DELIVER", "phase": "分销", "name": "发往华中市场", "amount": 94.5, "unit": "t·km",
+          "factor": { "kind": "tiangong", "process": "e39b52de", "unit": "kgCO2e/t·km" },
+          "note": "含包装约 189 kg × 500 km" }
+      ]
+    },
+    {
+      "code": "ELEC",
+      "name": "电子信息产业链",
+      "industry": "电子信息",
+      "functional_unit": "1 套笔记本电脑背光模组（含 60 颗 LED）",
+      "milestones": [
+        { "after_stage": "JINSHANG_MAKE", "product": "LED 芯片", "per": "60 颗（1 套模组用量）" },
+        { "after_stage": "GUMAI_MAKE", "product": "背光模组", "per": "1 套" }
+      ],
+      "stages": [
+        { "code": "SUBSTRATE", "phase": "原料获取", "name": "衬底与外延片", "amount": 0.000075, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "aa50ae6c", "unit": "kgCO2e/kg" },
+          "note": "2 英寸衬底约 2.5 g、出芯约 2 万颗，60 颗折 0.075 g；天工未收录蓝宝石衬底，以单晶硅片代替" },
+        { "code": "GASES", "phase": "原料获取", "name": "外延工艺气体（氨、氢）", "amount": 0.0012, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "9d85fcde", "unit": "kgCO2e/kg" },
+          "note": "MOCVD 用氨与氢约 0.2 kg/万颗，按 60 颗折算；以氢气生产过程计" },
+        { "code": "JINSHANG_MAKE", "phase": "园区生产", "name": "今上半导体 · 外延与芯片制造", "enterprise": "E_JINSHANG", "amount": 0.006, "unit": "万颗",
+          "factor": { "kind": "park_enterprise", "enterprise": "E_JINSHANG" },
+          "note": "企业 2025 年范围一+二排放 ÷ 芯片产量" },
+        { "code": "CHIP_MOVE", "phase": "运输", "name": "芯片运至谷麦光电（园区内）", "amount": 0.000003, "unit": "t·km",
+          "factor": { "kind": "tiangong", "process": "e39b52de", "unit": "kgCO2e/t·km" },
+          "note": "约 1 g × 3 km（金牛物流片区内），可忽略" },
+        { "code": "FRAME", "phase": "原料获取", "name": "铝背板与散热件", "amount": 0.12, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "1a29347c", "unit": "kgCO2e/kg" },
+          "note": "原生铝锭（液态原铝铸锭）" },
+        { "code": "LIGHTGUIDE", "phase": "原料获取", "name": "导光板与扩散膜", "amount": 0.08, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "be9a3b27", "unit": "kgCO2e/kg" },
+          "note": "以聚碳酸酯树脂计（PMMA 未收录）" },
+        { "code": "LIGHTBAR", "phase": "原料获取", "name": "灯条电路板（FPC/PCB）", "amount": 0.02, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "7dd32b3f", "unit": "kgCO2e/kg" },
+          "note": "印制电路板子组件制造" },
+        { "code": "GUMAI_MAKE", "phase": "园区生产", "name": "谷麦光电 · SMD 封装与模组组装", "enterprise": "E_GUMAI", "amount": 1, "unit": "套",
+          "factor": { "kind": "park_enterprise", "enterprise": "E_GUMAI" },
+          "note": "企业 2025 年范围一+二排放 ÷ 模组产量" },
+        { "code": "PACK", "phase": "包装", "name": "防静电托盘与纸箱", "amount": 0.15, "unit": "kg",
+          "factor": { "kind": "tiangong", "process": "d3954d8b", "unit": "kgCO2e/kg" },
+          "note": "以瓦楞纸板计" },
+        { "code": "DELIVER", "phase": "分销", "name": "发往整机厂（长三角）", "amount": 0.4, "unit": "t·km",
+          "factor": { "kind": "tiangong", "process": "e39b52de", "unit": "kgCO2e/t·km" },
+          "note": "约 0.4 kg × 1,000 km" }
+      ]
+    }
+  ]
+}

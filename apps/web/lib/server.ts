@@ -1,5 +1,5 @@
 import "server-only";
-import { admin, createManagerAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, getCarbonAsset, getFootprintComparison, getEnterpriseEnergyMix, getEnterpriseMonthly, importWorkbook, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
+import { admin, createManagerAgent, getChartData, getParkOverview, getManagementData, getDataInventory, getIndicatorConfiguration, getCarbonManagementData, getCarbonAsset, getIndicatorBoard, getProductChains, getFootprintComparison, getEnterpriseEnergyMix, getEnterpriseMonthly, importWorkbook, initPool, loadConfig, logMessage, ping, triggerGovernance } from "@xinyang/db-agent";
 
 /** Administrator operations (governance page). Local single-user deployment: no login yet, the reviewer name comes from ADMIN_NAME. */
 export function adminApi() {
@@ -25,6 +25,18 @@ export function management(year: number) {
 export function carbonManagement(year: number) {
   initPool(loadConfig({ requireModelKey: false }).databaseUrl);
   return getCarbonManagementData(year);
+}
+
+/** Product carbon trajectories of the two industry chains and the TianGong background summary. */
+export function productChains() {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getProductChains();
+}
+
+/** Every evaluation indicator with its leading value and values since 2021 (evaluation views). */
+export function indicatorBoard(year: number) {
+  initPool(loadConfig({ requireModelKey: false }).databaseUrl);
+  return getIndicatorBoard(year);
 }
 
 /** Carbon-cost exposure per year and enterprise, with CEA / CCER prices (carbon asset tab). */

@@ -7,14 +7,21 @@
  *   data/simulated/resource-environment_simulated.xlsx
  * The 数据来源 column is left blank; importing with --estimated marks every value as data_source = estimated.
  * Deterministic: a seeded PRNG gives the same numbers for the same assumptions.
+ *
+ * Scenario files: SIM_ASSUMPTIONS=data/simulated/assumptions-v2.json SIM_OUT=data/simulated/v2 npx tsx sim/simulate.ts
+ * Optional keys (v2): intensity_factor_by_year, default_green_trade_share_of_grid, and per enterprise
+ * intensity_factor_extra and mix_by_year.
  */
 import ExcelJS from "exceljs";
 import { readFileSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { mkdirSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..", "..", "..");
-const A = JSON.parse(readFileSync(join(root, "data", "simulated", "assumptions.json"), "utf8"));
-const NOTE = "模拟数据（data/simulated/assumptions.json）";
+const assumptionsPath = resolve(root, process.env.SIM_ASSUMPTIONS ?? join("data", "simulated", "assumptions.json"));
+const outDir = resolve(root, process.env.SIM_OUT ?? join("data", "simulated"));
+const A = JSON.parse(readFileSync(assumptionsPath, "utf8"));
+const NOTE = `模拟数据（${relative(root, assumptionsPath).split("\\").join("/")}）`;
 
 function mulberry32(seed: number) {
   return () => {
@@ -70,17 +77,19 @@ for (const e of A.enterprises) {
     if (grossForEnergy === undefined) continue;
 
     // Annual energy → physical quantities
-    const tce = grossForEnergy * e.intensity_tce_per_wan * (1 - A.intensity_decline_per_year) ** (y - 2021) * noise();
-    const elecKwh = (tce * (e.mix.ELEC ?? 0)) / ELEC;
+    const yearFactor: number = A.intensity_factor_by_year?.[ys] ?? (1 - A.intensity_decline_per_year) ** (y - 2021);
+    const tce = grossForEnergy * e.intensity_tce_per_wan * yearFactor * (e.intensity_factor_extra?.[ys] ?? 1) * noise();
+    const mix = e.mix_by_year?.[ys] ?? e.mix;
+    const elecKwh = (tce * (mix.ELEC ?? 0)) / ELEC;
     const pv: number = e.pv_kwh_per_year?.[ys] ?? 0;
     const pvFeed = pv * (e.pv_feed_in_share ?? 0);
     const pvSelf = pv - pvFeed;
     const gridTotal = Math.max(elecKwh - pvSelf, 0);
-    const green = gridTotal * (e.green_trade_share_of_grid?.[ys] ?? 0);
+    const green = gridTotal * (e.green_trade_share_of_grid?.[ys] ?? A.default_green_trade_share_of_grid?.[ys] ?? 0);
     const grid = gridTotal - green;
-    const gasM3 = (tce * (e.mix.NATURAL_GAS ?? 0)) / GAS;
-    const heatGj = (tce * (e.mix.HEAT_FOSSIL ?? 0)) / HEAT;
-    const dieselT = (tce * (e.mix.DIESEL ?? 0)) / DSL;
+    const gasM3 = (tce * (mix.NATURAL_GAS ?? 0)) / GAS;
+    const heatGj = (tce * (mix.HEAT_FOSSIL ?? 0)) / HEAT;
+    const dieselT = (tce * (mix.DIESEL ?? 0)) / DSL;
 
     const base = shares(S[e.profile], from), gasS = shares(S.gas_heating, from), pvS = shares(S.pv, from);
     for (let m = from; m <= 12; m++) {
@@ -136,7 +145,8 @@ async function fill(template: string, sheets: [string, Row[]][], target: string)
     const ws = wb.getWorksheet(name)!;
     rows.forEach((values, r) => values.forEach((v, c) => { if (v !== null && v !== undefined) ws.getRow(3 + r).getCell(c + 1).value = v; }));
   }
-  await wb.xlsx.writeFile(join(root, "data", "simulated", target));
+  mkdirSync(outDir, { recursive: true });
+  await wb.xlsx.writeFile(join(outDir, target));
   console.log(target, sheets.map(([n, r]) => `${n}:${r.length}行`).join(" "));
 }
 
