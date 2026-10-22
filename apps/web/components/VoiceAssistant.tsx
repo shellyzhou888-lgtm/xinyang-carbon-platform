@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { probeVoice, voiceBackendUrl } from "@/lib/voice";
+import { probeVoice, probeVoiceAssets, voiceBackendUrl } from "@/lib/voice";
 
 type Overview = { tce: number | null; co2_t: number | null; achieved: number; total: number } | null;
 
@@ -30,6 +30,9 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
     (async () => {
       try {
         if (!window.isSecureContext) throw new Error("当前地址不能使用麦克风：请通过可信任的 HTTPS 地址访问网站");
+        if (!(await probeVoiceAssets())) {
+          throw new Error("小云浏览器资源未就绪，请在 apps/web 运行 npm run voice:assets 后刷新页面");
+        }
         const backendUrl = voiceBackendUrl();
         if (window.location.protocol === "https:" && new URL(backendUrl).protocol !== "https:") {
           throw new Error("HTTPS 网站需要使用 HTTPS/WSS 小云后台地址");
@@ -73,7 +76,10 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
             },
           ],
           onEvent(event: any) {
-            if (event.type === "error") console.warn("[xiaoyun]", event.message);
+            if (event.type === "error") {
+              console.warn("[xiaoyun]", event.message);
+              if (!disposed && event.message) setStatus(`小云语音错误：${event.message}`);
+            }
           },
         });
         // The SDK has no public avatar option. Its open shadow root lets the host
