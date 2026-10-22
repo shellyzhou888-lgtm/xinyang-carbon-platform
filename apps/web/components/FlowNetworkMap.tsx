@@ -128,9 +128,13 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
       const hubs = [{ lng: network.park[0], lat: network.park[1], size: 70 }, ...network.zones.map((z) => ({ lng: z.at[0], lat: z.at[1], size: 46 }))];
       layers.push(new PointLayer({ name: "flow-hub-glow", zIndex: 7, blend: "additive" }).source(hubs, { parser: { type: "json", x: "lng", y: "lat" } })
         .shape("circle").size("size", (s: number) => s).color(style.card).animate(true).style({ opacity: 0.85 }));
+      // Location ripple under every enterprise cone (same animation as the overview markers).
+      layers.push(new PointLayer({ name: "flow-site-ripple", zIndex: 7, blend: "additive" })
+        .source(network.sites.filter((s) => !s.alert).map((s) => ({ lng: s.at[0], lat: s.at[1] })), { parser: { type: "json", x: "lng", y: "lat" } })
+        .shape("circle").size(24).color(style.card).animate({ enable: true, speed: 0.7, rings: 3 }).style({ opacity: 0.8 }));
       const alertSites = network.sites.filter((s) => s.alert).map((s) => ({ lng: s.at[0], lat: s.at[1] }));
       if (alertSites.length) layers.push(new PointLayer({ name: "flow-alert-dome", zIndex: 8, blend: "additive" }).source(alertSites, { parser: { type: "json", x: "lng", y: "lat" } })
-        .shape("circle").size(90).color(ALERT).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 }));
+        .shape("circle").size(36).color(ALERT).animate({ enable: true, speed: 0.8, rings: 3 }).style({ opacity: 1 }));
       flowLayers.current = layers;
       for (const layer of layers) scene.addLayer(layer);
     }).catch((reason) => console.warn("[flow-map] flow layers unavailable", reason));
@@ -164,8 +168,8 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
       const color = site.alert ? ALERT : style.card;
       const pin = conePin(color, 18);
       pins.add(new AMap.LabelMarker({ position: site.at, zIndex: 3, icon: { image: pin.image, size: pin.size, anchor: "bottom-center" } }));
-      const plate = sitePlate(index + 1, site.name, color);
-      names.add(new AMap.LabelMarker({ position: site.at, zIndex: 7, icon: { image: plate.image, size: plate.size, anchor: "bottom-left", offset: [8, -24] } }));
+      // Enterprises stay as cones only (the side list names them in the same order); name plates collided with zone cards.
+      void index; void sitePlate; void names;
     });
   }, [ready, handle, network, mode, style, total, year]);
   useEffect(() => () => { labels.current = null; flowLayers.current = []; }, []);
@@ -186,11 +190,10 @@ export default function FlowNetworkMap({ mode, year, nodes, mix, parkTotal, aler
           <em><u style={{ width: `${c.value / (network.totals[0]?.value || 1) * 100}%`, background: c.color }} /></em>
         </motion.button></li>)}
       </ol>
-      <div className="flowmap-node-title">{mode === "energy" ? "供能节点" : "排放节点"}<small>园区、片区与企业均标注在图上</small></div>
-      <ol className="flowmap-nodes">
-        <li><b className="flowmap-node-index">起</b><span>{mode === "energy" ? "信阳经开区 · 供能起点" : "信阳经开区 · 碳排汇点"}</span></li>
-        {network.zones.map((zone) => <li key={zone.key}><b className="flowmap-node-index">中</b><span>{zoneFeature(zone.key)?.properties.name ?? zone.key} · 中转汇聚</span></li>)}
-        {visibleSites.map((site) => <li key={site.code}><b className="flowmap-node-index">{network.sites.slice().sort((a, b) => b.value - a.value).findIndex((row) => row.code === site.code) + 1}</b><span title={site.name}>{site.name}<small>{mode === "energy" ? "用能终点" : "排放起点"} · {fmt(site.value, 0)} {style.unit}</small></span></li>)}
+      <div className="flowmap-node-title">{mode === "energy" ? "用能企业" : "排放企业"}<small>{only ?? "全部品种"}</small></div>
+      <ol className="flowmap-sites">
+        {visibleSites.slice(0, 8).map((site, i) => <li key={site.code}><b className="num">{i + 1}</b><span title={site.name}>{shortName(site.name)}</span><em className="num">{fmt(site.value, 0)}</em>
+          <i><u style={{ width: `${site.value / (visibleSites[0]?.value || 1) * 100}%`, background: style.card }} /></i></li>)}
       </ol>
       <small className="flowmap-note">线宽表示量，光点与箭头表示方向；点选品种只看该品种的流向。</small>
     </aside>

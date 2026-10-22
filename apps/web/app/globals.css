@@ -1428,3 +1428,96 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .honor-rows .honor-count { color: var(--honor); }
 /* Achieved-count caption stays on one line beside the large number. */
 .overview-screen .indicator-count small { white-space: nowrap; font-size: 13px; letter-spacing: 0; }
+
+/* ---------- v0.43 · indicator scales (current value on a bar, leading value marked; no status wording) ---------- */
+.ind-board { display: grid; gap: 20px; align-content: start; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.ind-group-title { display: flex; align-items: baseline; gap: 8px; margin: 0 0 10px; font-size: 14px; font-weight: 600; color: var(--text); }
+.ind-group-title small { font-size: 12px; font-weight: 400; color: var(--text-3); }
+.ind-grid { display: grid; gap: 12px; }
+.ind-grid.cols-1 { grid-template-columns: minmax(0, 1fr); }
+.ind-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ind-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ind-card { display: grid; gap: 10px; align-content: start; padding: 14px 16px; border-radius: 12px; background: rgb(var(--ink) / .035); }
+.ind-card header { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.ind-code { flex: none; font-size: 11px; color: var(--text-3); padding: 2px 6px; border-radius: 6px; background: rgb(var(--ink) / .06); }
+.ind-card header b { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; line-height: 1.35; }
+.ind-met { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--tint); color: var(--accent-text); }
+.ind-met svg { stroke-width: 3; }
+.ind-value { display: flex; align-items: baseline; gap: 6px; }
+.ind-value strong { font-size: 26px; font-weight: 600; line-height: 1.1; }
+.ind-card.met .ind-value strong { color: var(--accent-text); }
+.ind-value small { font-size: 12px; color: var(--text-3); }
+.ind-value span { margin-left: auto; font-size: 12px; color: var(--text-3); }
+.ind-scale { padding: 18px 0 2px; }
+.ind-track { position: relative; height: 8px; border-radius: 4px; background: repeating-linear-gradient(135deg, rgb(var(--ink) / .07) 0 2px, transparent 2px 7px), rgb(var(--ink) / .04); }
+.ind-fill { position: absolute; left: 0; top: 0; bottom: 0; display: block; border-radius: 4px; background: linear-gradient(90deg, rgb(var(--info-rgb) / .45), var(--info)); }
+.ind-card.met .ind-fill { background: linear-gradient(90deg, rgb(var(--accent-rgb) / .45), var(--accent)); }
+.ind-bench { position: absolute; top: -6px; bottom: -6px; width: 2px; margin-left: -1px; border-radius: 1px; background: var(--text); }
+.ind-bench em { position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); font-style: normal; font-size: 11px; color: var(--text-2); white-space: nowrap; }
+.ind-trend-wrap { display: flex; align-items: center; gap: 12px; color: var(--info); }
+.ind-trend { width: 120px; height: 34px; flex: none; overflow: visible; }
+.ind-trend-year { font-size: 8px; fill: var(--text-3); }
+.ind-trend-wrap small { font-size: 12px; color: var(--text-3); }
+.ind-def { margin: 0; font-size: 12px; line-height: 1.5; color: var(--text-3); }
+@media (max-width: 1180px) { .ind-grid.cols-2, .ind-grid.cols-3 { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 1181px) and (min-height: 700px) {
+  .fit-screen :is(.section-pager-view, .fit-body) .panel > .ind-board { flex: 1 1 0; min-height: 0; }
+}
+/* Flow map side list: the largest enterprises for the selected energy type. */
+.flowmap-sites { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.flowmap-sites li { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 3px 8px; align-items: baseline; font-size: 12px; }
+.flowmap-sites li b { font-size: 11px; color: var(--text-3); font-weight: 500; }
+.flowmap-sites li span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+.flowmap-sites li em { font-style: normal; color: var(--text-2); }
+.flowmap-sites li i { grid-column: 2 / -1; height: 3px; border-radius: 2px; background: rgb(var(--ink) / .06); overflow: hidden; }
+.flowmap-sites li u { display: block; height: 100%; border-radius: 2px; text-decoration: none; }
+
+/* ---------- v0.43 · product carbon trajectory ---------- */
+.trajectory { display: grid; grid-template-rows: auto minmax(240px, 1fr) auto; gap: 16px; min-height: 0; }
+.trajectory > .chart { height: auto; min-height: 240px; }
+.trajectory-top { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(320px, 1fr); gap: 24px; align-items: start; }
+.trajectory-products { display: flex; align-items: stretch; gap: 10px; flex-wrap: wrap; }
+.milestone { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: rgb(var(--ink) / .04); }
+.milestone-step { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: var(--tint); color: var(--accent-text); font-size: 12px; font-weight: 600; }
+.milestone div { display: grid; gap: 2px; }
+.milestone b { font-size: 15px; }
+.milestone small { font-size: 12px; color: var(--text-3); }
+.milestone strong { margin-left: 8px; font-size: 22px; font-weight: 600; color: var(--carbon); white-space: nowrap; }
+.milestone strong small { margin-left: 4px; font-family: var(--font); font-size: 11px; font-weight: 400; color: var(--text-3); }
+.milestone-route { display: grid; align-content: center; gap: 2px; padding: 0 8px; font-size: 13px; color: var(--text-2); }
+.milestone-route small { font-size: 11px; color: var(--text-3); }
+.trajectory-summary { display: grid; gap: 10px; }
+.phase-bar { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: rgb(var(--ink) / .06); }
+.phase-bar i { display: block; height: 100%; }
+.phase-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--text-2); }
+.phase-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.phase-legend i { width: 8px; height: 8px; border-radius: 3px; }
+.phase-legend b { font-weight: 600; color: var(--text); }
+.stage-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 16px; }
+.stage-list li { display: grid; grid-template-columns: 64px minmax(0, 1.2fr) minmax(0, 1fr) 76px; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 10px; background: rgb(var(--ink) / .03); }
+.stage-phase { font-size: 11px; text-align: center; padding: 3px 0; border-radius: 6px; color: var(--phase); background: color-mix(in srgb, var(--phase) 14%, transparent); }
+.stage-name, .stage-source { display: grid; gap: 2px; min-width: 0; }
+.stage-name b { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stage-name small, .stage-source small { font-size: 11px; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stage-source { font-size: 12px; color: var(--text-2); }
+.stage-list strong { display: grid; justify-items: end; font-size: 14px; font-weight: 600; }
+.stage-list strong small { font-family: var(--font); font-size: 11px; font-weight: 400; color: var(--text-3); }
+.lca-method { display: grid; gap: 16px; align-content: start; min-height: 0; overflow: auto; scrollbar-width: thin; }
+.method-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: step; }
+.method-steps li { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: rgb(var(--ink) / .035); counter-increment: step; }
+.method-steps li b { font-size: 14px; }
+.method-steps li b::before { content: "0" counter(step) " "; color: var(--accent-text); font-family: var(--font-num); }
+.method-steps li span { font-size: 12px; line-height: 1.5; color: var(--text-2); }
+@media (min-width: 1181px) and (min-height: 700px) {
+  .fit-screen :is(.section-pager-view, .fit-body) .panel > :is(.trajectory, .lca-method) { flex: 1 1 0; min-height: 0; }
+}
+@media (max-width: 1180px) {
+  .trajectory-top, .stage-list, .method-steps { grid-template-columns: minmax(0, 1fr); }
+}
+.ind-board.lg .ind-trend-wrap { flex-direction: column; align-items: stretch; gap: 8px; }
+.ind-board.lg .ind-trend { width: 100%; height: 160px; }
+.ind-board.lg .ind-trend polyline { stroke-width: 1.2; }
+.ind-board.lg .ind-card { gap: 14px; padding: 18px 20px; }
+.ind-board.lg .ind-trend { height: auto; aspect-ratio: 360 / 130; }
+.ind-trend-value { font-size: 10px; fill: var(--text-2); font-family: var(--font-num); }
+.ind-board.lg .ind-trend-year { font-size: 9px; }

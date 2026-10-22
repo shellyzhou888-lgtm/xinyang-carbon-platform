@@ -4,6 +4,8 @@ export { createManagerAgent, managerPrompt, askManager, type ManagerContext, typ
 export { loadConfig, REPO_ROOT, type AgentConfig } from "./config.js";
 export { closePool, initPool, ping } from "./db.js";
 export { getParkOverview, type ParkOverview } from "./overview.js";
+export { getIndicatorBoard, type IndicatorBoardRow } from "./indicator-board.js";
+export { getProductChains, type ProductChain, type ProductChainStage, type LcaSummary } from "./product-chain.js";
 export { logMessage } from "./audit.js";
 export { governanceIdle, runGovernance, triggerGovernance, type GovernanceTrigger } from "./governance.js";
 export * as admin from "./admin.js";

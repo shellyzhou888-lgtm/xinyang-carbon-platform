@@ -1,0 +1,550 @@
+{
+  "purpose": "占位模拟数据 v2（绿色转型情景）：在园区真实数据到位前用于跑通平台；产值保留 v1 与公开锚点，用能按“新产线能效提升 + 绿电交易 + 屋顶光伏 + 逐年节能”调整；导入时标记为 estimated",
+  "generated_on": "2026-10-22",
+  "seed": 20261020,
+  "years": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "noise_pct": 3,
+  "public_anchors": [
+    {
+      "item": "今上半导体（信阳）2022 年产值 2.75 亿元",
+      "use": "作为真实数据单独导入（data/public），模拟数据不覆盖该年",
+      "source": "https://5g.dahe.cn/news/202309071299991"
+    },
+    {
+      "item": "万华生态板业（信阳）老厂年产能 15 万 m3、年销售额 3 亿元",
+      "use": "万华 2021 年产值基数",
+      "source": "https://baike.baidu.com/item/万华生态板业（信阳）有限公司/1085274"
+    },
+    {
+      "item": "信阳万华无醛生态产业园 2022-12-29 投产，年产 70 万 m3",
+      "use": "万华 2023 年起产值爬坡",
+      "source": "https://app.dahecube.com/nweb/news/20230128/152289n85643716e50.htm?artid=152289"
+    },
+    {
+      "item": "亚丹信阳工厂 2023-08-06 投产，预计全部投产后营收 5 亿元",
+      "use": "亚丹 2023 年起有产值",
+      "source": "https://news.qq.com/rain/a/20230809A09NOX00"
+    },
+    {
+      "item": "信阳市 2024 年规上工业增加值增长 8.8%，电子信息产业增加值增长 31.7%",
+      "use": "2024 年增速参照",
+      "source": "https://www.xinyang.gov.cn/2025/02-12/559382.html"
+    },
+    {
+      "item": "星原智能、螓杰智能入选河南省第一批零碳工厂（2024-12）",
+      "use": "两家企业 2024 年起有光伏和绿电交易",
+      "source": "https://gyhxxhj.xinyang.gov.cn/2024/12-16/258154.html"
+    },
+    {
+      "item": "螓杰智能为高新技术企业（GR202341000426）",
+      "use": "高企标记（真实）",
+      "source": "河南省 2023 年第一批高新技术企业备案名单"
+    }
+  ],
+  "tce_per_unit": {
+    "ELEC": 0.0001229,
+    "NATURAL_GAS": 0.0013284,
+    "HEAT_FOSSIL": 0.03412,
+    "DIESEL": 1.4571
+  },
+  "intensity_decline_per_year": 0.02,
+  "seasonality": {
+    "home": [
+      0.8,
+      0.62,
+      1.0,
+      1.03,
+      1.05,
+      1.04,
+      1.02,
+      1.0,
+      1.06,
+      1.1,
+      1.12,
+      1.16
+    ],
+    "electronics": [
+      0.92,
+      0.78,
+      1.0,
+      1.0,
+      1.03,
+      1.08,
+      1.12,
+      1.12,
+      1.04,
+      1.0,
+      0.98,
+      1.03
+    ],
+    "gas_heating": [
+      1.25,
+      1.0,
+      1.05,
+      0.95,
+      0.9,
+      0.85,
+      0.85,
+      0.85,
+      0.9,
+      1.0,
+      1.15,
+      1.3
+    ],
+    "pv": [
+      0.6,
+      0.7,
+      0.9,
+      1.05,
+      1.2,
+      1.2,
+      1.25,
+      1.25,
+      1.05,
+      0.9,
+      0.7,
+      0.6
+    ],
+    "public": [
+      1.15,
+      1.05,
+      0.95,
+      0.9,
+      0.92,
+      1.05,
+      1.15,
+      1.15,
+      0.95,
+      0.88,
+      0.92,
+      1.03
+    ]
+  },
+  "enterprises": [
+    {
+      "name": "万华生态板业（信阳）有限公司",
+      "credit": "91411500664697189K",
+      "profile": "home",
+      "gross_output_wan": {
+        "2021": 30000,
+        "2022": 33000,
+        "2023": 110000,
+        "2024": 160000,
+        "2025": 190000
+      },
+      "va_rate": 0.25,
+      "intensity_tce_per_wan": 0.3,
+      "productivity_wan_per_person": 150,
+      "mix": {
+        "ELEC": 0.32,
+        "NATURAL_GAS": 0.4,
+        "HEAT_FOSSIL": 0.25,
+        "DIESEL": 0.03
+      },
+      "pv_kwh_per_year": {
+        "2023": 1500000,
+        "2024": 6000000,
+        "2025": 11000000
+      },
+      "pv_feed_in_share": 0.15,
+      "above_scale": "是",
+      "high_tech": "否",
+      "product": {
+        "name": "无醛秸秆刨花板",
+        "unit": "m3",
+        "price_wan_per_unit": 0.25
+      },
+      "basis": "人造板：70 万 m3 × 约 0.07 tce/m3 ÷ 产值，约 0.30 tce/万元；用热以天然气与外购热力为主（暂不使用生物质，因缺折标系数）",
+      "intensity_factor_extra": {
+        "2023": 0.6,
+        "2024": 0.58,
+        "2025": 0.53
+      },
+      "mix_by_year": {
+        "2024": {
+          "ELEC": 0.38,
+          "NATURAL_GAS": 0.38,
+          "HEAT_FOSSIL": 0.21,
+          "DIESEL": 0.03
+        },
+        "2025": {
+          "ELEC": 0.44,
+          "NATURAL_GAS": 0.36,
+          "HEAT_FOSSIL": 0.17,
+          "DIESEL": 0.03
+        }
+      }
+    },
+    {
+      "name": "现代筑美（信阳基地）",
+      "credit": null,
+      "profile": "home",
+      "gross_output_wan": {
+        "2021": 120000,
+        "2022": 95000,
+        "2023": 70000,
+        "2024": 55000,
+        "2025": 50000
+      },
+      "va_rate": 0.22,
+      "intensity_tce_per_wan": 0.045,
+      "productivity_wan_per_person": 80,
+      "mix": {
+        "ELEC": 0.7,
+        "NATURAL_GAS": 0.25,
+        "DIESEL": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "定制家居；假设随母公司业务收缩逐年下降"
+    },
+    {
+      "name": "亚丹生态科技（信阳）有限公司",
+      "credit": null,
+      "profile": "home",
+      "gross_output_wan": {
+        "2023": 6000,
+        "2024": 22000,
+        "2025": 30000
+      },
+      "va_rate": 0.22,
+      "intensity_tce_per_wan": 0.04,
+      "productivity_wan_per_person": 80,
+      "mix": {
+        "ELEC": 0.75,
+        "NATURAL_GAS": 0.2,
+        "DIESEL": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "2023-08 投产；营收向 5 亿元规划爬坡",
+      "start": "2023-08",
+      "pv_kwh_per_year": {
+        "2025": 1000000
+      },
+      "pv_feed_in_share": 0.1
+    },
+    {
+      "name": "信阳永豪轩家具有限公司",
+      "credit": null,
+      "profile": "home",
+      "gross_output_wan": {
+        "2021": 52000,
+        "2022": 50000,
+        "2023": 55000,
+        "2024": 60000,
+        "2025": 64000
+      },
+      "va_rate": 0.22,
+      "intensity_tce_per_wan": 0.04,
+      "productivity_wan_per_person": 80,
+      "mix": {
+        "ELEC": 0.72,
+        "NATURAL_GAS": 0.23,
+        "DIESEL": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "家具出口企业",
+      "pv_kwh_per_year": {
+        "2024": 1000000,
+        "2025": 2000000
+      },
+      "pv_feed_in_share": 0.1
+    },
+    {
+      "name": "天一美家（信阳基地）",
+      "credit": null,
+      "profile": "home",
+      "gross_output_wan": {
+        "2021": 25000,
+        "2022": 24000,
+        "2023": 26000,
+        "2024": 28000,
+        "2025": 29000
+      },
+      "va_rate": 0.22,
+      "intensity_tce_per_wan": 0.04,
+      "productivity_wan_per_person": 80,
+      "mix": {
+        "ELEC": 0.72,
+        "NATURAL_GAS": 0.23,
+        "DIESEL": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "门窗、红木家具"
+    },
+    {
+      "name": "百德木门（信阳基地）",
+      "credit": null,
+      "profile": "home",
+      "gross_output_wan": {
+        "2021": 20000,
+        "2022": 21000,
+        "2023": 23000,
+        "2024": 24000,
+        "2025": 25000
+      },
+      "va_rate": 0.22,
+      "intensity_tce_per_wan": 0.045,
+      "productivity_wan_per_person": 80,
+      "mix": {
+        "ELEC": 0.7,
+        "NATURAL_GAS": 0.25,
+        "DIESEL": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "木门",
+      "pv_kwh_per_year": {
+        "2025": 600000
+      },
+      "pv_feed_in_share": 0.1
+    },
+    {
+      "name": "信阳市谷麦光电子科技有限公司",
+      "credit": "91411502MA3XG3BLXL",
+      "profile": "electronics",
+      "gross_output_wan": {
+        "2021": 90000,
+        "2022": 100000,
+        "2023": 120000,
+        "2024": 155000,
+        "2025": 180000
+      },
+      "va_rate": 0.24,
+      "intensity_tce_per_wan": 0.07,
+      "productivity_wan_per_person": 120,
+      "mix": {
+        "ELEC": 0.92,
+        "NATURAL_GAS": 0.06,
+        "DIESEL": 0.02
+      },
+      "pv_kwh_per_year": {
+        "2023": 1600000,
+        "2024": 3000000,
+        "2025": 4500000
+      },
+      "pv_feed_in_share": 0.05,
+      "above_scale": "是",
+      "high_tech": "是",
+      "basis": "LED 光源、背光源；2024 年增速参照全市电子信息 +31.7% 取约 +29%；高企标记依据信阳日报对谷麦光电的报道（母公司口径）"
+    },
+    {
+      "name": "今上半导体（信阳）有限公司",
+      "credit": null,
+      "profile": "electronics",
+      "gross_output_wan": {
+        "2023": 55000,
+        "2024": 80000,
+        "2025": 100000
+      },
+      "va_rate": 0.24,
+      "intensity_tce_per_wan": 0.09,
+      "productivity_wan_per_person": 120,
+      "mix": {
+        "ELEC": 0.95,
+        "NATURAL_GAS": 0.05
+      },
+      "above_scale": "是",
+      "high_tech": "是",
+      "gross_output_for_energy_wan": {
+        "2022": 27500
+      },
+      "basis": "2022 年产值为真实值（单独导入），能耗按该产值模拟；2023 年起产值模拟；2022 年只模拟增加值（产值真实值 × 增加值率），产值用真实值",
+      "start": "2022-03",
+      "va_only_wan": {
+        "2022": 27500
+      },
+      "pv_kwh_per_year": {
+        "2024": 1500000,
+        "2025": 3000000
+      },
+      "pv_feed_in_share": 0.1
+    },
+    {
+      "name": "信阳星原智能科技有限公司",
+      "credit": "91411500MA9K66WY2J",
+      "profile": "electronics",
+      "gross_output_wan": {
+        "2022": 20000,
+        "2023": 35000,
+        "2024": 50000,
+        "2025": 60000
+      },
+      "va_rate": 0.2,
+      "intensity_tce_per_wan": 0.035,
+      "productivity_wan_per_person": 120,
+      "mix": {
+        "ELEC": 0.97,
+        "NATURAL_GAS": 0.03
+      },
+      "pv_kwh_per_year": {
+        "2024": 1200000,
+        "2025": 1500000
+      },
+      "pv_feed_in_share": 0.05,
+      "green_trade_share_of_grid": {
+        "2024": 0.4,
+        "2025": 0.5
+      },
+      "above_scale": "是",
+      "high_tech": "否",
+      "basis": "通信与智能终端；零碳工厂，2024 年起光伏与绿电交易"
+    },
+    {
+      "name": "河南螓杰智能科技有限公司",
+      "credit": null,
+      "profile": "electronics",
+      "gross_output_wan": {
+        "2022": 10000,
+        "2023": 18000,
+        "2024": 28000,
+        "2025": 35000
+      },
+      "va_rate": 0.2,
+      "intensity_tce_per_wan": 0.035,
+      "productivity_wan_per_person": 120,
+      "mix": {
+        "ELEC": 0.97,
+        "NATURAL_GAS": 0.03
+      },
+      "pv_kwh_per_year": {
+        "2024": 800000,
+        "2025": 1000000
+      },
+      "pv_feed_in_share": 0.05,
+      "green_trade_share_of_grid": {
+        "2024": 0.5,
+        "2025": 0.6
+      },
+      "above_scale": "是",
+      "high_tech": "是",
+      "basis": "零碳工厂；高企证书为真实信息"
+    }
+  ],
+  "public_area": {
+    "name": "园区公共设施",
+    "profile": "public",
+    "grid_kwh_per_year": {
+      "2021": 2600000,
+      "2022": 2700000,
+      "2023": 2800000,
+      "2024": 2900000,
+      "2025": 3000000
+    },
+    "diesel_t_per_year": 6,
+    "basis": "管委会办公、公共照明、泵站；规模参照同类省级园区"
+  },
+  "park_resource_env": {
+    "name": "信阳经济技术开发区",
+    "industrial_land_km2": {
+      "2021": 6.8,
+      "2022": 7.2,
+      "2023": 7.8,
+      "2024": 8.1,
+      "2025": 8.3
+    },
+    "water_productivity_yuan_per_m3": {
+      "2021": 1050,
+      "2022": 1100,
+      "2023": 1150,
+      "2024": 1200,
+      "2025": 1250
+    },
+    "water_reuse_rate": {
+      "2021": 0.86,
+      "2022": 0.87,
+      "2023": 0.88,
+      "2024": 0.89,
+      "2025": 0.9
+    },
+    "solid_waste_t_per_wan_va": 0.25,
+    "solid_waste_util_rate": {
+      "2021": 0.94,
+      "2022": 0.95,
+      "2023": 0.955,
+      "2024": 0.96,
+      "2025": 0.965
+    },
+    "wastewater_t_per_wan_va": {
+      "2021": 2.2,
+      "2022": 2.1,
+      "2023": 2.0,
+      "2024": 1.9,
+      "2025": 1.8
+    },
+    "pollutants_t_2021": {
+      "COD": 40,
+      "NH3N": 4.0,
+      "SO2": 14,
+      "NOX": 70
+    },
+    "pollutant_decline_per_year": 0.03,
+    "new_industrial_building_m2": {
+      "2021": 120000,
+      "2022": 300000,
+      "2023": 180000,
+      "2024": 90000,
+      "2025": 60000
+    },
+    "new_industrial_green_share": {
+      "2021": 0.25,
+      "2022": 0.35,
+      "2023": 0.4,
+      "2024": 0.45,
+      "2025": 0.5
+    },
+    "new_public_building_m2": {
+      "2021": 8000,
+      "2022": 5000,
+      "2023": 20000,
+      "2024": 6000,
+      "2025": 4000
+    },
+    "new_public_green_share": {
+      "2021": 0.6,
+      "2022": 0.6,
+      "2023": 0.7,
+      "2024": 0.7,
+      "2025": 0.75
+    },
+    "waste_heat_available_gj": 300000,
+    "waste_heat_recovery_rate": {
+      "2021": 0.45,
+      "2022": 0.48,
+      "2023": 0.52,
+      "2024": 0.55,
+      "2025": 0.58
+    },
+    "basis": "园区整体上报口径；规划面积 15.6 km2 中已投产工业用地按逐年增加假设；资源环境水平按园区 2024 年已通过省级评审、大致接近引领值的假设设定"
+  },
+  "data_source_note": "数据来源列留空，按 --estimated 批次导入后记为 estimated",
+  "scenario": "green_transition_v2",
+  "intensity_factor_by_year": {
+    "2021": 1.0,
+    "2022": 0.96,
+    "2023": 0.91,
+    "2024": 0.85,
+    "2025": 0.78
+  },
+  "default_green_trade_share_of_grid": {
+    "2022": 0.03,
+    "2023": 0.07,
+    "2024": 0.14,
+    "2025": 0.22
+  },
+  "scenario_notes": [
+    "全体企业单位产值能耗以 2021 年为基准逐年下降：0.96 / 0.91 / 0.85 / 0.78（节能改造、余热回收、设备更新）",
+    "外购电中绿电交易比例默认 3% → 7% → 14% → 22%（2022–2025）；已入选零碳工厂的企业保持更高比例",
+    "万华新产线（2022-12 投产）能效优于老线，单位产值能耗另乘 0.60（2023）/ 0.58（2024）/ 0.53（2025），并逐年以电代热",
+    "屋顶分布式光伏 2023 年起逐步扩容"
+  ]
+}

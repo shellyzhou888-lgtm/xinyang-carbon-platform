@@ -4,13 +4,13 @@ import Link from "next/link";
 import { motion } from "motion/react";
 
 const STEPS = [
-  { key: "alerts", no: "01", label: "诊断预警", detail: "发现异常与超预算" },
-  { key: "causes", no: "02", label: "根因溯源", detail: "定位高排放对象" },
-  { key: "strategies", no: "03", label: "减碳策略", detail: "匹配策略库" },
-  { key: "forecast", no: "04", label: "能碳预测", detail: "检验策略效果" },
+  { key: "causes", no: "01", label: "碳分析", detail: "定位高排放对象" },
+  { key: "alerts", no: "02", label: "碳预警", detail: "发现异常与超预算" },
+  { key: "evaluation", no: "03", label: "碳评价", detail: "对照评价指标" },
+  { key: "strategies", no: "04", label: "能耗优化", detail: "策略测算与效果" },
 ];
 
-/** The four-step diagnosis flow as one stepper; the active step carries a sliding highlight. */
+/** The four-step diagnosis flow (analysis → warning → evaluation → optimisation); the active step carries a sliding highlight. */
 export default function DiagnosisSteps({ year, active, counts }: { year: number; active: string; counts: Record<string, number> }) {
   return <nav className="stepper" aria-label="诊断流程">
     {STEPS.map((step) => <Link key={step.key} href={`/diagnosis?year=${year}&tab=${step.key}`} className={`step ${active === step.key ? "on" : ""}`} aria-current={active === step.key ? "step" : undefined} scroll={false}>

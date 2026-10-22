@@ -1,6 +1,6 @@
-import { charts, management, overview, carbonManagement, enterpriseEnergyMix, enterpriseMonthly } from "@/lib/server";
+import { charts, management, overview, carbonManagement, enterpriseEnergyMix, enterpriseMonthly, indicatorBoard } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
-import { AchievedIndicators, DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
+import { DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import { LinkTabs } from "@/components/MotionParts";
 import { RankingChart } from "@/components/EnergyCharts";
 import { KpiCard, YearCompareChart } from "@/components/InsightParts";
@@ -10,6 +10,7 @@ import FlowNetworkMap from "@/components/FlowNetworkMap";
 import EnergyFlow from "@/components/EnergyFlow";
 import { BudgetProgress, CompositionCapsules, EnterpriseMatrix } from "@/components/ProgressViz";
 import SectionPager from "@/components/SectionPager";
+import { IndicatorScales } from "@/components/IndicatorScales";
 import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
@@ -25,7 +26,8 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const twinYears = [2021, 2022, 2023, 2024, 2025].filter((y) => y <= year);
   let monthlyByYear: Awaited<ReturnType<typeof enterpriseMonthly>>[] = [];
   let mix: Awaited<ReturnType<typeof enterpriseEnergyMix>> = [];
-  try { [data, chart, detail, extended, monthlyByYear, mix] = await Promise.all([overview(year), charts(year), management(year), carbonManagement(year), Promise.all(twinYears.map((y) => enterpriseMonthly(y))), tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([])]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
+  let board: Awaited<ReturnType<typeof indicatorBoard>> = [];
+  try { [data, chart, detail, extended, monthlyByYear, mix, board] = await Promise.all([overview(year), charts(year), management(year), carbonManagement(year), Promise.all(twinYears.map((y) => enterpriseMonthly(y))), tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([]), indicatorBoard(year)]); } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const monthly = chart?.monthly.filter((row) => row.month.startsWith(String(year))) || [];
   const renewable = detail?.renewable.filter((row) => row.renewable).reduce((total, row) => total + row.tce, 0);
   const renewableShare = renewable != null && data?.tce ? renewable / data.tce * 100 : null;
@@ -38,7 +40,6 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const leader = chart?.ranking[0];
 
   const prevMonthly = monthlyByYear[twinYears.indexOf(year - 1)] ?? [];
-  const achievedAny = (codes: string[]) => !!data?.achieved.some((row) => codes.includes(row.code));
   const tabs = <LinkTabs id="energy" label="能源模块" active={tab} items={TABS.map(([key, label]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` }))} />;
 
   return <div className="fit-screen">
@@ -51,7 +52,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       <KpiCard label="重点用能企业" value={chart?.ranking.length} unit="家" digits={0} tone="energy" foot={leader && data?.tce ? `${leader.name.replace(/（[^）]*）/g, "")} 占园区 ${fmt(leader.tce / data.tce * 100, 1)}%` : undefined} delay={0.15} />
     </div>
 
-    {tab === "consumption" && <SectionPager lead={tabs} labels={["能耗热力", "月度与结构", "企业用能矩阵", "预算进度", ...(achievedAny(["I04", "I05", "I06"]) ? ["达标表现"] : [])]}>
+    {tab === "consumption" && <SectionPager lead={tabs} labels={["能耗热力", "月度与结构", "企业用能矩阵", "预算进度", "指标表现"]}>
       <Panel className="panel-flush view-fill" title="园区能耗热力孪生" subtitle="点阵按各企业当月综合能耗与位置扩散建模，颜色越暖能耗越高；底部时间轴可逐月播放">
         {monthlyByYear.some((rows) => rows.length) ? <EnergyHeatTwin year={year} rowsByYear={Object.fromEntries(twinYears.map((y, i) => [y, monthlyByYear[i] ?? []]))} /> : <Empty title="暂无企业逐月能耗" />}
       </Panel>
@@ -69,10 +70,12 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       <Panel className="view-fill" title="累计能耗与预算" subtitle="年度预算按季度、按月等额分配，与实际用量对比">
         <BudgetProgress data={extended} kind="energy" />
       </Panel>
-      <AchievedIndicators data={data} codes={["I04", "I05", "I06"]} title="能源利用达标表现" />
+      <Panel className="view-fill" title="能源利用指标" subtitle="《绿色工业园区评价要求》能源利用类指标：当前值与引领值">
+        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={3} />
+      </Panel>
     </SectionPager>}
 
-    {tab === "renewable" && <SectionPager lead={tabs} labels={["能源来源", ...(extended?.storage.length ? ["储能充电"] : []), ...(achievedAny(["I05"]) ? ["达标表现"] : [])]}>
+    {tab === "renewable" && <SectionPager lead={tabs} labels={["能源来源", ...(extended?.storage.length ? ["储能充电"] : []), "指标表现"]}>
       <div className="view-split even">
         <Panel title="各来源能源折标量" subtitle="按能源品种库的可再生属性与年度净消费量汇总">
           <MetricChart rows={(detail?.renewable || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" label="各来源能源折标量" color={C.accent} />
@@ -88,12 +91,16 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
         <div className="table-scroll"><table><thead><tr><th>月份</th><th className="num">储能充电 / kWh</th><th className="num">储能放电 / kWh</th><th className="num">充电桩电量 / kWh</th></tr></thead>
           <tbody>{extended.storage.map((row) => <tr key={row.month}><td>{row.month}</td><td className="num">{fmt(row.storage_charge_kwh)}</td><td className="num">{fmt(row.storage_discharge_kwh)}</td><td className="num">{fmt(row.ev_charge_kwh)}</td></tr>)}</tbody></table></div>
       </Panel> : null}
-      <AchievedIndicators data={data} codes={["I05"]} title="可再生能源达标表现" />
+      <Panel className="view-fill" title="可再生能源指标" subtitle="可再生能源利用率：当前值与引领值，以及 2021 年以来的变化">
+        <IndicatorScales rows={board.filter((row) => row.code === "I05")} year={year} columns={1} />
+      </Panel>
     </SectionPager>}
 
-    {tab === "intensity" && <SectionPager lead={tabs} labels={["企业强度", ...(achievedAny(["I04", "I06"]) ? ["达标表现"] : [])]}>
+    {tab === "intensity" && <SectionPager lead={tabs} labels={["企业强度", "指标表现"]}>
       <Panel className="view-fill" title="企业综合能耗与单位产值能耗" subtitle="能耗单位 tce；单位产值能耗为 tce/万元产值。缺少产值的企业不填造强度。">{chart ? <RankingChart data={chart} /> : <Empty title="暂无数据" />}</Panel>
-      <AchievedIndicators data={data} codes={["I04", "I06"]} title="能源强度达标表现" />
+      <Panel className="view-fill" title="能源强度指标" subtitle="能源产出率与单位产品能耗达标企业占比">
+        <IndicatorScales rows={board.filter((row) => ["I04", "I06"].includes(row.code))} year={year} columns={2} />
+      </Panel>
     </SectionPager>}
 
     {tab === "flow" && <SectionPager lead={tabs} labels={detail?.transfers.length ? ["能流地图", "内部转供", "转供明细"] : ["能流地图", "内部转供"]}>
