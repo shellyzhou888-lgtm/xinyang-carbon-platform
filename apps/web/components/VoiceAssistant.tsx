@@ -40,9 +40,10 @@ export default function VoiceAssistant({ year, overview, page = "/" }: { year: n
         // Without a running backend the SDK would retry its WebSocket and flood the console;
         // the top-bar status pill already explains how to start it.
         // The backend may be started after the page opens: keep probing every 15 s until it answers.
+        setStatus("小云未连接：请在 apps/web 运行 npm run voice");
         while (!(await probeVoice(5000))) {
           if (disposed) return;
-          setStatus("");
+          setStatus("小云未连接：请在 apps/web 运行 npm run voice");
           await new Promise((resolve) => window.setTimeout(resolve, 15_000));
           if (disposed) return;
         }
