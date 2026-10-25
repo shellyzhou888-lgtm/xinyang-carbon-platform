@@ -33,6 +33,10 @@
 - MCP 插件 SHA-256：`229ee114f0504b486bdd24bbc8b08fa9b22112f5e831ef8b2e9cc507e9ccbbfe`，与上一轮 Windows 工具记录相同。上游：[MCP for Blender](https://github.com/ahujasid/mcp-for-blender)。它是社区插件，不是 Blender Foundation 官方产品。
 - 通信路径为官方 Python MCP SDK `ClientSession` → stdio MCP 服务端 → Blender 附加组件，监听 `127.0.0.1:9876`。关闭遥测，启用 MCP safe mode。没有用离线 bpy 或直接 socket 指令打开、检查或修改场景。
 
+## 当前修订工程
+
+2026-10-25 起，最新待审阅源文件为 `assets/blender-models/v3/park-reference-v3.blend`，Scene 为 `V3_GH/EI/IN/RD`；旧 `ASSEMBLY_*` 仍保留。新增 [概念与模型对照](../assets/blender-models/v3/index.html) 与 [v3 修订记录](park-modeling-v3-review.md)。仅打开工程时，将下述 `FILE` 参数改为 v3 文件；不要误跑旧版构建脚本。新外观尚待确认，网站/GLB 仍为旧版。
+
 ## 下次打开
 
 在项目根目录运行以下入口。脚本使用项目本地绝对路径定位程序，无需把 uv 加入全局 PATH。

@@ -1,0 +1,136 @@
+{
+  "version": "0.54.0",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 2579,
+      "sha256": "bcf2950beae66ab33f84861e7c61102d4af313284571a943ab410c87c82554a8"
+    },
+    {
+      "path": "greybox/EI-overview.png",
+      "bytes": 705370,
+      "sha256": "5a3f64e3615fb5b7d8934a5a45d367b324321a590ff370425cbb88554395152b"
+    },
+    {
+      "path": "greybox/GH-overview.png",
+      "bytes": 706746,
+      "sha256": "87d3ddd5eabb397e9f25521f312fb2858b0c11464ed3c751402fe953ebd342f8"
+    },
+    {
+      "path": "greybox/IN-overview.png",
+      "bytes": 683571,
+      "sha256": "3d1bdd1f45e74a1222001ef90e90ab5b2701c9b242d07e71e13d23099ace6e46"
+    },
+    {
+      "path": "greybox/RD-overview.png",
+      "bytes": 725856,
+      "sha256": "c851f09cb76e171942fc7e747251c63eb4a8f064a0acf1dafb884b84bb840af9"
+    },
+    {
+      "path": "index.html",
+      "bytes": 7376,
+      "sha256": "ce09cd4ba0ab9c7afe14afa90a584fe561df8063145fc30253e6039b6c0fbace"
+    },
+    {
+      "path": "park-reference-v3-greybox.blend",
+      "bytes": 9908990,
+      "sha256": "e21f481059b1020766f115718f5f5e02ea7e68bd37c289a502a5cc3fbac1a955"
+    },
+    {
+      "path": "park-reference-v3-structure.blend",
+      "bytes": 12401663,
+      "sha256": "7e81007130f8c686e06741c6de1f84b85c8deec9bcbfa70e63eeeccb61fe1dbf"
+    },
+    {
+      "path": "park-reference-v3.blend",
+      "bytes": 93393703,
+      "sha256": "d3ccc968fb6d23d7423ba36c687229d40850717e6114e9300c790ff775e9408b"
+    },
+    {
+      "path": "renders/EI-detail.png",
+      "bytes": 2567243,
+      "sha256": "684bbf60c538f2fa25474a47f35aec392caea2fbea07b5714032018e48a4e4e3"
+    },
+    {
+      "path": "renders/EI-overview.png",
+      "bytes": 3062032,
+      "sha256": "c169dc8bfaf2ad89b446cbfe135fd9ad65c57f55e6195de0277178ee9bbe5edf"
+    },
+    {
+      "path": "renders/EI-plan.png",
+      "bytes": 2926828,
+      "sha256": "bcf265b5c23feef724aa060a22390ea7237e33a2b82bd09e1c1f9f8a91569586"
+    },
+    {
+      "path": "renders/GH-detail.png",
+      "bytes": 2593319,
+      "sha256": "c478efda60e58a3e05bb46ba470cd0bb08757b73efc5c6332fcc039679a55cfc"
+    },
+    {
+      "path": "renders/GH-overview.png",
+      "bytes": 3033372,
+      "sha256": "8690f67f563e17ca26d6e9394a3c9187bd748dc3a0ca2315efcf1a4c4601bfa4"
+    },
+    {
+      "path": "renders/GH-plan.png",
+      "bytes": 2884383,
+      "sha256": "96fe785fbcfc4c8cfbcee2819d220c72a7800d7883f78bf4c004874d037403c8"
+    },
+    {
+      "path": "renders/IN-detail.png",
+      "bytes": 2144100,
+      "sha256": "6455a6adfac38ba0984feae22331e6e8d6e8650a0f77283b4db3e6d148ddaafa"
+    },
+    {
+      "path": "renders/IN-overview.png",
+      "bytes": 2823347,
+      "sha256": "a7c10a333d7e20838c1d8fd5dc2896d2837951b60d978402df9f9567a9ba4179"
+    },
+    {
+      "path": "renders/IN-plan.png",
+      "bytes": 2711321,
+      "sha256": "a07fdc14a4ebd70d631088339724749c155ddc879a603d861dbba4d3d14c27f0"
+    },
+    {
+      "path": "renders/RD-detail.png",
+      "bytes": 2067198,
+      "sha256": "827f08d3f891f2a9b2f72a2115ee73d953029fd2173a5b4f9406577f65cb2501"
+    },
+    {
+      "path": "renders/RD-overview.png",
+      "bytes": 3130691,
+      "sha256": "9e27938273977348ac40aeb2db1abd59fa95c35c85117cc4d8cdc734a6a07f29"
+    },
+    {
+      "path": "renders/RD-plan.png",
+      "bytes": 2924440,
+      "sha256": "c5e8cd74b0bc6485c9f59c55bb79f542d351bfb7afb7fad76f4b30b11367dd23"
+    },
+    {
+      "path": "review/final-layout.json",
+      "bytes": 50440,
+      "sha256": "7209e065df8cf282362607f85d5f52e067c8f2018a9dd96d792de7d4a59fa0d0"
+    },
+    {
+      "path": "review/mcp-evidence.json",
+      "bytes": 52556,
+      "sha256": "19ffd7ded08ba43040246e9fb860b4e0da1d91bb3f36c1ea72e7d8c16c933656"
+    },
+    {
+      "path": "review/qa.json",
+      "bytes": 5836,
+      "sha256": "f6526f58d26dd0aa8f405d5070765a5adec1855a9eb3363d2ef4e7cd2e2dd3b4"
+    },
+    {
+      "path": "review/references.json",
+      "bytes": 28915,
+      "sha256": "df3eb91eec264371afdf47ae10b7655f71db22ae93482327fd7a9609f7b99efa"
+    },
+    {
+      "path": "scene-contract.json",
+      "bytes": 42661,
+      "sha256": "231d2d9436fac67fb07a4e67c277dfd404b2463da1464f6614862879419262c3"
+    }
+  ],
+  "preserved_v2_sha256": "9191de5a0f90cf2709a957910372f0674637e54ac834e6c69582d2ec278e8c78"
+}
