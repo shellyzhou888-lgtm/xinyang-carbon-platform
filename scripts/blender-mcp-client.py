@@ -6,6 +6,7 @@ Run with: uv run --python 3.11 --with "mcp<2" python scripts/blender-mcp-client.
 """
 import argparse
 import asyncio
+import base64
 import json
 import os
 from datetime import datetime, timezone
@@ -31,6 +32,7 @@ async def main():
     parser.add_argument("--audit-dir", type=Path, default=ROOT / "storage/tooling/blender-mcp/audit")
     parser.add_argument("--user-prompt", default=USER_PROMPT)
     parser.add_argument("--data", type=Path, help="JSON scene specification passed as the LAYOUT constant")
+    parser.add_argument("--image-output", type=Path, help="Save the first image returned by an MCP tool")
     opts = parser.parse_args()
     params = StdioServerParameters(
         command=opts.uvx,
@@ -70,6 +72,13 @@ async def main():
             audit_dir.mkdir(parents=True, exist_ok=True)
             (audit_dir / f"{opts.label}.json").write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
             texts = [block.text for block in result.content if block.type == "text"]
+            if opts.image_output:
+                images = [block for block in result.content if block.type == "image"]
+                if not images:
+                    raise RuntimeError("MCP tool returned no image; inspect the audit result")
+                opts.image_output.parent.mkdir(parents=True, exist_ok=True)
+                opts.image_output.write_bytes(base64.b64decode(images[0].data, validate=True))
+                print(f"MCP image saved: {opts.image_output}")
             for value in texts:
                 print(value[:14000])
             if result.model_dump(by_alias=True).get("isError") or any(value.startswith(("Error", "Rejected")) for value in texts):

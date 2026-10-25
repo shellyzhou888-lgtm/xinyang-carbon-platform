@@ -4,6 +4,8 @@
 
 148组建筑单元按已批准场景与资产方向组装，含院内交通、入口、停车、绿化与水岸。数量、尺度和位置为概念推定，未完成逐栋测绘及地理配准；科创院落为设计提案，不能把规划红线或实例摆放当作现状事实。
 
+2026-10-24 已在 Apple Silicon Mac 恢复 Blender MCP 并打开总工程，四区全部建筑实例与查看相机检查通过，模型文件未修改。Mac 启动入口与复用方法见 [连接及查看说明](../../../docs/blender-macos-session.md)。
+
 色调统一暖灰白主体、蓝灰玻璃、深灰基座，工业建筑少量灰红点缀。模型为米制，GLB使用Y向上。规划示意环线单独隐藏，不进入GLB。
 
 assembly-layout.json保留全部实例和道路参数；manifest.json为原生模型与PNG校验；validation.json检查GLB结构、范围、独立分区和实例完整性；mcp-audit.json如实保留成功与失败调用。详情见项目docs/park-full-assembly-v2.md。
