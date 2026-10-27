@@ -1,0 +1,262 @@
+{
+  "date": "2026-10-27",
+  "status": "pending_user_approval",
+  "generator": "built-in image_gen",
+  "source_page": "http://localhost:3001/",
+  "selected_zones": [
+    "绿色家居",
+    "电子信息"
+  ],
+  "capture_method": "浏览器真实UI选片区、卫星图层、关闭企业标牌、调整倾斜与旋转、保存截图及裁图",
+  "map_boundary_caveat": "高德卫星底图上的项目规划范围叠加层；非高德法定边界、未测绘复核",
+  "old_concepts": "v3/v4布局已被用户指出过于规整，不作为本次布局输入",
+  "generation_inputs": [
+    {
+      "park": "GH",
+      "files": [
+        "assets/modeling-concepts/v5/references/green-home-outline.jpg",
+        "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S04-04_现代筑美信阳一期航拍.jpg",
+        "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S01-04_万华厂区航拍.jpg",
+        "assets/modeling-concepts/v2/references/S36-10.jpg"
+      ],
+      "output": "01-green-home-map-four-views.png"
+    },
+    {
+      "park": "EI",
+      "files": [
+        "assets/modeling-concepts/v5/references/electronics-outline.jpg",
+        "assets/site-photo-references/v2/02_电子信息/01_整体体量/S21-05_今上厂区高位全景.jpg",
+        "assets/modeling-concepts/v2/references/S21-01.jpg"
+      ],
+      "output": "02-electronics-map-four-views.png"
+    }
+  ],
+  "files": [
+    {
+      "file": "01-green-home-map-four-views.png",
+      "bytes": 3749226,
+      "sha256": "bacaf5e1a8ef89928c85fa69702fe5215c6461125332b3f44ff42dcf865e86c6",
+      "size": [
+        1536,
+        1024
+      ],
+      "role": "output"
+    },
+    {
+      "file": "02-electronics-map-four-views.png",
+      "bytes": 3840754,
+      "sha256": "739ab69e30b4e2aacf200fb3ef404339b9d47475ff1eca9b5dc2b3c8dfe31206",
+      "size": [
+        1536,
+        1024
+      ],
+      "role": "output"
+    },
+    {
+      "file": "references/electronics-map.jpg",
+      "bytes": 82174,
+      "sha256": "9fbb15418f94bab2ef764ec657a11d293346b4ffe83fe6b006eb81c28070f693",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/electronics-outline-full.jpg",
+      "bytes": 181497,
+      "sha256": "f193cfa1d7e19dab970be56f9368c4aa5e39c8239e8088b647e8c06377e7b3b4",
+      "role": "context_proof"
+    },
+    {
+      "file": "references/electronics-outline.jpg",
+      "bytes": 79531,
+      "sha256": "0f77f7b8aa4a3b72dab4f3b1b2e588a841bc142d706c19590b70736e17c31e08",
+      "role": "generation_input"
+    },
+    {
+      "file": "references/electronics-overview-full.jpg",
+      "bytes": 174550,
+      "sha256": "0086b10326be1635837f765ca46e7d5445061e0cd5e3a555b3cfb9f876bd1999",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-back.jpg",
+      "bytes": 106983,
+      "sha256": "7a698eaadaad1a03e1e6f563692ec76f8d36b2a05ab8aee4175e48559760eceb",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-front-current.jpg",
+      "bytes": 105859,
+      "sha256": "8750f697f6a8fb9bf24719252016e02b0546108933071a9ea737393a34d4bbf2",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-front.jpg",
+      "bytes": 73700,
+      "sha256": "696c8b22ed9301c5e6e0d4927dce53d7e9a258bcc7475f019cb2fd8bd97d5733",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-map.jpg",
+      "bytes": 84579,
+      "sha256": "38b7fd87fd441f5f06c9020144ff36c4bc0513a850d581d726547cd78d8a33cf",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-outline-full.jpg",
+      "bytes": 197151,
+      "sha256": "c55f97c7e81d9c5dbd3cef45e52f392be154a4920db5085a5ab1dea10ad3e790",
+      "role": "context_proof"
+    },
+    {
+      "file": "references/green-home-outline.jpg",
+      "bytes": 96207,
+      "sha256": "9e782ee3f1c557c61239c2c6cfa0e6e6bdec4da3f93e3ab10a1dfd85a5f93893",
+      "role": "generation_input"
+    },
+    {
+      "file": "references/green-home-overview-full.jpg",
+      "bytes": 207795,
+      "sha256": "4e270082b32243b252f90564d2c74426f2bd3c9a4dd60b011d6fd7b277a45537",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-side-a.jpg",
+      "bytes": 107022,
+      "sha256": "c88f5b5c2e380a9ab5a2021d7fde6d66727c1954b55ac0b40e241c93543bdf27",
+      "role": "auxiliary_not_used"
+    },
+    {
+      "file": "references/green-home-side-b.jpg",
+      "bytes": 104420,
+      "sha256": "d577ad7ce9ac7976717651636709f969e2a7ca722b2c3960f0f4d1bab8564f39",
+      "role": "auxiliary_not_used"
+    }
+  ],
+  "photo_sources": [
+    {
+      "id": "S01-04",
+      "group": "01_绿色家居",
+      "stage": "01_整体体量",
+      "title": "万华厂区航拍",
+      "note": "低分辨率，可读厂房布局；不可测量",
+      "file": "01_绿色家居/01_整体体量/S01-04_万华厂区航拍.jpg",
+      "source_id": "S01",
+      "source_title": "羊山新区现代家居产业专题",
+      "source_url": "https://dzb.henandaily.cn/html5/2025-10/27/content_329_1763563.htm",
+      "image_url": "https://dzb.henandaily.cn/resfile/2025-10-27/T5/p50_b.jpg",
+      "published_date_as_reported": "2025-10-27",
+      "retrieved_date": "2026-10-21",
+      "capture_date": "未单独核实；发稿日期不等于拍摄日期",
+      "width": 400,
+      "height": 332,
+      "sha256": "846edb2c2abd6021fa25f8bba5a01dfcf97977330a9b74d6400d93417756a404",
+      "rights": "原发布者/摄影者保留权利；项目参考存档，未取得通用再分发许可",
+      "geometry_status": "透视实拍，非正交测绘；尺寸与坐标未验证",
+      "kind": "新闻与企业实拍",
+      "zone": "绿色家居",
+      "view": "透视摄影；具体相机参数未核实",
+      "evidence_status": "来源报道/企业官网；地点限制见note"
+    },
+    {
+      "id": "S04-04",
+      "group": "01_绿色家居",
+      "stage": "01_整体体量",
+      "title": "现代筑美信阳一期航拍",
+      "note": "2020年建设阶段，非当前完整现状",
+      "file": "01_绿色家居/01_整体体量/S04-04_现代筑美信阳一期航拍.jpg",
+      "source_id": "S04",
+      "source_title": "现代筑美信阳基地正式试产",
+      "source_url": "http://www.mjmhjj.cn/newsshow/4965.htm",
+      "image_url": "http://www.mjmhjj.cn/Uploads/image/202006/20200604112018_8326.jpg",
+      "published_date_as_reported": "2020",
+      "retrieved_date": "2026-10-21",
+      "capture_date": "未单独核实；发稿日期不等于拍摄日期",
+      "width": 960,
+      "height": 540,
+      "sha256": "7f43733cb6068db482127cd29bc6a72d7a527aaa655d260aadade98aa73a4327",
+      "rights": "原发布者/摄影者保留权利；项目参考存档，未取得通用再分发许可",
+      "geometry_status": "透视实拍，非正交测绘；尺寸与坐标未验证",
+      "kind": "新闻与企业实拍",
+      "zone": "绿色家居",
+      "view": "透视摄影；具体相机参数未核实",
+      "evidence_status": "来源报道/企业官网；地点限制见note",
+      "original_project_file": "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S04-04_现代筑美信阳一期航拍.jpg",
+      "review_file": "references/S04-04.jpg"
+    },
+    {
+      "id": "S21-01",
+      "group": "02_电子信息",
+      "stage": "02_建筑结构",
+      "title": "今上厂房主立面与道路",
+      "note": "入口、窗带、屋顶和道路标线",
+      "file": "02_电子信息/02_建筑结构/S21-01_今上厂房主立面与道路.jpg",
+      "source_id": "S21",
+      "source_title": "今上速度现场",
+      "source_url": "https://app.dahecube.com/nweb/news/20221205/147443n471b1456025.htm?artid=147443",
+      "image_url": "https://att.dahecube.com/p/221202/39adef03e2f8f1496285ad08e261086a",
+      "published_date_as_reported": "2022-12-05",
+      "retrieved_date": "2026-10-21",
+      "capture_date": "未单独核实；发稿日期不等于拍摄日期",
+      "width": 1000,
+      "height": 562,
+      "sha256": "1e3ade85429f7aeabffbca3716a61dd4e31307a08a0a710211d1bca051573b2c",
+      "rights": "原发布者/摄影者保留权利；项目参考存档，未取得通用再分发许可",
+      "geometry_status": "透视实拍，非正交测绘；尺寸与坐标未验证",
+      "kind": "新闻与企业实拍",
+      "zone": "电子信息",
+      "view": "透视摄影；具体相机参数未核实",
+      "evidence_status": "来源报道/企业官网；地点限制见note",
+      "original_project_file": "assets/site-photo-references/v2/02_电子信息/02_建筑结构/S21-01_今上厂房主立面与道路.jpg",
+      "review_file": "references/S21-01.jpg"
+    },
+    {
+      "id": "S21-05",
+      "group": "02_电子信息",
+      "stage": "01_整体体量",
+      "title": "今上厂区高位全景",
+      "note": "主体与附属体块、院落道路",
+      "file": "02_电子信息/01_整体体量/S21-05_今上厂区高位全景.jpg",
+      "source_id": "S21",
+      "source_title": "今上速度现场",
+      "source_url": "https://app.dahecube.com/nweb/news/20221205/147443n471b1456025.htm?artid=147443",
+      "image_url": "https://att.dahecube.com/p/221202/08d54f65da82b03a81d72c2f015bcc48",
+      "published_date_as_reported": "2022-12-05",
+      "retrieved_date": "2026-10-21",
+      "capture_date": "未单独核实；发稿日期不等于拍摄日期",
+      "width": 1000,
+      "height": 562,
+      "sha256": "c7bff8791dc51ac92979e6d5198da260649bf5ff6991d3f3c64b9f8edd33c685",
+      "rights": "原发布者/摄影者保留权利；项目参考存档，未取得通用再分发许可",
+      "geometry_status": "透视实拍，非正交测绘；尺寸与坐标未验证",
+      "kind": "新闻与企业实拍",
+      "zone": "电子信息",
+      "view": "透视摄影；具体相机参数未核实",
+      "evidence_status": "来源报道/企业官网；地点限制见note"
+    },
+    {
+      "id": "S36-10",
+      "group": "01_绿色家居",
+      "stage": "01_整体体量",
+      "title": "万华工艺塔与管廊",
+      "note": "报道署名赵家奇、郭徽；高低跨与塔体连接",
+      "file": "01_绿色家居/01_整体体量/S36-10_万华工艺塔与管廊.jpg",
+      "source_id": "S36",
+      "source_title": "信阳绿水青山展新颜",
+      "source_url": "https://hn.ifeng.com/c/8b8PdWIuVAf",
+      "image_url": "https://x0.ifengimg.com/ucms/2024_28/0A0C5FD5354A5D5BEBBAA2CDF28620B76A4A1C77_size399_w1200_h675.jpg",
+      "published_date_as_reported": "2024-07",
+      "retrieved_date": "2026-10-21",
+      "capture_date": "未单独核实；发稿日期不等于拍摄日期",
+      "width": 1200,
+      "height": 675,
+      "sha256": "616734b364b0db24af1f951ede73538c41dd9817e60067cf2ea8d461542245fe",
+      "rights": "原发布者/摄影者保留权利；项目参考存档，未取得通用再分发许可",
+      "geometry_status": "透视实拍，非正交测绘；尺寸与坐标未验证",
+      "kind": "新闻与企业实拍",
+      "zone": "绿色家居",
+      "view": "透视摄影；具体相机参数未核实",
+      "evidence_status": "来源报道/企业官网；地点限制见note",
+      "original_project_file": "assets/site-photo-references/v2/01_绿色家居/01_整体体量/S36-10_万华工艺塔与管廊.jpg",
+      "review_file": "references/S36-10.jpg"
+    }
+  ]
+}
