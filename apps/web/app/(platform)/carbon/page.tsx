@@ -45,7 +45,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/carbon?year=${year}${key === "analysis" ? "" : `&tab=${key}`}` });
   const tabs = <BusinessNavigation id="carbon" active={tab} items={TABS.map(link)} />;
 
-  return <div className="analysis-workspace tone-carbon">
+  return <div className="analysis-workspace screen-board tone-carbon">
     <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description="先看排放构成与企业贡献，再看减排目标和改善方向。">
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>
@@ -64,74 +64,73 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
 
     {tabs}
 
-    {tab === "analysis" && <div className="analysis-grid">
-      <Panel className="analysis-main" title="近年排放量与碳强度" subtitle="柱为二氧化碳排放量，折线为单位工业增加值 CO₂（两轴均从 0 起）">
+    {tab === "analysis" && <div className="screen-grid screen-carbon-analysis">
+      <Panel className="screen-trend" title="近年排放量与碳强度" subtitle="柱为二氧化碳排放量，折线为单位工业增加值 CO₂（两轴均从 0 起）">
         <AnnualComboChart years={annual.map((item) => item.year)} totals={annual.map((item) => item.co2_t)} intensity={annual.map((item) => intensityOf(item.year))}
           totalName="碳排放" totalUnit="tCO₂" intensityName="碳强度" intensityUnit="tCO₂/万元" color={C.carbon} label="近年排放量与碳强度" />
       </Panel>
-      <Panel className="analysis-side analysis-scope" title={`${year} 年范围一与范围二`} subtitle="厂内燃料燃烧为直接排放，外购电力、热力为间接排放">
+      <Panel className="screen-scope" title={`${year} 年范围一与范围二`} subtitle="厂内燃料燃烧为直接排放，外购电力、热力为间接排放">
         <ScopeSplit rows={structure(detail)} />
       </Panel>
 
-      <Panel className="analysis-main" title="企业排放与碳强度四象限" subtitle="横轴为排放量（对数），纵轴为单位产值 CO₂；虚线为中位数，气泡越大排放越多">
+      <Panel className="screen-quadrant" title="企业排放与碳强度四象限" subtitle="横轴为排放量（对数），纵轴为单位产值 CO₂；虚线为中位数，气泡越大排放越多">
         <EmitterQuadrant rows={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} />
       </Panel>
-      <Panel className="analysis-side analysis-ranking" title="企业碳排放贡献" subtitle="按排放量排序；右列为单位产值 CO₂（tCO₂/万元）">
+      <Panel className="screen-ranking" title="企业碳排放贡献" subtitle="按排放量排序；右列为单位产值 CO₂（tCO₂/万元）">
         <ContributionList rows={ranking.map((item) => ({ code: item.code, name: shortName(item.name), value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} unit="tCO₂" intensityUnit="tCO₂/万元产值" tone="carbon" />
       </Panel>
-      <Panel className="analysis-wide" title={`${year - 1} → ${year} 年排放变化归因`} subtitle="从上年总量出发，逐项列出各能源品种带来的增减，落到本年总量">
+      <Panel className="screen-waterfall" title={`${year - 1} → ${year} 年排放变化归因`} subtitle="从上年总量出发，逐项列出各能源品种带来的增减，落到本年总量">
         <ChangeWaterfall previous={structure(previous)} current={structure(detail)} year={year} />
       </Panel>
     </div>}
 
     {tab === "targets" && <>
-      <div className="analysis-grid">
-        <Panel className="analysis-wide" title="碳排放指标" subtitle="《绿色工业园区评价要求》碳排放类指标：要求逐年下降，图为 2021 年以来的变化">
+      <div className="screen-grid screen-targets">
+        <Panel className="screen-indicators" title="碳排放指标" subtitle="《绿色工业园区评价要求》碳排放类指标：要求逐年下降，图为 2021 年以来的变化">
           <IndicatorScales rows={board.filter((row) => ["I17", "I18", "I19"].includes(row.code))} year={year} columns={3} large />
         </Panel>
 
-        <Panel className="analysis-side" title={`${year} 年排放预算使用`} subtitle="累计排放占年度排放预算的比例">
+        <Panel className="screen-budget" title={`${year} 年排放预算使用`} subtitle="累计排放占年度排放预算的比例">
           <CarbonBudgetGauge data={extended} />
         </Panel>
-        <div className="analysis-main analysis-nested"><Roadmap data={extended} /></div>
+        <div className="screen-roadmap analysis-nested"><Roadmap data={extended} /></div>
       </div>
       <div className="analysis-next"><span>结合目标差距，进一步查看问题、原因与减排措施</span><MoreLink href={`/diagnosis?year=${year}&tab=diagnose`}>进入综合诊断</MoreLink></div>
     </>}
 
-    {tab === "flow" && <div className="analysis-stack">
-      <Panel className="panel-flush view-fill" title="碳流网络互动地图" subtitle="企业 → 产业片区 → 园区的排放汇聚；卡片显示排放量、占比与单位产值 CO₂，红色光罩为存在未处理预警的企业"
+    {tab === "flow" && <div className="screen-grid screen-carbon-flow">
+      <Panel className="screen-map panel-flush" title="碳流网络互动地图" subtitle="企业 → 产业片区 → 园区的排放汇聚；卡片显示排放量、占比与单位产值 CO₂，红色光罩为存在未处理预警的企业"
         action={<MoreLink href={`/energy?year=${year}&tab=flow`}>能流网络</MoreLink>}>
         <FlowNetworkMap mode="carbon" year={year} parkTotal={data?.co2_t} mix={mix} nodes={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))}
           alerts={(detail?.alerts || []).filter((item) => item.status === "open").map((item) => item.node)} />
       </Panel>
+      <Panel className="screen-ranking" title="企业碳排放贡献" subtitle="企业排放量、园区占比与单位产值 CO₂">
+        <ContributionList rows={ranking.map((item) => ({ code: item.code, name: shortName(item.name), value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} unit="tCO₂" intensityUnit="tCO₂/万元产值" tone="carbon" />
+      </Panel>
     </div>}
 
-    {tab === "asset" && <div className="analysis-stack">
-      <Panel className="view-fill" title="碳成本敞口" subtitle="按全国碳市场年均价折算的园区碳排放价值；虚框柱为基准预测排放">
+    {tab === "asset" && <div className="screen-grid screen-assets">
+      <Panel className="screen-exposure" title="碳成本敞口" subtitle="按全国碳市场年均价折算的园区碳排放价值；虚框柱为基准预测排放">
         <ExposureView asset={asset} year={year} />
       </Panel>
-      <div className="analysis-grid balanced">
-        <Panel className="view-fill" title="减排措施的碳资产价值" subtitle="诊断页关联策略的年减排量 × 当年碳价，按减排量排序">
-          <ReductionValue plans={extended?.plans || []} price={parkAsset?.cea_price} exposure={parkAsset?.cost_wan} />
-        </Panel>
-        <CarbonMarket data={extended} />
-      </div>
+      <Panel className="view-fill" title="减排措施的碳资产价值" subtitle="诊断页关联策略的年减排量 × 当年碳价，按减排量排序">
+        <ReductionValue plans={extended?.plans || []} price={parkAsset?.cea_price} exposure={parkAsset?.cost_wan} />
+      </Panel>
+      <CarbonMarket data={extended} />
     </div>}
 
-    {tab === "product" && <div className="analysis-stack">
-      {(product?.chains ?? []).map((chain) => <Panel key={chain.code} className="view-fill" title={`${chain.name} · 产品碳轨迹`}
+    {tab === "product" && <div className="screen-grid screen-products">
+      {(product?.chains ?? []).map((chain) => <Panel key={chain.code} className="screen-chain" title={`${chain.name} · 产品碳轨迹`}
         subtitle={`功能单位：${chain.functional_unit}；园区生产段取 ${chain.year} 年企业排放，物料清单与产量为模拟值，背景因子取天工 LCI（Brightway 计算）`}>
         <ChainTrajectory chain={chain} />
       </Panel>)}
-      <div className="analysis-grid balanced">
-        <Panel title="企业产品碳强度对标" subtitle="厂内碳强度 ÷ 功能单位相同的参考足迹；超过 100% 的条目标为橙色">
-          <FootprintView comparison={footprint} />
-        </Panel>
-        <FootprintRefs data={extended} />
-      </div>
-      {product?.lca ? <Panel className="view-fill" title="天工 LCI 背景数据与计算方法" subtitle="背景过程由 Brightway 2.5 递归计算，结果写回园区数据库，网页只读取结果">
+      <Panel className="screen-comparison" title="企业产品碳强度对标" subtitle="厂内碳强度 ÷ 功能单位相同的参考足迹；超过 100% 的条目标为橙色">
+        <FootprintView comparison={footprint} />
+      </Panel>
+      <FootprintRefs data={extended} />
+      {product?.lca ? <Panel className="screen-method" title="天工 LCI 背景数据与计算方法" subtitle="背景过程由 Brightway 2.5 递归计算，结果写回园区数据库，网页只读取结果">
         <LcaMethod lca={product.lca} rule={product.chains[0]?.factor_rule ?? null} />
-      </Panel> : <Panel className="view-fill" title="天工 LCI 背景数据"><p className="panel-note">尚未导入天工数据，请在 packages/lca 运行 tiangong_lca.py --write 与 product_chains.py --write。</p></Panel>}
+      </Panel> : <Panel className="screen-method" title="天工 LCI 背景数据"><p className="panel-note">尚未导入天工数据，请在 packages/lca 运行 tiangong_lca.py --write 与 product_chains.py --write。</p></Panel>}
     </div>}
   </div>;
 }
