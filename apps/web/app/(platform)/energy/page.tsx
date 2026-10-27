@@ -1,25 +1,25 @@
 import { charts, management, overview, carbonManagement, enterpriseEnergyMix, enterpriseMonthly, indicatorBoard } from "@/lib/server";
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
 import { DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
-import { LinkTabs } from "@/components/MotionParts";
+import BusinessNavigation from "@/components/BusinessNavigation";
 import { RankingChart } from "@/components/EnergyCharts";
-import { KpiCard, YearCompareChart } from "@/components/InsightParts";
+import { ContributionList, KpiCard, YearCompareChart } from "@/components/InsightParts";
 import MetricChart from "@/components/MetricChart";
 import EnergyHeatTwin from "@/components/EnergyHeatTwin";
 import FlowNetworkMap from "@/components/FlowNetworkMap";
 import EnergyFlow from "@/components/EnergyFlow";
 import { BudgetProgress, CompositionCapsules, EnterpriseMatrix } from "@/components/ProgressViz";
-import SectionPager from "@/components/SectionPager";
 import { IndicatorScales } from "@/components/IndicatorScales";
 import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
 
-const TABS = [["consumption", "能源消费"], ["renewable", "可再生能源"], ["intensity", "能源强度"], ["flow", "能流网络"]] as const;
+const TABS = [["consumption", "用能分析"], ["renewable", "绿能利用"], ["intensity", "能效对标"]] as const;
+const TOPICS = [["heat", "热力孪生"], ["flow", "能流网络"]] as const;
 
 export default async function Energy({ searchParams }: { searchParams: Promise<{ year?: string; tab?: string }> }) {
   const sp = await searchParams, year = selectedYear(sp.year);
-  const tab = TABS.some(([key]) => key === sp.tab) ? sp.tab! : "consumption";
+  const tab = [...TABS, ...TOPICS].some(([key]) => key === sp.tab) ? sp.tab! : "consumption";
   let data: Awaited<ReturnType<typeof overview>> | null = null, chart: Awaited<ReturnType<typeof charts>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, error = "";
   let extended: Awaited<ReturnType<typeof carbonManagement>> | null = null;
   // Heat twin: every year with enterprise monthly data (2021 onwards), switchable inside the map.
@@ -40,10 +40,11 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const leader = chart?.ranking[0];
 
   const prevMonthly = monthlyByYear[twinYears.indexOf(year - 1)] ?? [];
-  const tabs = <LinkTabs id="energy" label="能源模块" active={tab} items={TABS.map(([key, label]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` }))} />;
+  const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` });
+  const tabs = <BusinessNavigation id="energy" active={tab} items={TABS.map(link)} topics={TOPICS.map(link)} />;
 
-  return <div className="fit-screen">
-    <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description="从消费结构到企业强度，逐层查看园区用能。" />
+  return <div className="analysis-workspace tone-energy">
+    <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description="总量与趋势、企业用能、预算与能效，在同一视野下逐层分析。" />
     <DataError error={error} />
     <div className="kpi-grid">
       <KpiCard featured label={`${year} 年综合能耗`} value={data?.tce} unit="tce" digits={0} tone="energy" previous={annual(year - 1)?.tce} spark={monthly.map((row) => row.tce)} foot="同比上年 · 月度走势" />
@@ -52,58 +53,69 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       <KpiCard label="重点用能企业" value={chart?.ranking.length} unit="家" digits={0} tone="energy" foot={leader && data?.tce ? `${leader.name.replace(/（[^）]*）/g, "")} 占园区 ${fmt(leader.tce / data.tce * 100, 1)}%` : undefined} delay={0.15} />
     </div>
 
-    {tab === "consumption" && <SectionPager lead={tabs} labels={["能耗热力", "月度与结构", "企业用能矩阵", "预算进度", "指标表现"]}>
-      <Panel className="panel-flush view-fill" title="园区能耗热力孪生" subtitle="点阵按各企业当月综合能耗与位置扩散建模，颜色越暖能耗越高；底部时间轴可逐月播放">
-        {monthlyByYear.some((rows) => rows.length) ? <EnergyHeatTwin year={year} rowsByYear={Object.fromEntries(twinYears.map((y, i) => [y, monthlyByYear[i] ?? []]))} /> : <Empty title="暂无企业逐月能耗" />}
-      </Panel>
-      <div className="view-split">
-        <Panel title={`${year} 年月度综合能耗`} subtitle={`柱为 ${year} 年，虚线为 ${year - 1} 年同期；悬停查看同比`}>
+    {tabs}
+
+    {tab === "consumption" && <>
+      <div className="analysis-grid">
+        <Panel className="analysis-main" title={`${year} 年月度综合能耗`} subtitle={`柱为 ${year} 年，虚线为 ${year - 1} 年同期；悬停查看同比`}>
           {monthly.length ? <YearCompareChart months={months} current={monthly.map((row) => row.tce)} previous={monthly.map((row) => lastYear.find((prev) => prev.month.slice(5) === row.month.slice(5))?.tce ?? null)} year={year} unit="tce" color={C.energy} label="月度综合能耗同比" /> : <Empty title="暂无月度数据" />}
         </Panel>
-        <Panel title="能源消费结构" subtitle="各品种折标准煤后的量与占比">
+        <Panel className="analysis-side" title="能源消费结构" subtitle="各品种折标准煤后的量与占比">
           <CompositionCapsules rows={(chart?.structure || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" />
         </Panel>
+        <Panel className="analysis-main analysis-matrix" title="企业月度用能体检矩阵" subtitle="每格为企业一个月的综合能耗：可按同比上年或相对自身月均着色，悬停查看数值">
+          <EnterpriseMatrix current={monthlyByYear[twinYears.indexOf(year)] ?? []} previous={prevMonthly} metric="tce" unit="tce" year={year} />
+        </Panel>
+        <Panel className="analysis-side analysis-ranking" title="重点用能企业" subtitle="能耗、园区占比与单位产值能耗（tce/万元）" action={<MoreLink href={`/energy?year=${year}&tab=intensity`}>能效对标</MoreLink>}>
+          <ContributionList rows={(chart?.ranking || []).map((row) => ({ code: row.code, name: row.name.replace(/（[^）]*）/g, ""), value: row.tce, intensity: row.intensity }))} total={data?.tce} unit="tce" intensityUnit="tce/万元产值" tone="energy" />
+        </Panel>
+        <Panel className="analysis-wide" title="累计能耗与预算" subtitle="年度预算按季度、按月等额分配，与实际用量对比">
+          <BudgetProgress data={extended} kind="energy" />
+        </Panel>
+        <Panel className="analysis-wide" title="能源利用指标" subtitle="《绿色工业园区评价要求》能源利用类指标：当前值与引领值">
+          <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={3} />
+        </Panel>
       </div>
-      <Panel className="view-fill" title="企业月度用能体检矩阵" subtitle="每格为企业一个月的综合能耗：可按同比上年或相对自身月均着色，悬停查看数值">
-        <EnterpriseMatrix current={monthlyByYear[twinYears.indexOf(year)] ?? []} previous={prevMonthly} metric="tce" unit="tce" year={year} />
-      </Panel>
-      <Panel className="view-fill" title="累计能耗与预算" subtitle="年度预算按季度、按月等额分配，与实际用量对比">
-        <BudgetProgress data={extended} kind="energy" />
-      </Panel>
-      <Panel className="view-fill" title="能源利用指标" subtitle="《绿色工业园区评价要求》能源利用类指标：当前值与引领值">
-        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={3} />
-      </Panel>
-    </SectionPager>}
+    </>}
 
-    {tab === "renewable" && <SectionPager lead={tabs} labels={["能源来源", ...(extended?.storage.length ? ["储能充电"] : []), "指标表现"]}>
-      <div className="view-split even">
+    {tab === "renewable" && <div className="analysis-stack">
+      <div className="analysis-grid balanced">
         <Panel title="各来源能源折标量" subtitle="按能源品种库的可再生属性与年度净消费量汇总">
           <MetricChart rows={(detail?.renewable || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" label="各来源能源折标量" color={C.accent} />
         </Panel>
+        <Panel className="view-fill" title="可再生能源指标" subtitle="可再生能源利用率：当前值与引领值，以及 2021 年以来的变化">
+          <IndicatorScales rows={board.filter((row) => row.code === "I05")} year={year} columns={1} />
+        </Panel>
+      </div>
+      <div className="analysis-grid balanced">
         <Panel title="可再生属性与用能来源">
           <div className="list">{detail?.renewable.map((row) => <div className="list-row" key={row.name}>
             <div><b>{row.name}</b><small>{row.renewable ? "可再生能源" : "常规能源"}</small></div>
             <div className="list-figure"><span className="num">{fmt(row.tce)}</span><small>tce</small>{row.renewable && <em className="chip-ok">可再生</em>}</div>
           </div>)}</div>
         </Panel>
+        {extended?.storage.length ? <Panel className="view-fill" title="储能与充电月度电量">
+          <div className="table-scroll"><table><thead><tr><th>月份</th><th className="num">储能充电 / kWh</th><th className="num">储能放电 / kWh</th><th className="num">充电桩电量 / kWh</th></tr></thead>
+            <tbody>{extended.storage.map((row) => <tr key={row.month}><td>{row.month}</td><td className="num">{fmt(row.storage_charge_kwh)}</td><td className="num">{fmt(row.storage_discharge_kwh)}</td><td className="num">{fmt(row.ev_charge_kwh)}</td></tr>)}</tbody></table></div>
+        </Panel> : null}
       </div>
-      {extended?.storage.length ? <Panel className="view-fill" title="储能与充电月度电量">
-        <div className="table-scroll"><table><thead><tr><th>月份</th><th className="num">储能充电 / kWh</th><th className="num">储能放电 / kWh</th><th className="num">充电桩电量 / kWh</th></tr></thead>
-          <tbody>{extended.storage.map((row) => <tr key={row.month}><td>{row.month}</td><td className="num">{fmt(row.storage_charge_kwh)}</td><td className="num">{fmt(row.storage_discharge_kwh)}</td><td className="num">{fmt(row.ev_charge_kwh)}</td></tr>)}</tbody></table></div>
-      </Panel> : null}
-      <Panel className="view-fill" title="可再生能源指标" subtitle="可再生能源利用率：当前值与引领值，以及 2021 年以来的变化">
-        <IndicatorScales rows={board.filter((row) => row.code === "I05")} year={year} columns={1} />
-      </Panel>
-    </SectionPager>}
 
-    {tab === "intensity" && <SectionPager lead={tabs} labels={["企业强度", "指标表现"]}>
-      <Panel className="view-fill" title="企业综合能耗与单位产值能耗" subtitle="能耗单位 tce；单位产值能耗为 tce/万元产值。缺少产值的企业不填造强度。">{chart ? <RankingChart data={chart} /> : <Empty title="暂无数据" />}</Panel>
-      <Panel className="view-fill" title="能源强度指标" subtitle="能源产出率与单位产品能耗达标企业占比">
-        <IndicatorScales rows={board.filter((row) => ["I04", "I06"].includes(row.code))} year={year} columns={2} />
-      </Panel>
-    </SectionPager>}
+    </div>}
 
-    {tab === "flow" && <SectionPager lead={tabs} labels={detail?.transfers.length ? ["能流地图", "内部转供", "转供明细"] : ["能流地图", "内部转供"]}>
+    {tab === "intensity" && <div className="analysis-grid">
+      <Panel className="analysis-main" title="企业综合能耗与单位产值能耗" subtitle="能耗单位 tce；单位产值能耗为 tce/万元产值。缺少产值的企业不填造强度。">{chart ? <RankingChart data={chart} /> : <Empty title="暂无数据" />}</Panel>
+      <Panel className="analysis-side" title="能源强度指标" subtitle="能源产出率与单位产品能耗达标企业占比">
+        <IndicatorScales rows={board.filter((row) => ["I04", "I06"].includes(row.code))} year={year} columns={1} />
+      </Panel>
+    </div>}
+
+    {tab === "heat" && <div className="analysis-stack">
+      <Panel className="panel-flush view-fill" title="园区能耗热力孪生" subtitle="点阵按各企业当月综合能耗与位置扩散建模，颜色越暖能耗越高；底部时间轴可逐月播放">
+        {monthlyByYear.some((rows) => rows.length) ? <EnergyHeatTwin year={year} rowsByYear={Object.fromEntries(twinYears.map((y, i) => [y, monthlyByYear[i] ?? []]))} /> : <Empty title="暂无企业逐月能耗" />}
+      </Panel>
+    </div>}
+
+    {tab === "flow" && <div className="analysis-stack">
       <Panel className="panel-flush view-fill" title="能流网络互动地图" subtitle="园区 → 产业片区 → 企业的供能关系；卡片显示能耗、占比与单位产值能耗，红色光罩为存在未处理预警的企业">
         <FlowNetworkMap mode="energy" year={year} parkTotal={data?.tce} mix={mix} nodes={(chart?.ranking || []).map((row) => ({ code: row.code, name: row.name, value: row.tce, intensity: row.intensity }))}
           alerts={(detail?.alerts || []).filter((row) => row.status === "open").map((row) => row.node)} />
@@ -115,6 +127,6 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
         <div className="table-scroll"><table><thead><tr><th>来源</th><th>去向</th><th>能源</th><th className="num">转供量</th></tr></thead>
           <tbody>{detail.transfers.map((row, index) => <tr key={index}><td>{row.source}</td><td>{row.target}</td><td>{row.energy}</td><td className="num">{fmt(row.quantity)} {row.unit}</td></tr>)}</tbody></table></div>
       </Panel>}
-    </SectionPager>}
+    </div>}
   </div>;
 }
