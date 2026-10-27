@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-26",
+  "status": "pending_user_approval",
+  "scope": [
+    "绿色家居",
+    "电子信息"
+  ],
+  "generator": "built-in image_gen",
+  "view_order": [
+    "正面",
+    "背面",
+    "左侧",
+    "右侧"
+  ],
+  "definition": "以对应v3全景方向为正面，其他为概念环绕视角；不对应已核实地理方位或测量值。",
+  "geometric_consistency": "主要组团可辨，逐栋几何未验证，部分次要道路与建筑漂移",
+  "outputs": [
+    {
+      "park": "绿色家居",
+      "file": "01-green-home-four-views.png",
+      "reference": "../v3/01-green-home-panorama.png",
+      "sha256": "79166d722e55a954d5683ded7ae2028959aa81c6c90d4ad23232e51ecdd2c317",
+      "width": 1672,
+      "height": 941
+    },
+    {
+      "park": "电子信息",
+      "file": "02-electronics-four-views.png",
+      "reference": "../v3/02-electronics-panorama.png",
+      "sha256": "f4a9e4ed889daa68e3c3a2fd2139d1014627249bedcdc8d4b22bc5819a628b37",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "source_photos": "../v3/reference-manifest.json"
+}
