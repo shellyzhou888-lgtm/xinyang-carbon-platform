@@ -48,7 +48,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/carbon?year=${year}${key === "analysis" ? "" : `&tab=${key}`}` });
   const tabs = <BusinessNavigation id="carbon" active={tab} items={TABS.map(link)} />;
 
-  return <div className="analysis-workspace screen-board tone-carbon">
+  return <div className={`analysis-workspace ${tab === "product" ? "product-workspace" : "screen-board"} tone-carbon`}>
     <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description="先看排放构成与企业贡献，再看减排目标和改善方向。">
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>

@@ -2050,3 +2050,33 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
   .renewable-mix, .chain-hotspots, .live-quotes { grid-template-columns: minmax(0, 1fr); }
   .renewable-donut { min-height: 220px; }
 }
+
+/* Product footprints use a scrolling reading layout rather than the fixed-height dashboard. */
+.product-workspace .screen-products { grid-template-rows: auto auto; align-items: start; gap: 24px; }
+.product-workspace .screen-chain { padding: 22px; }
+.product-workspace .trajectory { grid-template-rows: auto 340px auto; overflow: visible; gap: 20px; }
+.product-workspace .trajectory > .chart { height: 340px; min-height: 300px; }
+.product-workspace .stage-list { max-height: 240px; overflow: auto; scrollbar-width: thin; }
+.product-workspace .stage-name b { font-size: 13px; }
+.product-workspace .phase-legend { font-size: 12px; gap: 6px 12px; }
+.product-workspace .chain-hotspots { grid-template-rows: auto auto; gap: 28px; }
+.product-workspace .chain-hotspots h3 { gap: 6px; }
+.product-workspace .chain-hotspots h3 small { line-height: 1.5; }
+.product-workspace .chain-hotspots li { padding: 10px 8px; }
+@media (min-width: 901px) {
+  .product-workspace .screen-products { grid-template-columns: minmax(0, 1fr) clamp(280px, 20vw, 360px); }
+  .product-workspace .screen-hotspots { position: sticky; top: calc(var(--topbar) + 16px); }
+}
+@media (min-width: 1181px) {
+  .product-workspace .trajectory { grid-template-columns: minmax(260px, .8fr) minmax(0, 2fr); grid-template-rows: minmax(340px, auto) auto; gap: 20px 24px; }
+  .product-workspace .trajectory-top { grid-template-columns: minmax(0, 1fr); gap: 16px; overflow: visible; }
+  .product-workspace .trajectory-products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .product-workspace .milestone-route { grid-column: 1 / -1; }
+  .product-workspace .milestone { padding: 10px; gap: 8px; }
+  .product-workspace .milestone-photo { width: 56px; height: 42px; }
+  .product-workspace .milestone b { font-size: 12px; }
+  .product-workspace .milestone strong { font-size: 20px; }
+  .product-workspace .milestone small { font-size: 10px; }
+  .product-workspace .trajectory > .chart { grid-column: 2; grid-row: 1; }
+  .product-workspace .trajectory > .stage-list { grid-column: 1 / -1; grid-row: 2; }
+}
