@@ -63,6 +63,14 @@
    - 开发服务器运行期间若修改了 `packages/db-agent/src` 的导出，先在 `packages/db-agent` 运行 `npm run build`，再重启网站开发服务器；`predev` 只在启动时构建一次，旧的 `dist/index.mjs` 会导致“Export ... doesn't exist in target module”。
 6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
 
+### 2026-10-27 Mac 本机语音连接验证
+
+- 本次离线原因是 `8766` 小云后台没有运行；现有 `.env.xiaoyun` 已配置本机 Python、语音与 Agent 密钥及项目模块，无需更换凭据。
+- 在 `apps/web` 执行 `npm run voice` 后，`http://127.0.0.1:8766/api/health` 返回 `mode=live`、`voiceReady=true`、`agentReady=true`。
+- 使用网站 origin 对 `/voice` 发起 WebSocket `hello`，项目 `xinyang-park` 返回 `ready`；刷新网站后右下角显示“唤醒小云”，连接状态显示“全部在线”。
+- 本轮检查到后台与项目协议握手；未开启麦克风、未验证实际收音及上游语音合成。用户点击小云后按浏览器提示允许麦克风即可开始真实语音验证。健康接口的 ready 字段表示密钥已配置，不等同于上游调用成功。
+- 网站与语音后台是两个独立进程：仅启动 `npm run dev` 不会启动小云。若小云离线，重新运行 `npm run voice`，保持进程运行；页面会定期重试，也可刷新立即重连。
+
 ### 3.2 连接状态与常见“数据连接异常”（2026-10-21）
 
 顶栏右侧的状态胶囊每分钟调用 `GET /api/health`，点击可查看三项：
