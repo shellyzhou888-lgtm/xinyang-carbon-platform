@@ -10,7 +10,9 @@
     "sync:weather": "tsx src/weather-sync.ts",
     "sync:directory": "tsx src/directory-sync.ts",
     "typecheck": "tsc --noEmit",
-    "test:fixture": "tsx test/make-fixture.ts"
+    "test:fixture": "tsx test/make-fixture.ts",
+    "sync:carbon": "tsx src/carbon-market-sync.ts",
+    "test:carbon": "tsx --test test/carbon-market.test.ts"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

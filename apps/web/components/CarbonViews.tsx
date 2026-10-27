@@ -155,18 +155,17 @@ export function CarbonBudgetGauge({ data }: { data: CarbonManagementData | null 
 
 // ---------- Carbon asset tab ----------
 
-/** Carbon-cost exposure: what the park's emissions would cost at the national carbon price, by year and by enterprise. */
+/** Annual park exposure; enterprise totals already appear in the emissions view. */
 export function ExposureView({ asset, year }: { asset: CarbonAsset | null; year: number }) {
   const park = (asset?.rows || []).filter((row) => row.node_code === "XYEDZ");
   const now = park.find((row) => row.year === year);
-  const enterprises = (asset?.rows || []).filter((row) => row.node_code !== "XYEDZ" && row.year === year && row.cost_wan != null).sort((a, b) => (b.cost_wan ?? 0) - (a.cost_wan ?? 0));
   const option = useMemo(() => ({
     backgroundColor: "transparent", tooltip: tooltip(),
     legend: legend({ top: 0, left: "center", data: ["碳成本敞口（实际排放）", "碳成本敞口（预测排放）", "全国碳市场年均价"] }),
     grid: { left: 8, right: 8, top: 52, bottom: 6, containLabel: true },
     xAxis: { type: "category", data: park.map((row) => String(row.year)), ...axis },
-    yAxis: [{ type: "value", name: "万元", nameTextStyle: { color: C.muted, align: "left" }, ...axis },
-            { type: "value", name: "元/t", nameTextStyle: { color: C.muted, align: "right" }, ...axis, splitLine: { show: false } }],
+    yAxis: [{ type: "value", name: "万元", nameTextStyle: { color: C.muted, align: "left" }, ...axis, splitNumber: 3 },
+            { type: "value", name: "元/t", nameTextStyle: { color: C.muted, align: "right" }, ...axis, splitNumber: 3, splitLine: { show: false } }],
     series: [
       { name: "碳成本敞口（实际排放）", type: "bar", stack: "c", barMaxWidth: 40, data: park.map((row) => row.co2_basis === "actual" ? row.cost_wan : "-"), itemStyle: { color: barFade(C.carbon), borderRadius: [8, 8, 0, 0] },
         label: { show: true, position: "top", color: C.text, fontSize: 12, formatter: ({ value }: { value: number }) => fmt(value, 0) } },
@@ -177,22 +176,13 @@ export function ExposureView({ asset, year }: { asset: CarbonAsset | null; year:
   }), [park]);
   const ref = useChart(option);
   if (!park.length) return <div className="empty"><b>暂无碳成本测算数据</b></div>;
-  const top = enterprises[0]?.cost_wan || 1;
-  return <div className="asset-exposure">
+  return <div className="asset-overview">
     <div className="viz-stack">
       <StatStrip items={[{ label: `${year} 年碳成本敞口`, value: now?.cost_wan, unit: "万元", tone: "carbon" }, { label: "全国碳市场年均价", value: now?.cea_price, unit: "元/t", digits: 2 },
         { label: "占园区工业总产值", value: now?.cost_share_of_output_pct, unit: "%", digits: 2 }, { label: "CCER 抵销可节省", value: now?.ccer_saving_wan, unit: "万元", digits: 1 }]} />
       <div ref={ref} className="chart" role="img" aria-label="历年碳成本敞口与碳价" />
       <p className="panel-note">敞口 = 当年碳排放 × 全国碳市场年均价，用于衡量碳价上涨的影响；园区企业目前不在全国碳市场强制履约范围内，不是实际支出。CCER 抵销按应清缴量的 5% 上限测算。</p>
     </div>
-    <ol className="exposure-list" aria-label={`${year} 年企业碳成本敞口`}>
-      {enterprises.map((row, i) => <li key={row.node_code}>
-        <span className="num">{String(i + 1).padStart(2, "0")}</span><b>{shortName(row.node_name)}</b>
-        <strong className="num">{fmt(row.cost_wan, 1)}<small>万元</small></strong>
-        <em className="num" title="占企业工业总产值">{row.cost_share_of_output_pct != null ? `${fmt(row.cost_share_of_output_pct, 2)}%` : "—"}</em>
-        <i><u style={{ width: `${(row.cost_wan ?? 0) / top * 100}%` }} /></i>
-      </li>)}
-    </ol>
   </div>;
 }
 

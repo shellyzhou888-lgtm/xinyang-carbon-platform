@@ -1,14 +1,16 @@
-import { charts, management, overview, carbonManagement, carbonAsset, enterpriseEnergyMix, footprintComparison, indicatorBoard, productChains } from "@/lib/server";
+import { charts, management, overview, carbonManagement, carbonAsset, carbonMarket, enterpriseEnergyMix, indicatorBoard, productChains } from "@/lib/server";
 import { selectedYear } from "@/lib/workspace";
 import { DataError, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import BusinessNavigation from "@/components/BusinessNavigation";
 import { AnnualComboChart, ContributionList, KpiCard } from "@/components/InsightParts";
 import { IndicatorScales } from "@/components/IndicatorScales";
-import { CarbonMarket, FootprintRefs, Roadmap } from "@/components/CarbonDataSections";
-import { CarbonBudgetGauge, ChangeWaterfall, EmitterQuadrant, ExposureView, FootprintView, ReductionValue, ScopeSplit } from "@/components/CarbonViews";
+import { Roadmap } from "@/components/CarbonDataSections";
+import { CarbonBudgetGauge, ChangeWaterfall, EmitterQuadrant, ExposureView, ReductionValue, ScopeSplit } from "@/components/CarbonViews";
 import FlowNetworkMap from "@/components/FlowNetworkMap";
-import { ChainTrajectory, LcaMethod } from "@/components/ProductTrajectory";
+import { ChainTrajectory } from "@/components/ProductTrajectory";
 import { C } from "@/lib/chart-theme";
+import ProductHotspots from "@/components/ProductHotspots";
+import LiveCarbonMarket from "@/components/LiveCarbonMarket";
 
 export const dynamic = "force-dynamic";
 
@@ -21,16 +23,17 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   let data: Awaited<ReturnType<typeof overview>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, extended: Awaited<ReturnType<typeof carbonManagement>> | null = null, error = "";
   let previous: Awaited<ReturnType<typeof management>> | null = null;
   let mix: Awaited<ReturnType<typeof enterpriseEnergyMix>> = [];
-  let asset: Awaited<ReturnType<typeof carbonAsset>> | null = null, footprint: Awaited<ReturnType<typeof footprintComparison>> | null = null;
+  let asset: Awaited<ReturnType<typeof carbonAsset>> | null = null;
+  let market: Awaited<ReturnType<typeof carbonMarket>> | null = null;
   let chart: Awaited<ReturnType<typeof charts>> | null = null;
   let board: Awaited<ReturnType<typeof indicatorBoard>> = [];
   let product: Awaited<ReturnType<typeof productChains>> | null = null;
   try {
-    [data, detail, extended, chart, previous, mix, asset, footprint, board, product] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
+    [data, detail, extended, chart, previous, mix, asset, market, board, product] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
     tab === "analysis" && year > 2021 ? management(year - 1) : Promise.resolve(null),
     tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([]),
     tab === "asset" ? carbonAsset(2021, year + 1) : Promise.resolve(null),
-    tab === "product" ? footprintComparison(year) : Promise.resolve(null), tab === "targets" ? indicatorBoard(year) : Promise.resolve([]), tab === "product" ? productChains() : Promise.resolve(null)]);
+    tab === "asset" ? carbonMarket() : Promise.resolve(null), tab === "targets" ? indicatorBoard(year) : Promise.resolve([]), tab === "product" ? productChains() : Promise.resolve(null)]);
   } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const annual = detail?.annual || [];
   const row = (y: number) => annual.find((item) => item.year === y);
@@ -116,7 +119,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <Panel className="view-fill" title="减排措施的碳资产价值" subtitle="诊断页关联策略的年减排量 × 当年碳价，按减排量排序">
         <ReductionValue plans={extended?.plans || []} price={parkAsset?.cea_price} exposure={parkAsset?.cost_wan} />
       </Panel>
-      <CarbonMarket data={extended} />
+      <LiveCarbonMarket initial={market} />
     </div>}
 
     {tab === "product" && <div className="screen-grid screen-products">
@@ -124,13 +127,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
         subtitle={`功能单位：${chain.functional_unit}；园区生产段取 ${chain.year} 年企业排放，物料清单与产量为模拟值，背景因子取天工 LCI（Brightway 计算）`}>
         <ChainTrajectory chain={chain} />
       </Panel>)}
-      <Panel className="screen-comparison" title="企业产品碳强度对标" subtitle="厂内碳强度 ÷ 功能单位相同的参考足迹；超过 100% 的条目标为橙色">
-        <FootprintView comparison={footprint} />
-      </Panel>
-      <FootprintRefs data={extended} />
-      {product?.lca ? <Panel className="screen-method" title="天工 LCI 背景数据与计算方法" subtitle="背景过程由 Brightway 2.5 递归计算，结果写回园区数据库，网页只读取结果">
-        <LcaMethod lca={product.lca} rule={product.chains[0]?.factor_rule ?? null} />
-      </Panel> : <Panel className="screen-method" title="天工 LCI 背景数据"><p className="panel-note">尚未导入天工数据，请在 packages/lca 运行 tiangong_lca.py --write 与 product_chains.py --write。</p></Panel>}
+      <ProductHotspots chains={product?.chains || []} />
     </div>}
   </div>;
 }

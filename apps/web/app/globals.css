@@ -1980,3 +1980,68 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
   .screen-board .stat-strip { grid-auto-flow: row; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .screen-board .stat-strip > div { padding: 0 8px; }
 }
+
+/* Approved simplification: retain the flagship views, replace detached/reference blocks with related evidence. */
+.renewable-mix { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 18px; min-width: 0; }
+.renewable-donut { position: relative; min-height: 230px; }
+.renewable-donut .chart { position: absolute; inset: 0; height: 100%; min-height: 0; }
+.renewable-center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; pointer-events: none; gap: 5px; }
+.renewable-center strong { font-size: 30px; color: var(--energy); }
+.renewable-center strong small { font-size: 14px; margin-left: 3px; }
+.renewable-center span { font-size: 11px; color: var(--text-3); }
+.renewable-legend { list-style: none; margin: 0; padding: 0; display: grid; align-content: center; gap: 10px; min-width: 0; overflow: auto; scrollbar-width: thin; }
+.renewable-legend li { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.renewable-legend li > i { width: 8px; height: 8px; border-radius: 3px; }
+.renewable-legend b { display: block; font-size: 12px; font-weight: 500; }
+.renewable-legend small { display: block; margin-top: 3px; font-size: 10px; color: var(--text-3); }
+.renewable-legend strong { font-size: 15px; }
+.chain-hotspots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; min-width: 0; }
+.chain-hotspots > section { min-width: 0; }
+.chain-hotspots h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin: 0 0 8px; font-size: 13px; }
+.chain-hotspots h3 small { font-size: 10px; font-weight: 400; color: var(--text-3); }
+.chain-hotspots ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 5px; }
+.chain-hotspots li { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 8px; background: var(--surface-2); }
+.hotspot-rank { color: var(--carbon); font-size: 12px; }
+.chain-hotspots li b { font-size: 11px; font-weight: 500; }
+.chain-hotspots li small { display: block; margin-top: 2px; font-size: 10px; color: var(--text-3); }
+.chain-hotspots li strong { font-size: 15px; text-align: right; color: var(--carbon); }
+.live-quotes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; min-height: 0; }
+.live-quote { min-width: 0; padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.live-quote header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.live-quote header b { font-size: 12px; }
+.live-quote header span { font-size: 10px; color: var(--text-3); }
+.live-price { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; margin: 12px 0 8px; }
+.live-price strong { font-size: 30px; font-weight: 500; }
+.live-price strong small { margin-left: 4px; font-family: var(--font); font-size: 12px; color: var(--text-3); }
+.live-price em { font-size: 12px; font-style: normal; }
+.live-price .up { color: var(--carbon); }
+.live-price .down { color: var(--energy); }
+.live-quote p, .live-quote a, .market-checked { display: block; margin: 6px 0 0; font-size: 10px; line-height: 1.5; color: var(--text-3); overflow-wrap: anywhere; }
+.live-quote a { color: var(--text-2); }
+.market-warning { color: var(--carbon-text) !important; }
+.asset-overview { display: flex; flex-direction: column; min-width: 0; }
+@media (min-width: 1181px) and (min-height: 760px) {
+  .screen-board .panel > :is(.renewable-mix, .chain-hotspots, .asset-overview, .live-quotes) { flex: 1 1 0; min-height: 0; overflow: auto; scrollbar-width: thin; }
+  .screen-board .renewable-donut { min-height: 150px; }
+  .screen-board .renewable-donut .chart { height: 100%; min-height: 0; }
+  .screen-board .asset-overview > .viz-stack { flex: 1; min-height: 0; }
+  .screen-board .market-checked { flex: none; }
+  .screen-renewable > .panel:first-child { grid-column: 1; grid-row: 1; }
+  .screen-renewable > .screen-renewable-mix { grid-column: 1; grid-row: 2; }
+  .screen-renewable > .screen-storage { grid-column: 2; grid-row: 1 / 3; }
+  .screen-energy-flow { grid-template-rows: minmax(0, 1fr); }
+  .screen-energy-flow > .screen-map { grid-row: 1; }
+  .screen-products { grid-template-rows: minmax(0, 2.6fr) minmax(210px, 1fr); }
+  .screen-products .chain-hotspots li { padding: 3px 8px; line-height: 1.1; }
+  .screen-products .chain-hotspots li b { display: block; }
+  .screen-products .chain-hotspots li strong { font-size: 13px; }
+  .screen-products > .screen-hotspots { grid-column: 1 / -1; }
+  .screen-assets { grid-template-rows: minmax(0, 1.2fr) minmax(0, 1fr); }
+  .screen-assets > .screen-exposure { grid-column: 1; grid-row: 1; }
+  .screen-assets > .screen-market-trend { grid-column: 1; grid-row: 2; }
+  .screen-assets > .screen-market-quotes { grid-column: 2; grid-row: 2; }
+}
+@media (max-width: 900px) {
+  .renewable-mix, .chain-hotspots, .live-quotes { grid-template-columns: minmax(0, 1fr); }
+  .renewable-donut { min-height: 220px; }
+}

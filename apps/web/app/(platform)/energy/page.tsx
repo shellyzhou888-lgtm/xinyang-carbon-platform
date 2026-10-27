@@ -2,7 +2,7 @@ import { charts, management, overview, carbonManagement, enterpriseEnergyMix, en
 import { selectedYear, formatNumber as fmt } from "@/lib/workspace";
 import { DataError, Empty, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import BusinessNavigation from "@/components/BusinessNavigation";
-import { RankingChart } from "@/components/EnergyCharts";
+import { IntensityRanking, RenewableMix } from "@/components/EnergyAnalysis";
 import { ContributionList, KpiCard, YearCompareChart } from "@/components/InsightParts";
 import MetricChart from "@/components/MetricChart";
 import EnergyHeatTwin from "@/components/EnergyHeatTwin";
@@ -79,16 +79,10 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       <Panel title="各来源能源折标量" subtitle="按能源品种库的可再生属性与年度净消费量汇总">
         <MetricChart rows={(detail?.renewable || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" label="各来源能源折标量" color={C.accent} />
       </Panel>
-      <Panel className="view-fill" title="可再生能源指标" subtitle="可再生能源利用率：当前值与引领值，以及 2021 年以来的变化">
-        <IndicatorScales rows={board.filter((row) => row.code === "I05")} year={year} columns={1} />
+      <Panel className="screen-renewable-mix" title="可再生属性与用能来源" subtitle="按折标准煤口径比较来源占比">
+        <RenewableMix rows={detail?.renewable || []} />
       </Panel>
-      <Panel title="可再生属性与用能来源">
-        <div className="list">{detail?.renewable.map((row) => <div className="list-row" key={row.name}>
-          <div><b>{row.name}</b><small>{row.renewable ? "可再生能源" : "常规能源"}</small></div>
-          <div className="list-figure"><span className="num">{fmt(row.tce)}</span><small>tce</small>{row.renewable && <em className="chip-ok">可再生</em>}</div>
-        </div>)}</div>
-      </Panel>
-      {extended?.storage.length ? <Panel className="view-fill" title="储能与充电月度电量">
+      {extended?.storage.length ? <Panel className="screen-storage" title="储能与充电月度电量">
         <div className="table-scroll"><table><thead><tr><th>月份</th><th className="num">储能充电 / kWh</th><th className="num">储能放电 / kWh</th><th className="num">充电桩电量 / kWh</th></tr></thead>
           <tbody>{extended.storage.map((row) => <tr key={row.month}><td>{row.month}</td><td className="num">{fmt(row.storage_charge_kwh)}</td><td className="num">{fmt(row.storage_discharge_kwh)}</td><td className="num">{fmt(row.ev_charge_kwh)}</td></tr>)}</tbody></table></div>
       </Panel> : null}
@@ -96,7 +90,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
     </div>}
 
     {tab === "intensity" && <div className="screen-grid screen-intensity">
-      <Panel className="analysis-main" title="企业综合能耗与单位产值能耗" subtitle="能耗单位 tce；单位产值能耗为 tce/万元产值。缺少产值的企业不填造强度。">{chart ? <RankingChart data={chart} /> : <Empty title="暂无数据" />}</Panel>
+      <Panel className="analysis-main" title="企业单位产值能耗比较" subtitle="单位产值能耗越低，单位产出的能源投入越少；企业间相对比较不等同于行业达标判定。">{chart ? <IntensityRanking rows={chart.ranking} /> : <Empty title="暂无数据" />}</Panel>
       <Panel className="analysis-side" title="能源强度指标" subtitle="能源产出率与单位产品能耗达标企业占比">
         <IndicatorScales rows={board.filter((row) => ["I04", "I06"].includes(row.code))} year={year} columns={1} />
       </Panel>
@@ -122,10 +116,6 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
       <Panel className="screen-sankey" title="企业 → 厂区 → 产线能流" subtitle="桑基图按能源品种与计量单位分别绘制">
         {detail?.transfers.length ? <EnergyFlow rows={detail.transfers} /> : <Empty title="尚无内部转供记录" action={<MoreLink href={`/admin/data?year=${year}`}>查看数据接入</MoreLink>}>录入来源、去向与计量单位后，可按能源品种建立能流网络。</Empty>}
       </Panel>
-      {!!detail?.transfers.length && <Panel className="screen-transfers" title="内部转供明细">
-        <div className="table-scroll"><table><thead><tr><th>来源</th><th>去向</th><th>能源</th><th className="num">转供量</th></tr></thead>
-          <tbody>{detail.transfers.map((row, index) => <tr key={index}><td>{row.source}</td><td>{row.target}</td><td>{row.energy}</td><td className="num">{fmt(row.quantity)} {row.unit}</td></tr>)}</tbody></table></div>
-      </Panel>}
     </div>}
   </div>;
 }

@@ -9,13 +9,14 @@
     "voice:assets": "node node_modules/@xiaoyun/voice/bin/xiaoyun.mjs assets public/xiaoyun",
     "postinstall": "npm run voice:assets",
     "db:tunnel": "node ../../scripts/start-db-tunnel.mjs --background",
-    "predev": "node ../../scripts/start-db-tunnel.mjs --background --if-needed && npm run voice:assets && npm run build:agent",
+    "predev": "node ../../scripts/start-db-tunnel.mjs --background --if-needed && npm run voice:assets && npm run build:agent && node ../../scripts/start-carbon-market-sync.mjs --background",
     "dev": "next dev --port 3001",
     "prebuild": "npm run voice:assets && npm run build:agent",
     "build": "next build",
     "start": "next start --port 3001",
     "typecheck": "tsc --noEmit",
-    "voice": "xiaoyun start --env .env.xiaoyun"
+    "voice": "xiaoyun start --env .env.xiaoyun",
+    "prestart": "node ../../scripts/start-db-tunnel.mjs --background --if-needed && node ../../scripts/start-carbon-market-sync.mjs --background"
   },
   "dependencies": {
     "@antv/l7": "^2.29.1",
