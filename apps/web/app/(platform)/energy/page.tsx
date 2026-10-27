@@ -14,12 +14,11 @@ import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
 
-const TABS = [["consumption", "用能分析"], ["renewable", "绿能利用"], ["intensity", "能效对标"]] as const;
-const TOPICS = [["heat", "热力孪生"], ["flow", "能流网络"]] as const;
+const TABS = [["heat", "数字孪生"], ["consumption", "用能分析"], ["flow", "能流网络"], ["renewable", "绿能利用"], ["intensity", "能效对标"]] as const;
 
 export default async function Energy({ searchParams }: { searchParams: Promise<{ year?: string; tab?: string }> }) {
   const sp = await searchParams, year = selectedYear(sp.year);
-  const tab = [...TABS, ...TOPICS].some(([key]) => key === sp.tab) ? sp.tab! : "consumption";
+  const tab = TABS.some(([key]) => key === sp.tab) ? sp.tab! : "heat";
   let data: Awaited<ReturnType<typeof overview>> | null = null, chart: Awaited<ReturnType<typeof charts>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, error = "";
   let extended: Awaited<ReturnType<typeof carbonManagement>> | null = null;
   // Heat twin: every year with enterprise monthly data (2021 onwards), switchable inside the map.
@@ -41,7 +40,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
 
   const prevMonthly = monthlyByYear[twinYears.indexOf(year - 1)] ?? [];
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` });
-  const tabs = <BusinessNavigation id="energy" active={tab} items={TABS.map(link)} topics={TOPICS.map(link)} />;
+  const tabs = <BusinessNavigation id="energy" active={tab} items={TABS.map(link)} />;
 
   return <div className="analysis-workspace tone-energy">
     <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description="总量与趋势、企业用能、预算与能效，在同一视野下逐层分析。" />

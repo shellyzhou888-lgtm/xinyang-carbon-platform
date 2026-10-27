@@ -12,13 +12,12 @@ import { C } from "@/lib/chart-theme";
 
 export const dynamic = "force-dynamic";
 
-const TABS = [["analysis", "排放分析"], ["targets", "减排管理"]] as const;
-const TOPICS = [["flow", "碳流网络"], ["asset", "碳资产"], ["product", "产品碳足迹"]] as const;
-type Tab = (typeof TABS)[number][0] | (typeof TOPICS)[number][0];
+const TABS = [["analysis", "排放分析"], ["product", "产品碳足迹"], ["flow", "碳流网络"], ["targets", "减排管理"], ["asset", "碳资产"]] as const;
+type Tab = (typeof TABS)[number][0];
 
 export default async function Carbon({ searchParams }: { searchParams: Promise<{ year?: string; tab?: string }> }) {
   const sp = await searchParams, year = selectedYear(sp.year);
-  const tab: Tab = [...TABS, ...TOPICS].some(([key]) => key === sp.tab) ? sp.tab as Tab : "analysis";
+  const tab: Tab = TABS.some(([key]) => key === sp.tab) ? sp.tab as Tab : "analysis";
   let data: Awaited<ReturnType<typeof overview>> | null = null, detail: Awaited<ReturnType<typeof management>> | null = null, extended: Awaited<ReturnType<typeof carbonManagement>> | null = null, error = "";
   let previous: Awaited<ReturnType<typeof management>> | null = null;
   let mix: Awaited<ReturnType<typeof enterpriseEnergyMix>> = [];
@@ -44,7 +43,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const structure = (list: typeof detail) => (list?.carbonStructure || []).map((item) => ({ name: item.name, value: item.co2_t }));
   const parkAsset = asset?.rows.find((item) => item.node_code === "XYEDZ" && item.year === year);
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/carbon?year=${year}${key === "analysis" ? "" : `&tab=${key}`}` });
-  const tabs = <BusinessNavigation id="carbon" active={tab} items={TABS.map(link)} topics={TOPICS.map(link)} />;
+  const tabs = <BusinessNavigation id="carbon" active={tab} items={TABS.map(link)} />;
 
   return <div className="analysis-workspace tone-carbon">
     <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description="先看排放构成与企业贡献，再看减排目标和改善方向。">
@@ -120,16 +119,16 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
     </div>}
 
     {tab === "product" && <div className="analysis-stack">
+      {(product?.chains ?? []).map((chain) => <Panel key={chain.code} className="view-fill" title={`${chain.name} · 产品碳轨迹`}
+        subtitle={`功能单位：${chain.functional_unit}；园区生产段取 ${chain.year} 年企业排放，物料清单与产量为模拟值，背景因子取天工 LCI（Brightway 计算）`}>
+        <ChainTrajectory chain={chain} />
+      </Panel>)}
       <div className="analysis-grid balanced">
         <Panel title="企业产品碳强度对标" subtitle="厂内碳强度 ÷ 功能单位相同的参考足迹；超过 100% 的条目标为橙色">
           <FootprintView comparison={footprint} />
         </Panel>
         <FootprintRefs data={extended} />
       </div>
-      {(product?.chains ?? []).map((chain) => <Panel key={chain.code} className="view-fill" title={`${chain.name} · 产品碳轨迹`}
-        subtitle={`功能单位：${chain.functional_unit}；园区生产段取 ${chain.year} 年企业排放，物料清单与产量为模拟值，背景因子取天工 LCI（Brightway 计算）`}>
-        <ChainTrajectory chain={chain} />
-      </Panel>)}
       {product?.lca ? <Panel className="view-fill" title="天工 LCI 背景数据与计算方法" subtitle="背景过程由 Brightway 2.5 递归计算，结果写回园区数据库，网页只读取结果">
         <LcaMethod lca={product.lca} rule={product.chains[0]?.factor_rule ?? null} />
       </Panel> : <Panel className="view-fill" title="天工 LCI 背景数据"><p className="panel-note">尚未导入天工数据，请在 packages/lca 运行 tiangong_lca.py --write 与 product_chains.py --write。</p></Panel>}
