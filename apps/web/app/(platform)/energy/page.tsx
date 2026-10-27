@@ -52,7 +52,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` });
   const tabs = <BusinessNavigation id="energy" active={tab} items={TABS.map(link)} />;
 
-  return <div className={`analysis-workspace energy-workspace ${tab === "consumption" ? "consumption-workspace" : ["intensity", "renewable"].includes(tab) ? "energy-detail-workspace" : "screen-board"} tone-energy`}>
+  return <div className={`analysis-workspace energy-workspace ${tab === "consumption" ? "consumption-workspace" : tab === "renewable" ? "energy-detail-workspace" : tab === "intensity" ? "screen-board intensity-workspace" : "screen-board"} tone-energy`}>
     <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description={DESCRIPTIONS[tab]} />
     <DataError error={error} />
     <div className="kpi-grid">
@@ -100,7 +100,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
     {tab === "intensity" && <div className="screen-grid screen-intensity">
       <Panel className="analysis-main" title="企业单位产值能耗比较" subtitle="单位产值能耗越低，单位产出的能源投入越少；企业间相对比较不等同于行业达标判定。">{chart ? <IntensityRanking rows={chart.ranking} /> : <Empty title="暂无数据" />}</Panel>
       <Panel className="analysis-side" title="能源利用与可再生能源指标" subtitle="能源产出率、可再生能源利用率与单位产品能耗达标企业占比">
-        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={1} large showTrend />
+        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={1} large showTrend compact />
       </Panel>
     </div>}
 
