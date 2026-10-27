@@ -1,0 +1,37 @@
+# 科创部落与科创研发全景提示词
+
+工具：内置 image_gen。独立生成两张概念图；引用照片不代表其建筑已归属规划园区。
+
+## IN
+
+参考输入（顺序）：
+- `assets/modeling-concepts/v2/references/M03.jpg`
+- `assets/modeling-concepts/v2/references/M04.jpg`
+- `assets/modeling-concepts/v2/references/S40-05.jpg`
+- `assets/site-photo-references/v2/03_科创部落_北湖环境/02_建筑结构/S39-04_北湖来信咖啡庭院.jpg`
+
+```text
+Use case: photorealistic-natural.
+Create one wide 16:9 full-bleed WHOLE-PARK aerial panoramic concept of the Beihu innovation community landscape in Xinyang. This is a reference-informed interpretive concept, not a surveyed as-built image. The subject is the entire lakeshore district, its winding access roads, clearings, scattered existing low-rise compounds, surrounding woodland and rural background, NOT a closeup of one villa or building.
+Input roles: images1/2 are satellite-map UI screenshots. Use ONLY visible organic shoreline, coves, wooded terrain, irregular rural roads and open parcels. IGNORE dashboard, labels and red polygons. Those polygons are uncertain planning overlays; one crosses water and must NOT be made into land or buildings. Images3/4 are actual Beihu ENVIRONMENT references, not proof of built innovation headquarters. Image3 supplies the natural lake, gently undulating land, beach and pedestrian connection; its peach water is sunset reflection, change to natural muted blue-green-gray water under neutral daylight. Image4 supplies scale and materials for a very small existing lakeside courtyard: warm white plaster, dark charcoal pitched tiles, gravel, stone retaining edges and mature deciduous trees. Do not enlarge it into a headquarters or duplicate it into a luxury villa estate.
+Composition: high oblique drone view from lake toward shore, enough altitude to see a complete broad landscape district with several road branches and distant village. Lake in foreground and right, intricate green peninsulas and sandy/earth coves, wooded rolling ground across center and left, scattered small white/gray tile-roof village courtyard groups tucked into a few clearings. Most of the image is natural woodland, scrub, meadows and water. A winding narrow approach road travels left-to-background, thin paths selectively follow shore, a small beach/activity clearing at one cove. Keep water foreground contained enough to see all the terrestrial park context. Distant rural settlement and hazy low horizon with a modest band of sky. No resort mega-development, no rows of invented innovation office buildings, no seven identical headquarters, no construction over water.
+Natural texture: diverse broadleaf canopies with irregular heights, ages and individual forms, deeper dense woods transitioning to uneven grass, ochre exposed earth and reeds; some orderly but non-cloned roadside saplings. Varied compact courtyard shapes with authentic low-key local architecture rather than generic modern glass cubes. Tiny paths, small bridges only where evidenced by shoreline activity reference, no grand urban boulevard. A few tiny people and parked vehicles only for scale.
+Style: exceptionally realistic drone photography, clean neutral bright daylight consistent with a natural silver/gray/green industrial park concept series, coherent soft shadows, subtle atmospheric distance, restrained saturation, finely detailed ground/roof/water textures. No orange sunset filter despite reference3 lighting. Show a rich, credible whole landscape rather than a sparse toy model. No text, labels, watermark, UI, planning lines, fake geographic precision.
+```
+
+## RD
+
+参考输入（顺序）：
+- `assets/modeling-concepts/v2/references/M06.jpg`
+- `assets/modeling-concepts/v2/references/M07.jpg`
+- `assets/site-photo-references/v2/05_周边道路与远景/01_整体体量/S40-04_羊山电商小镇航拍.jpg`
+- `assets/site-photo-references/v2/05_周边道路与远景/01_整体体量/S35-07_羊山城区宽幅天际线.jpg`
+
+```text
+Use case: photorealistic-natural.
+Create ONE beautiful, wide 16:9 WHOLE DISTRICT aerial panoramic concept for the Xinyang research and innovation park, a partially developed urban-edge district. This is an interpretive full-park composition based on references, NOT a certified current aerial or exact measured reconstruction. Show multiple built compounds, the road framework, genuine reserve lands, ponds and surrounding city in one image. Not a single building hero render.
+Input roles: images1/2 satellite screenshots establish overall spatial structure: substantial green and brown undeveloped land, several intersecting roads, a compact reddish-roof commercial/ecommerce group, some pale built clusters, small ponds, a major boulevard along the eastern edge with surrounding urban neighborhoods beyond. Ignore dashboard UI, red planning lines and labels; boundary registration is uncertain. Buildings of unknown type must not automatically be called laboratories. Image3 shows Yangshan ecommerce town: use only its recognizable compact low-rise commercial block TYPE with terracotta roofs, warm cream walls and a restrained few orange-red stair/entrance volumes, linked wings and close courtyards. Exact inclusion/location still provisional; do not transplant photograph wholesale or imply geographic proof. Image4 is surrounding city skyline SCALE reference only, not verified view direction. Do not transplant its monument, civic axis or specific towers into the district.
+Composition: high oblique drone panorama far enough back to contain the whole partially developed district. In foreground, broad irregular grass/brown soil parcels and a couple small existing ponds crossed by ordinary local roads. Midground, a compact terracotta-roof ecommerce-style block beside other visually distinct pale midrise institutional/commercial buildings and small developed compounds. Back/midground contains a limited larger flat-roof campus/manufacturing group. A broad tree-lined boundary boulevard runs toward the horizon on right; city residential blocks belong to background/right outside the main site. Preserve substantial reserve parcels, as in satellite, instead of filling them with speculative futuristic campuses. Road hierarchy clear: boulevard, smaller intersecting public streets, narrow internal court access. No rigid uniform oversized roads between all buildings.
+Architecture: differentiate roof silhouettes, heights, shallow pitched terracotta roofs versus pale flat roofs, L-shaped wings, tighter small courts, attached lower service volumes. Structural variation follows the actual visible types, no random twisted shapes. Buildings cluster tightly inside developed plots but large actual open plots remain. No tall unlocated Wisdom Island landmark building, no arbitrary identical U-shaped lab compounds, no transplanted housing presented as research buildings, no glass skyscraper forest.
+Materials/lighting: subdued warm white/stone gray walls, realistically weathered red-brown tiles, dark windows, silver-gray roofs where appropriate, asphalt charcoal and small road markings, olive and moss-green scrub, yellow-brown soil, muted pond water, varied individual deciduous trees and uneven natural vegetation. Natural neutral bright daylight, coherent shadows and atmospheric perspective matching a realistic aerial concept series. Avoid toy diorama, floating base, perfect neon lawn, identical tree spheres, evenly spaced clone buildings, dramatic orange/teal grade, fake labels, branding, UI, watermarks. Entire scene reads as a real developing mixed urban district, not a completed luxury tech masterplan.
+```
