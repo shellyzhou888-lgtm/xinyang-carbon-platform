@@ -163,12 +163,12 @@ code { font-family: "Cascadia Code", Consolas, monospace; font-size: 14px; backg
 .rail-bottom .rail-item.on { color: var(--accent); background: var(--surface-3); }
 
 .app-main { min-width: 0; display: flex; flex-direction: column; }
-.topbar { position: sticky; top: 0; z-index: 20; height: var(--topbar); display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 0 32px; background: linear-gradient(180deg, rgb(var(--base) / 0.92), rgb(var(--base) / 0.6)); backdrop-filter: blur(18px) saturate(1.2); }
-.topbar-title { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.topbar { position: sticky; top: 0; z-index: 20; height: var(--topbar); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 0 32px; background: linear-gradient(180deg, rgb(var(--base) / 0.92), rgb(var(--base) / 0.6)); backdrop-filter: blur(18px) saturate(1.2); }
+.topbar-title { grid-column: 2; display: flex; align-items: center; justify-content: center; gap: 16px; min-width: 0; }
 .topbar-logo { height: 42px; width: auto; }
 .topbar-sep { width: 1px; height: 18px; background: var(--surface-4); }
 .topbar-page { font-size: 14px; color: var(--text-2); white-space: nowrap; }
-.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-right { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 16px; }
 
 .segmented { position: relative; display: inline-flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--surface-2); }
 .segmented > a, .segmented > button { position: relative; border: 0; background: transparent; color: var(--text-2); padding: 8px 16px; border-radius: 10px; font-size: 14px; font-family: var(--font-num); letter-spacing: 0.02em; transition: color 0.2s; }
@@ -994,7 +994,17 @@ p, li, td, th { line-height: 1.55; }
 .import-result.bad b { color: var(--danger); }
 @media (max-width: 900px) { .import-steps { grid-template-columns: minmax(0, 1fr); } }
 .topbar-name { font-size: 24px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; background: linear-gradient(90deg, var(--text), color-mix(in srgb, var(--accent) 60%, var(--text))); -webkit-background-clip: text; background-clip: text; color: transparent; }
+/* On compact screens, center within the space left beside the controls. */
+@media (max-width: 1100px) {
+  .topbar { grid-template-columns: minmax(0, 1fr) auto; }
+  .topbar-title { grid-column: 1; }
+  .topbar-right { grid-column: 2; }
+}
 @media (max-width: 900px) { .topbar-name { font-size: 18px; } }
+@media (max-width: 560px) {
+  .topbar { gap: 8px; padding-left: 16px; padding-right: 16px; }
+  .topbar-name { font-size: clamp(12px, calc(7.5vw - 12px), 18px); }
+}
 /* Overview: panel tags as rounded pills (like the zone switch), honour tiles with aligned circled counts. */
 .brief-tag { display: inline-flex; align-items: center; padding: 4px 16px; border-radius: 10px; font-size: 16px; font-weight: 600; letter-spacing: 0.04em; }
 .brief-tag.energy, .brief-tag.carbon { background: var(--accent); color: var(--accent-ink); box-shadow: 0 8px 22px rgb(var(--accent-rgb) / .24); }
