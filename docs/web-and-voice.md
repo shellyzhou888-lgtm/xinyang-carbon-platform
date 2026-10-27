@@ -36,7 +36,7 @@
 
 ## 3. 本机启动
 
-前提：SSH 隧道已打开（localhost:15432），仓库根目录 `.env` 中已有 `DATABASE_URL` 与 `DEEPSEEK_API_KEY`。
+前提：仓库根目录 `.env` 中已有 `DATABASE_URL` 与 `DEEPSEEK_API_KEY`；本机有已授权的 SSH 私钥和已核验的服务器指纹。开发启动会自动建立本机 `15432` 数据库隧道（Mac、Linux、Windows 通用）。
 
 1. 安装依赖（首次）：在 `apps/web` 运行 `npm install`。安装、开发启动和生产构建都会自动运行 `npm run voice:assets`，把小云浏览器资源复制到 `public/xiaoyun`；若需手动修复资源，可单独运行该命令。`.env.xiaoyun` 已存在时无需重新生成。
 2. 填写 `apps/web/.env.xiaoyun`（已被 .gitignore 忽略，不会上传）：
@@ -58,7 +58,8 @@
 4. 启动小云后台：在 `apps/web` 运行 `npm run voice`（等于 `xiaoyun start --env .env.xiaoyun`）。
    - 小云后台用 dotenv 读取 `.env.xiaoyun`，**已存在的进程环境变量优先**。若启动脚本向进程注入了旧 Key，会覆盖文件里的新 Key；换 Key 后请直接用 `npm run voice` 启动，并用 `http://127.0.0.1:8766/api/health` 确认 `voiceReady`、`agentReady` 均为 `true`。
    - 语音接不通时依次检查：8766 端口是否在监听（后台进程停止后网页不会报错，只是不出现小云）；`.env.xiaoyun` 中两个 Key 是否为空；千问 Key 与 `QWEN_REALTIME_URL` 是否属于同一工作空间。
-5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先自动构建 `packages/db-agent`），打开 http://localhost:3001 。未登录访问任何页面都会跳转到 `/login`。
+5. 启动网站：在 `apps/web` 运行 `npm run dev`（会先检查/启动数据库隧道，再自动构建 `packages/db-agent`），打开 http://localhost:3001 。未登录访问任何页面都会跳转到 `/login`。
+   - 网站已运行但数据库断开时，可单独执行 `npm run db:tunnel`，恢复后刷新页面。SSH 重连日志在仓库根目录 `storage/db-tunnel/tunnel.log`；可用隧道会复用。
    - 开发服务器运行期间若修改了 `packages/db-agent/src` 的导出，先在 `packages/db-agent` 运行 `npm run build`，再重启网站开发服务器；`predev` 只在启动时构建一次，旧的 `dist/index.mjs` 会导致“Export ... doesn't exist in target module”。
 6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
 
@@ -68,7 +69,7 @@
 
 | 项 | 判断方式 | 不可用时的处理 |
 | --- | --- | --- |
-| 园区数据库 | 服务端执行一次只读 `SELECT 1`（`packages/db-agent` 的 `ping()`），6 秒超时 | 打开 SSH 隧道 `scripts/start-db-tunnel.ps1`；账号错误时检查根目录 `.env` 的 `DATABASE_URL` |
+| 园区数据库 | 服务端执行一次只读 `SELECT 1`（`packages/db-agent` 的 `ping()`），6 秒超时 | 在 `apps/web` 运行 `npm run db:tunnel`（跨平台）；Windows 也可用 `scripts/start-db-tunnel.ps1`；账号错误时检查根目录 `.env` 的 `DATABASE_URL` |
 | AI 数据助手 | 服务端是否读取到 `DEEPSEEK_API_KEY`（只返回是否配置，不返回 Key） | 在根目录 `.env` 加 `DEEPSEEK_API_KEY=sk-…` 后重启网站；页面数据不受影响 |
 | 小云语音 | 浏览器探测 `127.0.0.1:8766`（页面加载和手动重新检测时） | 在 `apps/web` 运行 `npm run voice`，并在 `.env.xiaoyun` 填写两个 Key |
 

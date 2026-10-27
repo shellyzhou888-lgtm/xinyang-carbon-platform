@@ -4,11 +4,25 @@
 
 数据库位于服务器本机的 `127.0.0.1:5432`，本项目目标库名为 `greensystem`，应用角色为 `zyz`。用户最初提供的 `zyz` 是旧的目标库信息，已以最新指定的 `greensystem` 为准。参考项目连接的是同一服务器上的另一个库 `carbonsystem`，其库名不能直接复用。从开发电脑连接时，`127.0.0.1` 指开发电脑本身，因此使用 SSH 隧道：
 
+Mac、Linux 和 Windows 均可在项目根目录运行（需要 Node.js 与系统 OpenSSH）：
+
+```sh
+node scripts/start-db-tunnel.mjs --background
+```
+
+在 `apps/web` 中也可运行 `npm run db:tunnel`。`npm run dev` 现在会在启动网站前自动检查根目录 `.env` 或进程环境中的 `DATABASE_URL`；仅当它指向本机隧道端口（默认 `15432`）时自动启动隧道。其他数据库地址不会触发 SSH。现有可用隧道会复用，不重复启动。
+
+新启动器使用当前用户 `~/.ssh/id_ed25519`，保持严格主机指纹校验与仅密钥登录；通过 PostgreSQL 协议响应验证转发确实可用，而非只检查端口占用。网络断开后按 5–60 秒间隔重连；首次启动未就绪会返回错误，具体 SSH 错误记录在 Git 忽略的 `storage/db-tunnel/tunnel.log`。前台运行（可按 Ctrl+C 停止）：`node scripts/start-db-tunnel.mjs`；后台停止时先在日志确认 supervisor PID，再用 `kill <PID>`（Windows 用任务管理器终止该 PID），不要批量停止 SSH 进程。
+
+可用环境变量：`DB_SSH_HOST`、`DB_SSH_PORT`、`DB_SSH_USER`、`DB_SSH_KEY`、`DB_TUNNEL_PORT`；自定义本机端口时需与 `DATABASE_URL` 一致。首次连接的主机指纹应经可信渠道核对，脚本不会自动接受陌生指纹。
+
+原 Windows PowerShell 启动方式继续可用：
+
 ```powershell
 .\scripts\start-db-tunnel.ps1
 ```
 
-该脚本用已授权的本机 SSH 私钥连接服务器 `2222` 端口，并将本机 `15432` 转发至服务器的 `127.0.0.1:5432`：
+PowerShell 脚本用已授权的本机 SSH 私钥连接服务器 `2222` 端口，并将本机 `15432` 转发至服务器的 `127.0.0.1:5432`：
 
 - 本机 `15432` 已有隧道在运行时，脚本提示“already running”后直接退出，不再报 `Address already in use`。
 - 服务器断开连接（`closed by remote host`）或暂时不可达（`Connection timed out`）时，脚本记录时间后自动重连（间隔 5 秒起，逐次加长，最长 60 秒），按 Ctrl+C 停止；只想连一次时加 `-Once`。
