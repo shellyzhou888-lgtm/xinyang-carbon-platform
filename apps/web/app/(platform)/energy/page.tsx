@@ -42,7 +42,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
   const link = ([key, label]: readonly [string, string]) => ({ key, label, href: `/energy?year=${year}&tab=${key}` });
   const tabs = <BusinessNavigation id="energy" active={tab} items={TABS.map(link)} />;
 
-  return <div className="analysis-workspace screen-board tone-energy">
+  return <div className={`analysis-workspace ${tab === "consumption" ? "consumption-workspace" : "screen-board"} tone-energy`}>
     <PageHeading eyebrow={`ENERGY MANAGEMENT · ${year} 年度`} title="能源管理" description="数字孪生、趋势结构与企业用能，分栏联动查看。" />
     <DataError error={error} />
     <div className="kpi-grid">
@@ -59,7 +59,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
         {monthly.length ? <YearCompareChart months={months} current={monthly.map((row) => row.tce)} previous={monthly.map((row) => lastYear.find((prev) => prev.month.slice(5) === row.month.slice(5))?.tce ?? null)} year={year} unit="tce" color={C.energy} label="月度综合能耗同比" /> : <Empty title="暂无月度数据" />}
       </Panel>
       <Panel className="screen-structure" title="能源消费结构" subtitle="各品种折标准煤后的量与占比">
-        <CompositionCapsules rows={(chart?.structure || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" />
+        <CompositionCapsules rows={(chart?.structure || []).map((row) => ({ name: row.name, value: row.tce }))} unit="tce" showAll />
       </Panel>
       <Panel className="screen-matrix" title="企业月度用能体检矩阵" subtitle="每格为企业一个月的综合能耗：可按同比上年或相对自身月均着色，悬停查看数值">
         <EnterpriseMatrix current={monthlyByYear[twinYears.indexOf(year)] ?? []} previous={prevMonthly} metric="tce" unit="tce" year={year} />
@@ -71,7 +71,7 @@ export default async function Energy({ searchParams }: { searchParams: Promise<{
         <BudgetProgress data={extended} kind="energy" />
       </Panel>
       <Panel className="screen-indicators" title="能源利用指标" subtitle="《绿色工业园区评价要求》能源利用类指标：当前值与引领值">
-        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={3} />
+        <IndicatorScales rows={board.filter((row) => ["I04", "I05", "I06"].includes(row.code))} year={year} columns={1} />
       </Panel>
     </div>}
 

@@ -2081,3 +2081,43 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
   .product-workspace .trajectory > .chart { grid-column: 2; grid-row: 1; }
   .product-workspace .trajectory > .stage-list { grid-column: 1 / -1; grid-row: 2; }
 }
+
+/* Consumption analysis prioritises complete content and scrolls as a page. */
+.consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: none; gap: 24px; align-items: start; }
+.consumption-workspace .screen-consumption > * { grid-area: auto; }
+.consumption-workspace .screen-consumption > .panel { padding: 24px; }
+.consumption-workspace .chart { height: 360px; min-height: 360px; }
+.consumption-workspace .screen-structure > .viz-stack { min-height: 360px; }
+.consumption-workspace .matrix { gap: 20px; }
+.consumption-workspace .matrix-grid { flex: none; max-height: none; overflow-x: auto; overflow-y: hidden; grid-template-rows: auto repeat(var(--rows, 10), minmax(40px, auto)); gap: 10px; }
+.consumption-workspace .matrix-row { min-width: 640px; grid-template-columns: 110px repeat(12, minmax(20px, 1fr)) 160px; gap: 5px; }
+.consumption-workspace .matrix-name, .consumption-workspace .contrib-name { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.consumption-workspace .contrib { max-height: none; overflow: visible; gap: 8px; }
+.consumption-workspace .contrib li { padding: 12px 4px; }
+.consumption-workspace .budget-progress { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.consumption-workspace .capsule-row { min-height: 230px; }
+.consumption-workspace .capsule b, .consumption-workspace .capsule small,
+.consumption-workspace .stat-strip strong, .consumption-workspace .stat-strip span { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.consumption-workspace .capsules.energy .capsule:nth-child(6) { --cap: #9b87ff; }
+.consumption-workspace .ind-board { overflow: visible; }
+.consumption-workspace .ind-card { padding: 20px; gap: 16px; }
+.consumption-workspace .ind-grid { gap: 20px; }
+@media (min-width: 1280px) {
+  .consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-areas: "trend structure" "matrix ranking" "budget indicators"; }
+  .consumption-workspace .screen-trend { grid-area: trend; }
+  .consumption-workspace .screen-structure { grid-area: structure; }
+  .consumption-workspace .screen-matrix { grid-area: matrix; }
+  .consumption-workspace .screen-ranking { grid-area: ranking; }
+  .consumption-workspace .screen-budget { grid-area: budget; }
+  .consumption-workspace .screen-indicators { grid-area: indicators; }
+}
+@media (max-width: 700px) {
+  .consumption-workspace .screen-consumption > .panel { padding: 18px; }
+  .consumption-workspace .capsule-row { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 12px; }
+  .consumption-workspace .capsule-track { min-height: 180px; }
+  .consumption-workspace .contrib li { grid-template-columns: 22px minmax(0, 1fr) auto 48px; }
+  .consumption-workspace .contrib-int { display: block; grid-column: 2 / -1; text-align: left; }
+  .consumption-workspace .contrib-int::before { content: "单位产值能耗 "; font-family: var(--font); }
+  .consumption-workspace .stat-strip { grid-auto-flow: row; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .consumption-workspace .stat-strip > div { border: 0; padding: 0; }
+}

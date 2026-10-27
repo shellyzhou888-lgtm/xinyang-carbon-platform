@@ -44,8 +44,8 @@ export function CapsuleColumns({ columns, tone = "energy", caption }: {
 }
 
 /** Composition as capsules: the largest item fills the column, each badge shows its share. */
-export function CompositionCapsules({ rows, unit, tone = "energy" }: { rows: { name: string; value: number }[]; unit: string; tone?: Tone }) {
-  const ranked = [...rows].filter((row) => row.value > 0).sort((a, b) => b.value - a.value).slice(0, 5);
+export function CompositionCapsules({ rows, unit, tone = "energy", showAll = false }: { rows: { name: string; value: number }[]; unit: string; tone?: Tone; showAll?: boolean }) {
+  const ranked = [...rows].filter((row) => row.value > 0).sort((a, b) => b.value - a.value).slice(0, showAll ? undefined : 5);
   const total = rows.reduce((sum, row) => sum + Math.max(0, row.value), 0), max = ranked[0]?.value || 1;
   if (!ranked.length) return <div className="empty"><b>暂无可展示数据</b></div>;
   return <div className="viz-stack">
@@ -55,7 +55,7 @@ export function CompositionCapsules({ rows, unit, tone = "energy" }: { rows: { n
       { label: `${ranked[0].name}占比`, value: total ? ranked[0].value / total * 100 : null, unit: "%", digits: 1 },
     ]} />
     <CapsuleColumns tone={tone} caption="各品种折算后的量与占比"
-      columns={ranked.map((row) => ({ key: row.name, label: row.name.replace(/（.*?）/g, ""), sub: `${fmt(row.value, 0)} ${unit}`, fill: row.value / max * 100, badge: `${fmt(total ? row.value / total * 100 : 0, 1)}%` }))} />
+      columns={ranked.map((row) => ({ key: row.name, label: showAll ? row.name : row.name.replace(/（.*?）/g, ""), sub: `${fmt(row.value, 0)} ${unit}`, fill: row.value / max * 100, badge: `${fmt(total ? row.value / total * 100 : 0, 1)}%` }))} />
   </div>;
 }
 
