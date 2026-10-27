@@ -2056,7 +2056,8 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .product-workspace .screen-chain { padding: 22px; }
 .product-workspace .trajectory { grid-template-rows: auto 340px auto; overflow: visible; gap: 20px; }
 .product-workspace .trajectory > .chart { height: 340px; min-height: 300px; }
-.product-workspace .stage-list { max-height: 240px; overflow: auto; scrollbar-width: thin; }
+.product-workspace .stage-list { max-height: none; overflow: visible; }
+.product-workspace :is(.stage-name b, .stage-name small, .stage-source small) { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
 .product-workspace .stage-name b { font-size: 13px; }
 .product-workspace .phase-legend { font-size: 12px; gap: 6px 12px; }
 .product-workspace .chain-hotspots { grid-template-rows: auto auto; gap: 28px; }
