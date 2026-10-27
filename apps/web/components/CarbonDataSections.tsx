@@ -12,7 +12,7 @@ export function Roadmap({ data }: { data: CarbonManagementData | null }) {
     {roadmap?.scenarios.length ? <>
       <ComparisonChart labels={years.map(String)} unit="tCO₂" label="历史排放与基准、低碳情景路线图" series={[
         { name: "历史排放", values: years.map((year) => roadmap.actual.find((row) => row.year === year)?.co2_t ?? null), color: "var(--text-2)" },
-        ...roadmap.scenarios.map((scenario, index) => ({ name: scenario.label || scenario.code, values: years.map((year) => scenario.points.find((row) => row.year === year)?.co2_t ?? null), color: index ? C.energy : C.carbon, dashed: true })),
+        ...roadmap.scenarios.map((scenario, index) => ({ name: scenario.label?.split(/[：:]/)[0] || scenario.code, values: years.map((year) => scenario.points.find((row) => row.year === year)?.co2_t ?? null), color: index ? C.energy : C.carbon, dashed: true })),
         { name: "达峰上限", values: years.map((year) => data?.targets.find((row) => row.kind === "carbon_peak_t" && row.year === year)?.value ?? null), color: C.danger, dashed: true },
       ]} />
       <div className="meta-row">{roadmap.scenarios.map((row) => <span key={row.code}><b>{row.label || row.code}</b>{row.peak_year ? `${row.peak_year} 年峰值 ${fmt(row.peak_co2_t)} tCO₂` : "预测期内未达峰"}</span>)}</div>

@@ -123,8 +123,8 @@ export function EmitterQuadrant({ rows, total }: { rows: { code: string; name: s
   </div>;
 }
 
-/** Budget use as a gauge with the headline figures; the roadmap sits beside it on the page. */
-export function CarbonBudgetGauge({ data }: { data: CarbonManagementData | null }) {
+/** Annual emissions quota use, with its original budget amounts and pace warning. */
+export function CarbonBudgetGauge({ data, compact = false }: { data: CarbonManagementData | null; compact?: boolean }) {
   const budget = data?.budget.find((row) => row.kind === "carbon");
   const annual = budget?.annual_budget ?? null;
   const actual = budget?.months.reduce((sum, row) => sum + (row.actual ?? 0), 0) ?? 0;
@@ -133,19 +133,19 @@ export function CarbonBudgetGauge({ data }: { data: CarbonManagementData | null 
     backgroundColor: "transparent",
     series: [{
       type: "gauge", startAngle: 210, endAngle: -30, min: 0, max: 120, radius: "92%", center: ["50%", "58%"],
-      progress: { show: true, width: 18, roundCap: true, itemStyle: { color: pct > 100 ? C.danger : C.carbon } },
-      axisLine: { roundCap: true, lineStyle: { width: 18, color: [[100 / 120, hexA(C.text, 0.08)], [1, hexA(C.danger, 0.18)]] } },
+      progress: { show: true, width: compact ? 10 : 18, roundCap: true, itemStyle: { color: pct > 100 ? C.danger : C.carbon } },
+      axisLine: { roundCap: true, lineStyle: { width: compact ? 10 : 18, color: [[100 / 120, hexA(C.text, 0.08)], [1, hexA(C.danger, 0.18)]] } },
       axisTick: { show: false }, splitLine: { show: false },
-      axisLabel: { distance: -46, color: C.muted, fontSize: 11, formatter: (v: number) => (v % 20 === 0 ? `${v}%` : "") },
+      axisLabel: { distance: compact ? -26 : -46, color: C.muted, fontSize: compact ? 9 : 11, formatter: (v: number) => (v % 20 === 0 ? `${v}%` : "") },
       pointer: { show: false }, anchor: { show: false }, title: { show: false },
-      detail: { offsetCenter: [0, "4%"], fontSize: 40, fontWeight: 600, color: C.text, formatter: (v: number) => `${fmt(v, 1)}%` },
+      detail: { offsetCenter: [0, "4%"], fontSize: compact ? 26 : 40, fontWeight: 600, color: C.text, formatter: (v: number) => `${fmt(v, 1)}%` },
       data: [{ value: Math.round(pct * 10) / 10 }],
     }],
-  }), [pct]);
+  }), [pct, compact]);
   const ref = useChart(option);
   if (annual == null) return <div className="empty"><b>本年度未录入排放预算</b></div>;
   const over = budget!.months.filter((row) => row.cumulative != null && row.budget_cumulative != null && row.cumulative > row.budget_cumulative).length;
-  return <div className="viz-stack">
+  return <div className={`viz-stack carbon-budget${compact ? " compact" : ""}`}>
     <StatStrip items={[{ label: "年度排放预算", value: annual, unit: "tCO₂" }, { label: "累计排放", value: actual, unit: "tCO₂", tone: "carbon" },
       { label: actual > annual ? "超出预算" : "剩余额度", value: Math.abs(annual - actual), unit: "tCO₂", tone: actual > annual ? "bad" : undefined }]} />
     <div ref={ref} className="chart gauge" role="img" aria-label={`排放预算使用 ${fmt(pct, 1)}%`} />

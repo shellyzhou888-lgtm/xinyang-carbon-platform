@@ -1,4 +1,4 @@
-import { charts, management, overview, carbonManagement, carbonAsset, carbonMarket, enterpriseEnergyMix, indicatorBoard, productChains } from "@/lib/server";
+import { charts, management, overview, carbonManagement, carbonAsset, carbonMarket, enterpriseEnergyMix, indicatorBoard, productChains, diagnosisLoop } from "@/lib/server";
 import { selectedYear } from "@/lib/workspace";
 import { DataError, MoreLink, PageHeading, Panel } from "@/components/WorkspaceParts";
 import BusinessNavigation from "@/components/BusinessNavigation";
@@ -11,6 +11,7 @@ import { ChainTrajectory } from "@/components/ProductTrajectory";
 import { C } from "@/lib/chart-theme";
 import ProductHotspots from "@/components/ProductHotspots";
 import LiveCarbonMarket from "@/components/LiveCarbonMarket";
+import CarbonReductionActions from "@/components/CarbonReductionActions";
 
 export const dynamic = "force-dynamic";
 
@@ -28,12 +29,14 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   let chart: Awaited<ReturnType<typeof charts>> | null = null;
   let board: Awaited<ReturnType<typeof indicatorBoard>> = [];
   let product: Awaited<ReturnType<typeof productChains>> | null = null;
+  let loop: Awaited<ReturnType<typeof diagnosisLoop>> | null = null;
   try {
-    [data, detail, extended, chart, previous, mix, asset, market, board, product] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
+    [data, detail, extended, chart, previous, mix, asset, market, board, product, loop] = await Promise.all([overview(year), management(year), carbonManagement(year), charts(year),
     tab === "analysis" && year > 2021 ? management(year - 1) : Promise.resolve(null),
     tab === "flow" ? enterpriseEnergyMix(year) : Promise.resolve([]),
     tab === "asset" ? carbonAsset(2021, year + 1) : Promise.resolve(null),
-    tab === "asset" ? carbonMarket() : Promise.resolve(null), tab === "targets" ? indicatorBoard(year) : Promise.resolve([]), tab === "product" ? productChains() : Promise.resolve(null)]);
+    tab === "asset" ? carbonMarket() : Promise.resolve(null), tab === "targets" ? indicatorBoard(year) : Promise.resolve([]), tab === "product" ? productChains() : Promise.resolve(null),
+    tab === "targets" ? diagnosisLoop(year) : Promise.resolve(null)]);
   } catch (reason) { error = reason instanceof Error ? reason.message : "请稍后重试"; }
   const annual = detail?.annual || [];
   const row = (y: number) => annual.find((item) => item.year === y);
@@ -49,7 +52,7 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
   const tabs = <BusinessNavigation id="carbon" active={tab} items={TABS.map(link)} />;
 
   return <div className={`analysis-workspace ${tab === "product" ? "product-workspace" : "screen-board"} tone-carbon`}>
-    <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description="先看排放构成与企业贡献，再看减排目标和改善方向。">
+    <PageHeading eyebrow={`CARBON MANAGEMENT · ${year} 年度`} title="碳排管理" description={tab === "targets" ? "指标目标 → 企业减排措施及预计减排量 → 情景路线图。" : "先看排放构成与企业贡献，再看减排目标和改善方向。"}>
       <details className="rules"><summary>核算规则与边界</summary><div>
         <h3>园区能源活动核算</h3>
         <p>采用 GIP_2026 口径，按发改环资〔2025〕910号附件4计算；电力、热力按净受入处理，燃料以活动量及对应因子核算，原料用途与燃料用途分别处理。</p>
@@ -79,22 +82,25 @@ export default async function Carbon({ searchParams }: { searchParams: Promise<{
       <Panel className="screen-quadrant" title="企业排放与碳强度四象限" subtitle="横轴为排放量（对数），纵轴为单位产值 CO₂；虚线为中位数，气泡越大排放越多">
         <EmitterQuadrant rows={ranking.map((item) => ({ code: item.code, name: item.name, value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} />
       </Panel>
-      <Panel className="screen-ranking" title="企业碳排放贡献" subtitle="按排放量排序；右列为单位产值 CO₂（tCO₂/万元）">
-        <ContributionList rows={ranking.map((item) => ({ code: item.code, name: shortName(item.name), value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} unit="tCO₂" intensityUnit="tCO₂/万元产值" tone="carbon" />
+      <Panel className="screen-ranking" title="企业碳排放贡献 · 前五名" subtitle="占比以园区总排放为分母；右列为单位产值 CO₂（tCO₂/万元）">
+        <ContributionList rows={ranking.slice(0, 5).map((item) => ({ code: item.code, name: shortName(item.name), value: item.co2_t, intensity: item.intensity }))} total={data?.co2_t} unit="tCO₂" intensityUnit="tCO₂/万元产值" tone="carbon" />
       </Panel>
       <Panel className="screen-waterfall" title={`${year - 1} → ${year} 年排放变化归因`} subtitle="从上年总量出发，逐项列出各能源品种带来的增减，落到本年总量">
         <ChangeWaterfall previous={structure(previous)} current={structure(detail)} year={year} />
+      </Panel>
+      <Panel className="screen-budget" title="年度排放额度使用率" subtitle={`${year} 年累计排放占年度排放预算的比例`}>
+        <CarbonBudgetGauge data={extended} compact />
       </Panel>
     </div>}
 
     {tab === "targets" && <>
       <div className="screen-grid screen-targets">
         <Panel className="screen-indicators" title="碳排放指标" subtitle="《绿色工业园区评价要求》碳排放类指标：要求逐年下降，图为 2021 年以来的变化">
-          <IndicatorScales rows={board.filter((row) => ["I17", "I18", "I19"].includes(row.code))} year={year} columns={3} large />
+          <IndicatorScales rows={board.filter((row) => ["I17", "I18", "I19"].includes(row.code))} year={year} columns={3} large compact />
         </Panel>
 
-        <Panel className="screen-budget" title={`${year} 年排放预算使用`} subtitle="累计排放占年度排放预算的比例">
-          <CarbonBudgetGauge data={extended} />
+        <Panel className="screen-actions" title="企业减排措施及预计减排量" subtitle={`${year} 年诊断关联措施，按预计年减排量排序`} action={<MoreLink href={`/diagnosis?year=${year}&tab=strategy`}>策略详情</MoreLink>}>
+          <CarbonReductionActions loop={loop} year={year} />
         </Panel>
         <div className="screen-roadmap analysis-nested"><Roadmap data={extended} /></div>
       </div>

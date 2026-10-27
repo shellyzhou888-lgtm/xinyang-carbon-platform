@@ -55,7 +55,7 @@ export function IndicatorScales({ rows, year, columns = 2, grouped = false, larg
                 <motion.i className="ind-fill" initial={reduce ? false : { width: 0 }} animate={{ width: pos(r.value!) }} transition={{ duration: 0.9, ease }} />
                 <span className="ind-bench" style={{ left: pos(r.benchmark!) }}><em>引领值 {lower ? "≤" : "≥"} {fmt(r.benchmark, digits(r.benchmark!))}</em></span>
               </div>
-            </div> : r.series.some((p) => p.value != null) ? <div className="ind-trend-wrap"><Trend series={r.series} large={large} unit={r.unit} compact={compact} /><small>{r.direction === "negative" ? "数值越低越好，" : r.direction === "positive" ? "数值越高越好，" : ""}近年变化</small></div>
+            </div> : r.series.some((p) => p.value != null) ? <div className="ind-trend-wrap"><Trend series={r.series} large={large} unit={r.unit} compact={compact} />{!compact && <small>{r.direction === "negative" ? "数值越低越好，" : r.direction === "positive" ? "数值越高越好，" : ""}近年变化</small>}</div>
               : <p className="ind-def">{r.definition || "按年度统计"}</p>}
             </div>
             {hasBench && showTrend && r.series.filter(p => p.year <= year && p.value != null).length >= 2 && <div className="ind-trend-wrap">

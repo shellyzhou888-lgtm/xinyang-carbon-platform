@@ -157,7 +157,6 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
 
   const openCount = alerts.filter((a) => a.severity !== "info").length;
   const high = shown.filter((a) => severityRank(a.severity) >= 3).length;
-  const involved = new Set(shown.flatMap(alertTargets).filter((c) => sites.some((s) => s.code === c))).size;
   const lead = [...sites].sort((a, b) => b.co2 - a.co2)[0];
   return <div className="spatial">
     <div ref={container} className="spatial-map" role="img" aria-label="园区实景诊断地图" />
@@ -168,7 +167,6 @@ export default function SpatialDiagnosis({ year, alerts, ranking, monthly, previ
       <nav className="spatial-zones" aria-label="产业片区">{DIAG_ZONES.map((z) => <button key={z.key} type="button" className={zone === z.key ? "on" : ""} aria-pressed={zone === z.key} onClick={() => switchZone(z.key)}>{z.label}</button>)}</nav>
       <div><span>{year} 年诊断问题</span><strong className="num">{alerts.length}</strong><small>需关注 {openCount}</small></div>
       <div><span>需优先处理</span><strong className="num">{high}</strong><small>高风险及紧急</small></div>
-      <div><span>本片区涉及企业</span><strong className="num">{involved}</strong><small>按问题定位</small></div>
       {lead && <div><span>片区最大排放</span><strong>{shortName(lead.name)}</strong><small>占园区 {fmt(parkCo2 ? lead.co2 / parkCo2 * 100 : 0, 1)}%</small></div>}
     </div>
 
