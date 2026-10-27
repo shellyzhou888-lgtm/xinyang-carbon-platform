@@ -33,7 +33,7 @@ export function IntensityRanking({ rows }: { rows: { name: string; intensity: nu
   const option = useMemo(() => ({
     backgroundColor: "transparent", tooltip: tooltip(),
     grid: { left: 8, right: 55, top: 30, bottom: 8, containLabel: true },
-    xAxis: { type: "value", name: "tce/万元", nameTextStyle: { color: C.muted }, ...axis },
+    xAxis: { type: "value", name: "tce/万元", nameTextStyle: { color: C.muted, align: "right" }, ...axis },
     yAxis: { type: "category", data: items.map(r => r.name.replace(/（.*?）/g, "")), ...axis, axisLabel: { color: C.text, fontSize: 12 } },
     series: [{ name: "单位产值能耗", type: "bar", data: items.map(r => r.intensity), barMaxWidth: 20,
       itemStyle: { color: barFade(C.energy, true), borderRadius: [0, 5, 5, 0] },

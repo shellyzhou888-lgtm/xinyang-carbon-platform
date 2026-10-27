@@ -9,7 +9,7 @@ import ChatPanel from "./ChatPanel";
 import VoiceAssistant from "./VoiceAssistant";
 import { HealthProvider, useHealth } from "./HealthContext";
 import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconMoon, IconOverview, IconSun } from "./icons";
-import { selectedYear } from "@/lib/workspace";
+import { ENERGY_YEARS, selectedYear } from "@/lib/workspace";
 import { logout } from "@/app/login/actions";
 
 const NAV = [
@@ -28,7 +28,8 @@ export default function PlatformShell({ children, user }: { children: React.Reac
 function Shell({ children, user }: { children: React.ReactNode; user: string }) {
   const path = usePathname();
   const params = useSearchParams();
-  const year = selectedYear(params.get("year") || undefined);
+  const requestedYear = Number(params.get("year"));
+  const year = path === "/energy" && ENERGY_YEARS.some(y => y === requestedYear) ? requestedYear : selectedYear(params.get("year") || undefined);
   const [chatOpen, setChatOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [themeRevision, setThemeRevision] = useState(0);

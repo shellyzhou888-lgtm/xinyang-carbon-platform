@@ -9,8 +9,8 @@ import { axis, barFade, C, fade, legend, SERIES, tooltip } from "@/lib/chart-the
 
 echarts.use([LegacyGridContainLabel, BarChart, LineChart, PieChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer]);
 
-export default function MetricChart({ rows, kind = "bar", unit, color = C.energy, label }: {
-  rows: { name: string; value: number | null }[]; kind?: "bar" | "line" | "pie"; unit: string; color?: string; label: string;
+export default function MetricChart({ rows, kind = "bar", unit, color = C.energy, label, showAllLabels = false }: {
+  rows: { name: string; value: number | null }[]; kind?: "bar" | "line" | "pie"; unit: string; color?: string; label: string; showAllLabels?: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const available = rows.some((row) => row.value != null);
@@ -25,7 +25,8 @@ export default function MetricChart({ rows, kind = "bar", unit, color = C.energy
     } : {
       ...common,
       grid: { left: 8, right: 12, top: 32, bottom: 8, containLabel: true },
-      xAxis: { type: "category", data: rows.map((row) => row.name), ...axis, axisLabel: { ...axis.axisLabel, rotate: rows.length > 12 ? 35 : 0 }, boundaryGap: kind === "bar" },
+      xAxis: { type: "category", data: rows.map((row) => row.name), ...axis, axisLabel: { ...axis.axisLabel, interval: showAllLabels ? 0 : "auto", rotate: rows.length > 12 ? 35 : 0,
+        ...(showAllLabels ? { fontSize: 11, lineHeight: 16, formatter: (name: string) => name.match(/.{1,5}/gu)?.join("\n") ?? name } : {}) }, boundaryGap: kind === "bar" },
       yAxis: { type: "value", name: unit, nameTextStyle: { color: C.muted, align: "left" }, ...axis },
       series: [{ type: kind, data: rows.map((row) => row.value), connectNulls: false, smooth: kind === "line" ? 0.35 : undefined, symbol: kind === "line" ? "circle" : undefined, symbolSize: 6,
         lineStyle: { width: 2.2, color }, areaStyle: kind === "line" ? { color: fade(color, 0.25) } : undefined,
@@ -34,6 +35,6 @@ export default function MetricChart({ rows, kind = "bar", unit, color = C.energy
     });
     const resize = new ResizeObserver(() => chart.resize()); resize.observe(host.current);
     return () => { resize.disconnect(); chart.dispose(); };
-  }, [rows, kind, unit, color, available]);
+  }, [rows, kind, unit, color, available, showAllLabels]);
   return available ? <div ref={host} className="chart" role="img" aria-label={label} /> : <div className="empty"><b>暂无可展示数据</b></div>;
 }

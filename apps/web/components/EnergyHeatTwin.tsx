@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import type { EnterpriseMonthly } from "@xinyang/db-agent";
 import { enterprises, type Position } from "@/lib/park-geography";
@@ -52,7 +53,8 @@ function stemCard(title: string, rows: [string, string][], accent: string) {
  */
 export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year: number; rowsByYear: Record<number, EnterpriseMonthly[]> }) {
   const years = Object.keys(rowsByYear).map(Number).filter((y) => rowsByYear[y]?.length).sort();
-  const [year, setYear] = useState(initialYear);
+  const router = useRouter();
+  const year = initialYear;
   const rows = useMemo(() => rowsByYear[year] ?? [], [rowsByYear, year]);
   const container = useRef<HTMLDivElement>(null);
   // Free zoom and drag within Henan province (the view cannot be dragged off to unrelated regions).
@@ -205,7 +207,7 @@ export default function EnergyHeatTwin({ year: initialYear, rowsByYear }: { year
           <span>{Number(m.slice(5))}月</span>
         </button>)}
       </div>
-      <span className="twin-years" role="group" aria-label="年份">{years.map((y) => <button key={y} type="button" className={y === year ? "on" : ""} aria-pressed={y === year} onClick={() => { setPlaying(false); setYear(y); }}>{y}</button>)}</span>
+      <span className="twin-years" role="group" aria-label="年份">{years.map((y) => <button key={y} type="button" className={y === year ? "on" : ""} aria-pressed={y === year} onClick={() => { setPlaying(false); router.push(`/energy?year=${y}&tab=heat`, { scroll: false }); }}>{y}</button>)}</span>
     </div>
   </div>;
 }

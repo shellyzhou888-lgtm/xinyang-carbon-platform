@@ -61,7 +61,7 @@ export function YearCompareChart({ months, current, previous, year, unit, color 
     } },
     legend: legend({ top: 0, right: 0, data: [`${year} 年`, `${year - 1} 年`] }),
     grid: { left: 8, right: 12, top: 36, bottom: 6, containLabel: true },
-    xAxis: { type: "category", data: months, ...axis },
+    xAxis: { type: "category", data: months, ...axis, axisLabel: { ...axis.axisLabel, interval: 0, fontSize: 10 } },
     yAxis: { type: "value", name: unit, nameTextStyle: { color: C.muted, align: "left" }, ...axis },
     series: [
       { name: `${year} 年`, type: "bar", data: current, barMaxWidth: 22, itemStyle: { color: barFade(color), borderRadius: [6, 6, 0, 0] },

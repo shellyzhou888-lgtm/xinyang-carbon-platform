@@ -33,7 +33,7 @@ function Trend({ series, large = false, unit }: { series: { year: number; value:
  * value gets a check; one that does not is shown the same way without any status wording. Indicators without a
  * leading value show their five-year trend; indicators without statistics show their definition.
  */
-export function IndicatorScales({ rows, year, columns = 2, grouped = false, large = false }: { rows: IndicatorBoardRow[]; year: number; columns?: 1 | 2 | 3; grouped?: boolean; large?: boolean }) {
+export function IndicatorScales({ rows, year, columns = 2, grouped = false, large = false, showTrend = false }: { rows: IndicatorBoardRow[]; year: number; columns?: 1 | 2 | 3; grouped?: boolean; large?: boolean; showTrend?: boolean }) {
   const reduce = useReducedMotion();
   const groups = grouped ? [...new Set(rows.map((r) => r.group ?? "其他"))] : [""];
   return <div className={`ind-board${large ? " lg" : ""}`}>
@@ -56,6 +56,9 @@ export function IndicatorScales({ rows, year, columns = 2, grouped = false, larg
               </div>
             </div> : r.series.some((p) => p.value != null) ? <div className="ind-trend-wrap"><Trend series={r.series} large={large} unit={r.unit} /><small>{r.direction === "negative" ? "数值越低越好，" : r.direction === "positive" ? "数值越高越好，" : ""}近年变化</small></div>
               : <p className="ind-def">{r.definition || "按年度统计"}</p>}
+            {hasBench && showTrend && r.series.filter(p => p.year <= year && p.value != null).length >= 2 && <div className="ind-trend-wrap">
+              <Trend series={r.series.filter(p => p.year <= year)} large={large} unit={r.unit} /><small>截至 {year} 年的变化</small>
+            </div>}
           </motion.article>;
         })}
       </div>

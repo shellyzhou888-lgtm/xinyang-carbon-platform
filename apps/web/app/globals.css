@@ -2083,7 +2083,7 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 }
 
 /* Consumption analysis prioritises complete content and scrolls as a page. */
-.consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: none; gap: 24px; align-items: start; }
+.consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; grid-template-areas: none; gap: 24px; align-items: stretch; }
 .consumption-workspace .screen-consumption > * { grid-area: auto; }
 .consumption-workspace .screen-consumption > .panel { padding: 24px; }
 .consumption-workspace .chart { height: 360px; min-height: 360px; }
@@ -2102,8 +2102,54 @@ tbody tr:nth-child(even) td { background: var(--surface-2); }
 .consumption-workspace .ind-board { overflow: visible; }
 .consumption-workspace .ind-card { padding: 20px; gap: 16px; }
 .consumption-workspace .ind-grid { gap: 20px; }
+.energy-navigation { flex: none; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 20px; margin-bottom: 18px; }
+.energy-navigation .business-navigation { margin: 0; }
+.energy-years { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; padding: 5px; border-radius: 12px; background: var(--surface-2); font-size: 13px; }
+.energy-years > span { color: var(--text-3); padding: 0 8px; }
+.energy-years a { padding: 6px 9px; border-radius: 8px; color: var(--text-2); font-family: var(--font-num); }
+.energy-years a[aria-current="page"] { color: var(--accent); background: rgb(var(--accent-rgb) / .14); }
+.energy-budget-combo { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.consumption-workspace .energy-budget-combo > .chart { height: 360px; min-height: 360px; }
+.budget-period { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; color: var(--text-3); font-size: 12px; }
+.budget-period > div { display: flex; gap: 3px; padding: 3px; border-radius: 9px; background: var(--surface-2); }
+.budget-period button { font: inherit; color: var(--text-2); border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; }
+.budget-period button[aria-pressed="true"] { color: var(--accent); background: rgb(var(--accent-rgb) / .14); }
+.budget-quarter-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 0; padding: 0; }
+.budget-quarter-summary li { display: grid; gap: 5px; padding: 12px 8px; border-radius: 10px; background: var(--surface-2); }
+.budget-quarter-summary b { font-size: 12px; color: var(--text-2); }
+.budget-quarter-summary strong { font-size: 18px; color: var(--energy); font-weight: 500; }
+.budget-quarter-summary small, .budget-quarter-summary span { font-size: 11px; color: var(--text-3); }
+.consumption-workspace .screen-indicators > .ind-board { flex: 1; align-content: stretch; grid-template-rows: 1fr; }
+.consumption-workspace .screen-indicators :is(.ind-group, .ind-grid) { height: 100%; }
+.energy-detail-workspace .screen-grid { gap: 24px; align-items: stretch; }
+.energy-detail-workspace .panel { padding: 24px; }
+.energy-detail-workspace .screen-intensity { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); grid-template-rows: auto; }
+.energy-detail-workspace .screen-intensity .analysis-main > .chart { flex: 1; min-height: 660px; }
+.energy-detail-workspace .screen-renewable { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-rows: auto auto; }
+.energy-detail-workspace .screen-renewable > .panel:first-child { grid-column: 1; grid-row: 1; }
+.energy-detail-workspace .screen-renewable > .screen-renewable-mix { grid-column: 1; grid-row: 2; }
+.energy-detail-workspace .screen-renewable > .screen-storage { grid-column: 2; grid-row: 1 / 3; }
+.energy-detail-workspace .screen-renewable > .panel:first-child .chart { height: 360px; min-height: 360px; }
+.energy-detail-workspace .renewable-legend { overflow: visible; max-height: none; }
+.energy-detail-workspace .table-scroll { max-height: none; }
+.energy-workspace .screen-heat .capsule b, .energy-workspace .screen-heat .capsule small { white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere; }
+.energy-workspace .screen-heat .capsule b { min-height: 3em; display: grid; place-items: start center; }
+.energy-workspace .screen-heat .capsules.energy .capsule:nth-child(6) { --cap: #9b87ff; }
+@media (max-width: 1100px) {
+  .energy-detail-workspace :is(.screen-intensity, .screen-renewable) { grid-template-columns: minmax(0, 1fr); }
+  .energy-detail-workspace .screen-renewable > .panel { grid-column: auto; grid-row: auto; }
+}
+@media (max-width: 700px) {
+  .budget-quarter-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .energy-detail-workspace .panel { padding: 18px; }
+  .energy-years { font-size: 12px; }
+  .energy-years a { padding: 6px 8px; }
+  .energy-workspace .screen-heat .capsule-row { grid-auto-flow: row; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .energy-detail-workspace .screen-renewable > .panel:first-child .chart { min-width: 480px; }
+  .energy-detail-workspace .screen-renewable > .panel:first-child { overflow-x: auto; }
+}
 @media (min-width: 1280px) {
-  .consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-areas: "trend structure" "matrix ranking" "budget indicators"; }
+  .consumption-workspace .screen-consumption { grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); grid-template-areas: "matrix ranking" "budget indicators"; }
   .consumption-workspace .screen-trend { grid-area: trend; }
   .consumption-workspace .screen-structure { grid-area: structure; }
   .consumption-workspace .screen-matrix { grid-area: matrix; }
