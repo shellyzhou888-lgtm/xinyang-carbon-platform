@@ -1,134 +1,120 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { PRESENTATION_CHANNEL, PRESENTATION_MODULES, PRESENTATION_VIEWS, presentationHref, type PresentationBlock } from "@/lib/presentation";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { DISPLAY_CHANNEL, DISPLAY_MODULES, DISPLAY_SLIDE_COUNT, displayFrameHref, originalViewHref, type DisplayModule } from "@/lib/presentation";
 import { YEARS } from "@/lib/workspace";
 import styles from "./PresentationPlayer.module.css";
 
 export default function PresentationPlayer({ year }: { year: number }) {
-  const frame = useRef<HTMLIFrameElement>(null), stage = useRef<HTMLDivElement>(null);
-  const [viewIndex, setViewIndex] = useState(0), [blockIndex, setBlockIndex] = useState(0);
-  const [blocks, setBlocks] = useState<PresentationBlock[]>([]), [catalog, setCatalog] = useState<Record<string, PresentationBlock[]>>({});
-  const [ready, setReady] = useState(false), [playing, setPlaying] = useState(true), [seconds, setSeconds] = useState(20);
-  const [progress, setProgress] = useState(0), [visible, setVisible] = useState(true), [menu, setMenu] = useState(true);
-  const [error, setError] = useState(""), [full, setFull] = useState(false), [reload, setReload] = useState(0);
-  const pendingBlock = useRef(0), initialized = useRef(false);
-  const view = PRESENTATION_VIEWS[viewIndex], href = presentationHref(viewIndex, year, true);
-  const post = useCallback((type: string, payload: object = {}) => frame.current?.contentWindow?.postMessage({ channel: PRESENTATION_CHANNEL, type, ...payload }, window.location.origin), []);
-  const go = useCallback((index: number, block = 0) => {
-    initialized.current = false; pendingBlock.current = block;
-    setReady(false); setBlocks([]); setBlockIndex(0); setProgress(0); setError("");
-    setViewIndex((index + PRESENTATION_VIEWS.length) % PRESENTATION_VIEWS.length);
-  }, []);
-  const step = useCallback((direction: number) => {
-    if (!ready) return;
-    const next = blockIndex + direction;
-    if (next >= 0 && next < blocks.length) { setBlockIndex(next); setProgress(0); }
-    else go(viewIndex + direction, direction < 0 ? -1 : 0);
-  }, [ready, blockIndex, blocks.length, go, viewIndex]);
-  useEffect(() => {
-    const receive = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin || event.source !== frame.current?.contentWindow || event.data?.channel !== PRESENTATION_CHANNEL || event.data.path !== view.path) return;
-      if (event.data.type === "ready" && Array.isArray(event.data.blocks) && event.data.blocks.length) {
-        const next = event.data.blocks.filter((block: PresentationBlock) => typeof block.id === "string" && typeof block.title === "string") as PresentationBlock[];
-        if (!next.length) return;
-        setBlocks(current => JSON.stringify(current) === JSON.stringify(next) ? current : next);
-        setCatalog(current => JSON.stringify(current[view.id]) === JSON.stringify(next) ? current : { ...current, [view.id]: next });
-        if (!initialized.current) {
-          initialized.current = true;
-          setBlockIndex(pendingBlock.current < 0 ? next.length - 1 : Math.min(pendingBlock.current, next.length - 1));
-        } else setBlockIndex(current => Math.min(current, next.length - 1));
-        setReady(true); setError("");
-      }
-      if (event.data.type === "interact") setPlaying(false);
-      if (event.data.type === "key") {
-        if (event.data.key === " ") setPlaying(current => !current);
-        else { setPlaying(false); step(event.data.key === "ArrowRight" ? 1 : -1); }
-      }
-    };
-    window.addEventListener("message", receive);
-    return () => window.removeEventListener("message", receive);
-  }, [view.id, view.path, step]);
-  useEffect(() => {
-    if (ready) { post("focus", { index: blockIndex }); post("scroll", { progress: 0 }); }
-  }, [ready, blockIndex, post]);
+  const root = useRef<HTMLDivElement>(null), catalog = useRef<HTMLDialogElement>(null);
+  const [playing, setPlaying] = useState(true), [seconds, setSeconds] = useState(25);
+  const [visible, setVisible] = useState(true), [full, setFull] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null), [error, setError] = useState("");
   useEffect(() => {
     const change = () => setVisible(!document.hidden);
     const fullscreen = () => setFull(!!document.fullscreenElement);
     const key = (event: KeyboardEvent) => {
-      if ((event.target as Element).closest("input,select,textarea,button,a")) return;
-      if (event.key === " ") { event.preventDefault(); setPlaying(current => !current); }
-      if (event.key === "ArrowRight" || event.key === "ArrowLeft") { event.preventDefault(); setPlaying(false); step(event.key === "ArrowRight" ? 1 : -1); }
+      if ((event.target as Element).closest("input,select,textarea,button,a,dialog[open]")) return;
+      if (event.key === " ") { event.preventDefault(); setPlaying(value => !value); }
+      if (event.key === "Escape") setExpanded(null);
     };
-    change(); document.addEventListener("visibilitychange", change); document.addEventListener("fullscreenchange", fullscreen); window.addEventListener("keydown", key);
+    change(); document.addEventListener("visibilitychange", change);
+    document.addEventListener("fullscreenchange", fullscreen); window.addEventListener("keydown", key);
     return () => { document.removeEventListener("visibilitychange", change); document.removeEventListener("fullscreenchange", fullscreen); window.removeEventListener("keydown", key); };
-  }, [step]);
+  }, []);
+  const fullscreen = async () => {
+    try { if (document.fullscreenElement) await document.exitFullscreen(); else await root.current?.requestFullscreen(); }
+    catch { setError("浏览器未允许全屏，可继续在当前窗口观看。"); }
+  };
+  return <div ref={root} className={styles.player}>
+    <header className={styles.header}>
+      <div className={styles.brand}><img src="/brand/logo-symbol-on-dark.svg" alt="" /><div><h1>信阳经开区 · 平台全景大屏</h1><p>总览 · 能源 · 碳排 · 诊断　/　四区同屏，完整界面自动轮播</p></div></div>
+      <div className={styles.controls}>
+        <label>统计年份<select aria-label="大屏统计年份" value={year} onChange={event => { window.location.href = `/display?year=${event.target.value}`; }}>{YEARS.map(value => <option key={value}>{value}</option>)}</select></label>
+        <label>切换间隔<select aria-label="完整界面轮播间隔" value={seconds} onChange={event => setSeconds(Number(event.target.value))}>{[10, 15, 25, 40, 60].map(value => <option key={value} value={value}>{value} 秒</option>)}</select></label>
+        <button type="button" className={styles.play} onClick={() => setPlaying(value => !value)}>{playing ? "暂停全部" : "开始轮播"}</button>
+        <button type="button" onClick={() => catalog.current?.showModal()}>内容目录</button>
+        <button type="button" onClick={fullscreen}>{full ? "退出全屏" : "全屏展示"}</button>
+        <Link href={`/?year=${year}`}>原平台 ↗</Link>
+      </div>
+    </header>
+    {error && <p className={styles.notice} role="status">{error}</p>}
+    <main className={styles.wall} aria-label="四区同屏轮播" data-expanded={expanded ?? undefined}>
+      {DISPLAY_MODULES.map((module, index) => <DisplayTile key={module.key} module={module} ordinal={index + 1} year={year}
+        playing={playing && visible && (!expanded || expanded === module.key)} seconds={seconds}
+        expanded={expanded === module.key} hidden={!!expanded && expanded !== module.key}
+        onPause={() => setPlaying(false)} onExpand={() => setExpanded(value => value === module.key ? null : module.key)} />)}
+    </main>
+    <footer className={styles.footer}><span><i data-playing={playing && visible} />{playing && visible ? "四区自动轮播中" : "已暂停，可手动切换"}</span><span>5 个前台模块 · {DISPLAY_SLIDE_COUNT} 个完整按钮界面 · 保留同一界面内的全部图表</span><span>原页面数据与组件 · 后台不参与展示</span></footer>
+    <dialog className={styles.catalog} ref={catalog}>
+      <header><div><span>PLATFORM CONTENTS</span><h2>大屏内容目录</h2><p>每次切换展示对应按钮下的整组内容。</p></div><button type="button" onClick={() => catalog.current?.close()} aria-label="关闭内容目录">×</button></header>
+      <div>{DISPLAY_MODULES.map(module => <section key={module.key}><h3 style={{ color: module.color }}>{module.label}</h3><ol>{module.slides.map(slide => <li key={slide.key}>{slide.label}</li>)}</ol></section>)}</div>
+    </dialog>
+  </div>;
+}
+
+function DisplayTile({ module, ordinal, year, playing, seconds, expanded, hidden, onPause, onExpand }: {
+  module: DisplayModule; ordinal: number; year: number; playing: boolean; seconds: number;
+  expanded: boolean; hidden: boolean; onPause: () => void; onExpand: () => void;
+}) {
+  const frame = useRef<HTMLIFrameElement>(null), viewport = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0), [reload, setReload] = useState(0), [readyKey, setReadyKey] = useState("");
+  const [progress, setProgress] = useState(0), [error, setError] = useState("");
+  const [panelCount, setPanelCount] = useState(0);
+  const [size, setSize] = useState({ width: 900, height: 390 });
+  const slide = module.slides[index], frameKey = `${slide.key}:${reload}`, ready = readyKey === frameKey;
+  const baseWidth = 1800, baseHeight = Math.max(780, Math.round(baseWidth * size.height / Math.max(1, size.width)));
+  const scale = Math.min(size.width / baseWidth, size.height / baseHeight);
+  const post = useCallback((type: string, payload: object = {}) => frame.current?.contentWindow?.postMessage({ channel: DISPLAY_CHANNEL, type, ...payload }, window.location.origin), []);
   useEffect(() => {
-    if (!playing || !ready || !visible) return;
+    const element = viewport.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => setSize({ width: entry.contentRect.width, height: entry.contentRect.height }));
+    observer.observe(element); return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const receive = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.source !== frame.current?.contentWindow || event.data?.channel !== DISPLAY_CHANNEL || event.data.module !== module.key || event.data.slide !== slide.key) return;
+      if (event.data.type === "ready") { setReadyKey(frameKey); setPanelCount(Number(event.data.panels) || 0); setError(""); }
+      if (event.data.type === "error") setError("当前按钮界面未能加载，可重试或切换下一界面。");
+    };
+    window.addEventListener("message", receive);
+    return () => window.removeEventListener("message", receive);
+  }, [module.key, slide.key, frameKey]);
+  useEffect(() => {
+    setError(""); setProgress(0);
+    if (ready) return;
+    const probe = window.setInterval(() => post("inspect"), 700);
+    const timeout = window.setTimeout(() => setError("加载超时，请重试；登录过期时请返回原平台登录。"), 45_000);
+    return () => { window.clearInterval(probe); window.clearTimeout(timeout); };
+  }, [frameKey, ready, post]);
+  useEffect(() => {
+    if (!ready || !playing) return;
     const start = performance.now();
+    post("scroll", { progress: 0 });
     const timer = window.setInterval(() => {
       const next = Math.min(1, (performance.now() - start) / (seconds * 1000));
       setProgress(next);
-      // Hold the beginning and end so readers have time before/after a long board scrolls.
-      post("scroll", { progress: Math.max(0, Math.min(1, (next - .18) / .65)) });
-      if (next >= 1) { window.clearInterval(timer); step(1); }
-    }, 120);
+      post("scroll", { progress: Math.max(0, Math.min(1, (next - .22) / .6)) });
+      if (next >= 1) { window.clearInterval(timer); setIndex(value => (value + 1) % module.slides.length); }
+    }, 140);
     return () => window.clearInterval(timer);
-  }, [playing, ready, visible, seconds, viewIndex, blockIndex, post, step]);
-  useEffect(() => {
-    if (ready) return;
-    const timer = window.setTimeout(() => { setError("页面未能完成加载。可重试或选择其他界面；若登录已过期，请返回原网站重新登录。"); setPlaying(false); }, 45_000);
-    return () => window.clearTimeout(timer);
-  }, [ready, viewIndex, reload]);
-  const selectView = (index: number) => { setPlaying(false); if (index !== viewIndex) go(index); };
-  const retry = () => { initialized.current = false; pendingBlock.current = blockIndex; setReady(false); setError(""); setReload(value => value + 1); };
-  const fullScreen = async () => {
-    try { if (document.fullscreenElement) await document.exitFullscreen(); else await stage.current?.requestFullscreen(); }
-    catch { setError("浏览器未允许全屏，可以使用浏览器全屏快捷键继续展示。"); }
-  };
-
-  return <div className={styles.player} ref={stage}>
-    <header className={styles.header}>
-      <Link className={styles.brand} href={`/?year=${year}`}><img src="/brand/logo-symbol-on-dark.svg" alt="" /><span>信阳经开区能碳管理平台<small>前台界面 · 大屏轮播</small></span></Link>
-      <div className={styles.controls}>
-        <label>统计年份<select aria-label="轮播统计年份" value={year} onChange={event => { window.location.href = `/display?year=${event.target.value}`; }}>{YEARS.map(value => <option key={value}>{value}</option>)}</select></label>
-        <label>每板块<select aria-label="每个板块展示时长" value={seconds} onChange={event => { setSeconds(Number(event.target.value)); setProgress(0); }}>{[10, 20, 30, 45, 60].map(value => <option key={value} value={value}>{value} 秒</option>)}</select></label>
-        <button type="button" onClick={() => setMenu(value => !value)} aria-pressed={menu}>界面目录</button>
-        <button type="button" onClick={fullScreen}>{full ? "退出全屏" : "全屏展示"}</button>
-        <Link href={presentationHref(viewIndex, year)} className={styles.back}>返回当前原页面 ↗</Link>
-      </div>
-    </header>
-    <div className={styles.body} data-menu={menu}>
-      {menu && <aside className={styles.catalog} aria-label="前台界面目录">
-        <div className={styles.catalogTitle}><b>前台界面</b><span>5 个页面 · 17 个界面</span></div>
-        {PRESENTATION_MODULES.map((module, i) => <section key={module.key}>
-          <h2><span>0{i + 1}</span>{module.label}</h2>
-          {PRESENTATION_VIEWS.map((item, index) => item.module === module.key && <button key={item.id} type="button" aria-current={index === viewIndex ? "step" : undefined} onClick={() => selectView(index)}>
-            <span>{item.label}</span><small>{catalog[item.id]?.length ? `${catalog[item.id].length} 板块` : "›"}</small>
-          </button>)}
-        </section>)}
-        <p>每个界面的小板块依次播完后，自动进入下一个界面。后台不参与轮播。</p>
-      </aside>}
-      <main className={styles.main}>
-        <div className={styles.heading}><div><span>{view.moduleLabel} <i>/</i> {view.label}</span><h1>{ready ? blocks[blockIndex]?.title : "正在载入原页面…"}</h1></div><span className={styles.counter}>界面 {String(viewIndex + 1).padStart(2, "0")} / 17{ready && <small>板块 {blockIndex + 1} / {blocks.length}</small>}</span></div>
-        <div className={styles.stage}>
-          <iframe key={`${href}:${reload}`} ref={frame} src={href} title={`${view.moduleLabel} · ${view.label}原页面内容`} allow="fullscreen" className={ready ? styles.loaded : undefined}
-            onLoad={() => {
-              try { if (frame.current?.contentWindow?.location.pathname === "/login") { setError("登录已过期，请返回原网站重新登录后打开大屏。"); setPlaying(false); return; } } catch { /* loading state handles unavailable frames */ }
-              post("inspect");
-            }} />
-          {!ready && <div className={styles.loading} role="status"><span className={styles.loader} />正在读取 {view.moduleLabel} · {view.label} 的原有板块</div>}
-          {error && <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={retry}>重新加载</button><button type="button" onClick={() => go(viewIndex + 1)}>下一个界面</button><Link href="/login?next=%2Fdisplay">返回登录</Link></div>}
-        </div>
-        <nav className={styles.blocks} aria-label="当前界面的小板块">{blocks.map((block, index) => <button key={block.id} type="button" aria-current={index === blockIndex ? "step" : undefined} onClick={() => { setPlaying(false); setBlockIndex(index); setProgress(0); }}><small>{String(index + 1).padStart(2, "0")}</small>{block.title}</button>)}</nav>
-      </main>
+  }, [ready, playing, seconds, frameKey, module.slides.length, post]);
+  const go = (next: number) => { onPause(); setIndex((next + module.slides.length) % module.slides.length); setProgress(0); post("scroll", { progress: 0 }); };
+  return <section className={styles.tile} style={{ "--module-color": module.color } as CSSProperties} data-module-tile={module.key} data-hidden={hidden} data-expanded={expanded} data-ready={ready} data-slide={slide.key} data-panel-count={panelCount} aria-label={module.label}>
+    <header className={styles.tileHeader}><div className={styles.moduleName}><span>0{ordinal}</span><div><h2>{module.label}</h2><small>{module.english}</small></div></div><div className={styles.current}><b>{slide.label}</b><small>{index + 1} / {module.slides.length}</small></div><button type="button" onClick={onExpand} aria-label={`${expanded ? "还原" : "放大"}${module.label}`}>{expanded ? "四区同屏" : "放大 ↗"}</button></header>
+    <div ref={viewport} className={styles.viewport}>
+      <iframe key={frameKey} ref={frame} src={displayFrameHref(module, slide, year)} title={`${module.label} · ${slide.label}完整界面`} aria-hidden={hidden} tabIndex={-1}
+        style={{ width: baseWidth, height: baseHeight, transform: `translate(-50%,-50%) scale(${scale})` }} data-loaded={ready}
+        onLoad={() => {
+          try { if (frame.current?.contentWindow?.location.pathname === "/login") { setError("登录已过期，请返回原平台登录后重新打开大屏。"); return; } } catch { /* load timeout supplies a visible error */ }
+          post("inspect");
+        }} />
+      {!ready && !error && <div className={styles.loading} role="status"><i />正在载入 {slide.label} 的完整内容</div>}
+      {error && <div className={styles.error} role="alert"><p>{error}</p><button type="button" onClick={() => setReload(value => value + 1)}>重新加载</button><button type="button" onClick={() => go(index + 1)}>下一界面</button><Link href="/login?next=%2Fdisplay">返回登录</Link></div>}
     </div>
-    <footer className={styles.footer}>
-      <span>{playing && ready && visible ? "● 自动轮播" : !ready ? "等待页面就绪" : "Ⅱ 已暂停"}<small>原页面原数据 · 长内容自动滚动</small></span>
-      <div><button type="button" disabled={!ready} onClick={() => { setPlaying(false); step(-1); }}>← 上一板块</button><button type="button" className={styles.play} disabled={!ready} onClick={() => { setPlaying(value => !value); setProgress(0); }}>{playing ? "暂停轮播" : "开始轮播"}</button><button type="button" disabled={!ready} onClick={() => { setPlaying(false); step(1); }}>下一板块 →</button></div>
-      <span className={styles.remaining}>{ready ? playing ? `${Math.ceil(seconds * (1 - progress))} 秒后切换` : "手动浏览" : "正在加载"}<small>方向键切换 · 空格暂停 / 播放</small></span>
-      <div className={styles.progress}><i style={{ width: `${progress * 100}%` }} /></div>
-    </footer>
-  </div>;
+    <footer className={styles.tileFooter}><button type="button" onClick={() => go(index - 1)} aria-label={`${module.label}上一界面`}>‹</button><nav aria-label={`${module.label}轮播界面`}>{module.slides.map((item, i) => <button key={item.key} type="button" onClick={() => go(i)} aria-current={i === index ? "step" : undefined} aria-label={`${module.label}：${item.label}`} title={item.label} />)}</nav><span>{ready ? playing ? `${Math.ceil(seconds * (1 - progress))} 秒后切换` : "已暂停" : "正在加载"}</span><Link href={originalViewHref(slide, year)} target="_blank" rel="noreferrer">查看原页 ↗</Link><button type="button" onClick={() => go(index + 1)} aria-label={`${module.label}下一界面`}>›</button></footer>
+    <div className={styles.progress}><i style={{ width: `${progress * 100}%` }} /></div>
+  </section>;
 }

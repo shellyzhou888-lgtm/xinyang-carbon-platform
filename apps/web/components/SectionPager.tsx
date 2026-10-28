@@ -2,7 +2,6 @@
 
 import { Children, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { useSearchParams } from "next/navigation";
 
 /**
  * Switch dense dashboard sections in place: on wide screens the page stays one screen high and each view fills the
@@ -12,10 +11,7 @@ export default function SectionPager({ labels, lead, children }: { labels: strin
   const views = Children.toArray(children);
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
-  const presenting = useSearchParams().get("present") === "1";
   const index = Math.min(active, views.length - 1);
-  // Keep every original sub-view mounted for the display player to enumerate and focus.
-  if (presenting) return <section className="section-pager" aria-label="内容切换">{views.map((view, i) => <div className="section-pager-view" key={i} aria-label={labels[i]}>{view}</div>)}</section>;
   return <section className="section-pager" aria-label="内容切换">
     <div className="section-pager-bar">
       {lead}

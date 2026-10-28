@@ -11,8 +11,6 @@ import { HealthProvider, useHealth } from "./HealthContext";
 import { IconAdmin, IconCarbon, IconChat, IconClose, IconDiagnosis, IconDirectory, IconEnergy, IconLogout, IconMoon, IconOverview, IconSun } from "./icons";
 import { ENERGY_YEARS, selectedYear } from "@/lib/workspace";
 import { logout } from "@/app/login/actions";
-import PresentationSource from "./PresentationSource";
-import { isPresentationPath } from "@/lib/presentation";
 
 const NAV = [
   { href: "/", label: "总览", title: "园区运行总览", Icon: IconOverview, match: (p: string) => p === "/" },
@@ -24,9 +22,6 @@ const NAV = [
 ];
 
 export default function PlatformShell({ children, user }: { children: React.ReactNode; user: string }) {
-  const path = usePathname(), params = useSearchParams();
-  if (path === "/display") return children;
-  if (params.get("present") === "1" && isPresentationPath(path)) return <PresentationSource path={path}>{children}</PresentationSource>;
   return <HealthProvider><Shell user={user}>{children}</Shell></HealthProvider>;
 }
 
@@ -100,7 +95,6 @@ function Shell({ children, user }: { children: React.ReactNode; user: string }) 
           <span className="topbar-name">信阳经开区能碳管理平台</span>
         </div>
         <div className="topbar-right">
-          <Link className="btn-ghost small" href={`/display?year=${year}`} title="逐个展示所有前台界面与小板块">大屏轮播</Link>
           <StatusPill />
           <Clock />
           <ThemeToggle theme={theme} onToggle={toggleTheme} />

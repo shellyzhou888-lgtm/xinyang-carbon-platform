@@ -1,0 +1,21 @@
+.scene {
+  --rail: 0px;
+  --topbar: 0px;
+  display: block !important;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg);
+}
+.scene > :global(.app-main) {
+  margin: 0 !important;
+  width: 100%;
+  min-height: 100vh;
+}
+.scene :global(.page) {
+  max-width: none;
+  margin: 0;
+  padding: 16px 20px;
+}
+.scene[data-screen="overview"] :global(.page) { padding: 0 !important; }
+.scene[data-screen="overview"] :global(.map-stage) { height: 100vh; }
+.scene :global(.notice.danger) { position: relative; z-index: 200; }
