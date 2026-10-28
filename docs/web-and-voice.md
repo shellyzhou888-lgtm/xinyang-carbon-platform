@@ -63,6 +63,14 @@
    - 开发服务器运行期间若修改了 `packages/db-agent/src` 的导出，先在 `packages/db-agent` 运行 `npm run build`，再重启网站开发服务器；`predev` 只在启动时构建一次，旧的 `dist/index.mjs` 会导致“Export ... doesn't exist in target module”。
 6. 登录账户写在 `apps/web/.env.local`（不提交 Git）：`AUTH_USERNAME`、`AUTH_PASSWORD`、`AUTH_SECRET`。修改后重启网站。这是本机演示用的单账户签名 Cookie 会话（12 小时），多用户部署需改为用户表。
 
+### 2026-10-28 全连接启动检查
+
+- 本机 SSH 隧道仍正常，网站 `3001` 与小云 `8766` 后台未运行；重新以独立后台进程启动两个服务，日志放在 Git 忽略的 `storage/runtime/`，不依赖当前终端会话。
+- 九项检查通过：SSH 隧道后的 PostgreSQL 实际查询、网页 DeepSeek 与语音 DeepSeek 的最小生成请求、千问实时语音 `session.updated`、项目 WebSocket `ready`、网站认证后健康接口、首页服务端渲染、小云浏览器资源和高德配置/SDK 下载。
+- 网站健康接口数据库查询约 138 ms。千问检查未发送麦克风音频，实际收音和扬声器播放仍需用户在页面唤醒后验证；本轮未开启麦克风。
+- 碳价同步已有进程复用，最近日志显示 CEA 分时源可用，CCER 官方站暂不可达时使用已实现的转载来源，未因检查直接写库。地图检查到配置与 SDK 可访问，未将其等同于所有瓦片和实际浏览器绘制均已验证。
+- 临时检查明细保存在 `storage/runtime/connections-check.json`，不含 API 密钥、数据库连接串或登录会话；本次未修改应用源代码与本机凭据。
+
 ### 2026-10-27 Mac 本机语音连接验证
 
 - 本次离线原因是 `8766` 小云后台没有运行；现有 `.env.xiaoyun` 已配置本机 Python、语音与 Agent 密钥及项目模块，无需更换凭据。
